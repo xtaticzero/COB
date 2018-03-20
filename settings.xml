@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <localRepository>${user.home}/.m2/repository_DyC2</localRepository>
+    <!--<localRepository>${user.home}/.m2/repository_Acuerdos</localRepository>-->
+    <interactiveMode>true</interactiveMode>
+    <usePluginRegistry>false</usePluginRegistry>
+    <offline>false</offline>
+    <proxies>
+        <!--        <proxy>
+            <port>3128</port>
+            <host>192.168.20.5</host>
+            <nonProxyHosts>99.90.29.85|192.168.20.98|localhost|localhost.localdomain|127.0.0.1|::1|lstkeug72064.stksat.com|lstkeug72064</nonProxyHosts>
+        </proxy>-->
+        <!--SAT Proxy-->
+        <!--        <proxy>
+            <port>3228</port>
+            <host>10.69.41.202</host>
+            <nonProxyHosts>99.90.29.85|192.168.20.98|localhost|localhost.localdomain|127.0.0.1|::1|lstkeug72064.stksat.com|lstkeug72064</nonProxyHosts>
+        </proxy>-->
+<!--        <proxy>
+            <port>3128</port>
+            <host>192.168.219.80</host>
+            <nonProxyHosts>99.90.29.85|10.57.66.228|192.168.20.98|localhost|localhost.localdomain|127.0.0.1|::1|lstkeug72064.stksat.com|lstkeug72064</nonProxyHosts>
+        </proxy>-->
+        <!--        <proxy>
+            <port>3128</port>
+            <host>192.168.219.80</host>
+            <nonProxyHosts>99.90.29.85|192.168.20.98|localhost|localhost.localdomain|127.0.0.1|::1|lstkeug72064.stksat.com|lstkeug72064</nonProxyHosts>
+        </proxy>-->
+    </proxies>
+    <mirrors>        
+<!--        <mirror>
+            <mirrorOf>*</mirrorOf>
+            <url>http://192.168.20.98:9000/repository/internal/</url>
+            <id>archiva.default</id>
+        </mirror>
+        <mirror>
+            <mirrorOf>apache.snapshots</mirrorOf>
+            <url>http://192.168.20.98:9000/repositories/snapshots/</url>
+            <id>archiva.apache.snapshots</id>
+        </mirror>        -->
+        <!--repository SAT-->
+        <!--<mirror> 
+            <mirrorOf>*</mirrorOf> 
+            <url>http://10.57.66.228:8080/repository/internal/</url> 
+            <id>archiva.default</id> 
+        </mirror>-->
+    </mirrors>
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <!--SOFTTEK-->
+<!--            <properties>
+                <sonar.jdbc.url>jdbc:jtds:sqlserver://192.168.20.132:1433/Sonar_3_7_4;instance=SQL_2008;SelectMethod=Cursor</sonar.jdbc.url>
+                <sonar.jdbc.driverClassName>net.sourceforge.jtds.jdbc.Driver</sonar.jdbc.driverClassName>
+                <sonar.jdbc.dialect>mssql</sonar.jdbc.dialect>
+                <sonar.jdbc.password>sonar</sonar.jdbc.password>
+                <sonar.pdf.username>admin</sonar.pdf.username>
+                <sonar.pdf.password>admin</sonar.pdf.password>
+                <sonar.host.url>http://192.168.20.132:9000</sonar.host.url>
+                <sonar.jdbc.username>sonar</sonar.jdbc.username>
+            </properties>-->
+            <!-- op 2-->
+<!--            <properties>
+                <sonar.jdbc.url>jdbc:jtds:sqlserver://192.168.20.132:1433/Sonar_3_7_4;instance=SQL_2008;SelectMethod=Cursor</sonar.jdbc.url>
+                <sonar.jdbc.driverClassName>net.sourceforge.jtds.jdbc.Driver</sonar.jdbc.driverClassName>
+                <sonar.jdbc.dialect>mssql</sonar.jdbc.dialect>
+                <sonar.jdbc.username>sonar</sonar.jdbc.username>
+                <sonar.jdbc.password>sonar</sonar.jdbc.password>
+                <sonar.host.url>http://192.168.20.132:9000</sonar.host.url>
+            </properties>-->
+            <!--SAT-->
+            <properties>
+                <sonar.jdbc.url>jdbc:jtds:sqlserver://sonar_stk:1433/Sonar_3_7_4;instance=SQL_2008;SelectMethod=Cursor</sonar.jdbc.url>
+                <sonar.jdbc.driverClassName>net.sourceforge.jtds.jdbc.Driver</sonar.jdbc.driverClassName>
+                <sonar.jdbc.dialect>mssql</sonar.jdbc.dialect>
+                <sonar.jdbc.password>sonar</sonar.jdbc.password>
+                <sonar.pdf.username>admin</sonar.pdf.username>
+                <sonar.pdf.password>admin</sonar.pdf.password>
+                <sonar.host.url>http://sonar_stk:9000/</sonar.host.url>
+                <sonar.jdbc.username>sonar</sonar.jdbc.username>
+            </properties>
+        </profile>
+    </profiles>    
+</settings>
