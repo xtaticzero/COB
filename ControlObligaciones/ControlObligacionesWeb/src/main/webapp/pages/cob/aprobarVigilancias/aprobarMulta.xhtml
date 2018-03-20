@@ -1,0 +1,404 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>Aprobar Multas</title> 
+            <h:outputScript library="js" name="procesamientoFirmas.js"/>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <script type="text/javascript">
+            /*<![CDATA[ */
+
+            var numEmpl;
+            var numVigilancia;
+            URL_TOTALDATOS = "../../../restServices/firmaMultas/getTotalRegistros";
+            URL_OBTENERDATOS = "../../../restServices/firmaMultas/getDatos";
+            URL_GUARDARFIRMAS = "../../../restServices/firmaMultas/guardarDatos";
+            URL_PROCESOTOMADO = "../../../restServices/firmaMultas/procesoTomado";
+            var Browser = detectarNavegador();
+
+            function iniciarFirmado() {
+                dialogFirmado.hide();
+                dlgBarraEstado.show();
+
+                rfc = '#{aprobarMultaMB.rfc}';
+
+                flgContador = 1;
+                var fecha1 = new Date();
+                console.log('inicio:' + fecha1.getMinutes() + ':' + fecha1.getSeconds() + '.' + fecha1.getMilliseconds());
+                totalRegistros = getRegistrosTotales();
+                var fecha1 = new Date();
+                console.log('despues de total:' + fecha1.getMinutes() + ':' + fecha1.getSeconds() + '.' + fecha1.getMilliseconds());
+
+                paginaRegistros = Math.ceil(totalRegistros / NUMERO_PAGINAS);
+                console.log('paginaRegistros:' + paginaRegistros);
+                if (paginaRegistros < NUMERO_PAGINAS) {
+                    FLG_SALIDA = paginaRegistros;
+                } else {
+                    FLG_SALIDA = NUMERO_PAGINAS;
+                }
+                indexRegistros = 1;
+                longRegistros = paginaRegistros;
+
+                procesamientoFirma();
+
+                var fecha1 = new Date();
+                console.log('termina for:' + fecha1.getMinutes() + ':' + fecha1.getSeconds() + '.' + fecha1.getMilliseconds());
+
+            }
+            function validaErrores() {
+                if (flgTieneErrores > 0 && (flgContadorPagina + flgTieneErrores) === PAGINAS_PARCIAL) {
+                    console.log('Existen errores ' + motivoErrores);
+                    dlgBarraEstado.hide();
+                    generaMensaje(motivoErrores);
+                    msgErrorFirmado.show();
+                }
+            }
+
+            function validaFinProceso() {
+                if (flgContador >= FLG_SALIDA && indexRegistros > totalRegistros) {
+                    console.log('termina todos los procesos ya!');
+                    //funcion original
+                    emitir();
+                } else {
+                    flgContador++;
+                }
+            }
+
+            function guardarDatos(resultado) {
+                $.ajax({
+                    type: 'POST',
+                    cache: false,
+                    url: URL_GUARDARFIRMAS,
+                    data: 'firmas=' + encodeURIComponent(JSON.stringify(resultado)),
+                    success: function(msg) {
+                        console.log('estatus guardado:' + msg.estatus);
+                        if (msg.estatus === 1) {
+                            if (flgContadorPagina >= PAGINAS_PARCIAL) {
+                                console.log('--------termina los procesos de pagina');
+                                indexRegistros = indexRegistros + paginaRegistros;
+                                validaFinProceso(resultado);
+                                procesamientoFirma();
+                            } else {
+                                flgContadorPagina++;
+                            }
+                        } else {
+                            flgTieneErrores++;
+                            motivoErrores = msg.mensaje;
+                        }
+
+
+                    },
+                    error: function(jqXHR, status, errorTHrown) {
+                        console.log('error:' + jqXHR.status + ", error:" + errorTHrown);
+                        flgTieneErrores++;
+                        motivoErrores = errorTHrown;
+                    },
+                    complete: function(jqXHR, status) {
+                        console.log('complete:' + jqXHR.status);
+                        validaErrores();
+                    }
+                });
+            }
+            function procesoTomado() {
+                var tomado = 2;
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: URL_PROCESOTOMADO,
+                    async: false,
+                    success: function(msg) {
+                        if (msg.estatus === 1) {
+                            tomado = msg.bloqueado;
+                        } else {
+                            generaMensaje('No se puede determinar si las multas están siendo firmadas');
+                        }
+                    },
+                    error: function(jqXHR, status, errorTHrown) {
+                        console.log('error:' + jqXHR.status + ", error:" + errorTHrown);
+                        generaMensaje('Error al determinar si las multas están siendo firmadas');
+                    }
+                });
+                return tomado;
+            }
+
+            function sobreEscribirBoton() {
+                setTimeout(function() {
+                    console.log('ini');
+                    document.getElementById('btnEnviarForm').onclick = function() {
+                        iniciarFirmado();
+                    };
+                }, 1500);
+            }
+            function emitir() {
+                pbAjax.start();
+                emitirMultas();
+            }
+            function verDialogoFirmado() {
+                if (browserCompatible()) {
+                    dlgLoader.show();
+                    var tomado = procesoTomado();
+                    dlgLoader.hide();
+                    if (tomado === 1) {
+                        generaMensaje('Ya existe otro proceso aprobando estas multas.');
+                    } else if (tomado === 0) {
+                        limpiaCampos();
+                        dialogFirmado.show();
+                        sobreEscribirBoton();
+                    }
+                }
+            }
+            function limpiaCampos() {
+                document.getElementById('certificate').value = '';
+                document.getElementById('privateKey').value = '';
+                document.getElementById('pwdLlavePriv').value = '';
+                document.getElementById('txtRFC').value = '';
+            }
+
+            function generaMensaje(mensaje){
+                $('#msgErrorFirmaVal').html(mensaje);
+            }
+
+            /* ]]> */
+        </script>
+        <h:body>            
+            <h:form  id="mostrarMultas" prependId="false">
+                <ui:include src="/WEB-INF/templates/loader.xhtml"/>
+                <ui:include src="/pages/firmadoMAT/firmadoInclude.xhtml" />
+
+                <script type="text/javascript">
+                    /*<![CDATA[ */
+                    $.noConflict();
+                    /* ]]> */
+                </script>
+                <p:poll interval="10" listener="#{aprobarMultaMB.increment}"
+                        widgetVar="poll" autoStart="false" id="pollMensaje"/>
+                <p:dialog header="#{mensajes['aprobarDocumentoRenuentes.preguntaEmitir']}"
+                          widgetVar="msgAceptar" modal="true">
+                    <p:commandButton value="#{mensajes['btnAceptar']}"
+                                     onclick="msgAceptar.hide();
+                        pbAjax.start();
+                        dlgBarraEstado.show();"
+                                     actionListener="#{aprobarMultaMB.emision}" update="mensajes"                                     
+                                     oncomplete="msgAceptar.hide();"/>
+                    <p:commandButton value="#{mensajes['btnCancelar']}" onclick="msgAceptar.hide()"/> 
+                </p:dialog>
+
+                <p:dialog header="Emitiendo multas" 
+                          widgetVar="dlgBarraEstado"
+                          draggable="false"
+                          closable="false"
+                          resizable="false"
+                          modal="true"
+                          id="dialogoBarra"
+                          onShow="poll.start();"
+                          onHide="poll.stop();">
+                    <h:outputText value="Aprobando multas , por favor espere..."/>
+                    <p:progressBar widgetVar="pbAjax" 
+                                   ajax="true" 
+                                   value="#{aprobarMultaMB.aprobarMultasManagedBeanHelper.progress.valor}" 
+                                   labelTemplate="{value}%" 
+                                   styleClass="animated"
+                                   interval="1000">  
+                        <p:ajax event="complete" 
+                                oncomplete="dlgBarraEstado.hide();pbAjax.setValue(0);redirigir();" update="dialogoBarra pollMensaje btnEmitir btnEmitirFirma"/>  
+                    </p:progressBar> 
+                </p:dialog>
+                <p:dialog id="modalDialog"
+                          header="#{mensajes['aprobarMultas.numeroResolucion']} #{aprobarMultaMB.aprobarMultasManagedBeanHelper.multaSeleccionada.numeroResolucion}"
+                          widgetVar="dlg2" modal="true" height="200" width="650">
+                    <p:dataTable value="#{aprobarMultaMB.aprobarMultasManagedBeanHelper.listaDetalle}"
+                                 var="detalle"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 rows="12"
+                                 paginatorAlwaysVisible="false"
+                                 id="tblDetalles"
+                                 emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarDetalleRenuentes.claveObligacion']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.claveObligacion}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarDetalleRenuentes.descripcionObligacion']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.descripcionObligacion}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarDetalleRenuentes.ejercicio']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.ejercicio}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarDetalleRenuentes.periodo']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.periodo}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarMultas.montoSancion']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.monto}"/>
+                        </p:column>                        
+                    </p:dataTable>
+                </p:dialog>
+
+
+
+                <p:panel styleClass="panel-princial" style="width:800px;margin-left:auto;margin-right:auto;">
+                    <p:messages id="mensajes" showDetail="true" showSummary="true"/>
+                    <h:panelGrid>
+                        <h:panelGrid columns="2" >
+                            <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.fechaEmision']}"/>
+                            <h:outputText value="#{aprobarMultaMB.aprobarMultasManagedBeanHelper.multaAprobarGrupo.fechaEmision}"/>
+                            <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.medioEnvio']}"/>
+                            <h:outputText value="#{aprobarMultaMB.aprobarMultasManagedBeanHelper.multaAprobarGrupo.medioEnvio}"/>
+                            <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.tipoFirma']}"/>
+                            <h:outputText value="#{aprobarMultaMB.aprobarMultasManagedBeanHelper.multaAprobarGrupo.tipoFirma}"/>
+                            <h:outputText value="#{mensajes['aprobarMultas.tipoMulta']}"/>
+                            <h:outputText value="#{aprobarMultaMB.aprobarMultasManagedBeanHelper.multaAprobarGrupo.tipoMulta}"/>
+                        </h:panelGrid>
+                        <p:panel header="#{mensajes['aprobarMultas.multasAprobar']}">
+                            <p:dataTable value="#{aprobarMultaMB.aprobarMultasManagedBeanHelper.listaMultaAprobar}"
+                                         var="multa"
+                                         paginator="false" emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarMultas.numeroResolucion']}" />
+                                    </f:facet>
+                                    <p:commandLink value="#{multa.numeroResolucion}"
+                                                   action="#{aprobarMultaMB.obtieneDetalles}"
+                                                   process="@this"
+                                                   update="@form"
+                                                   oncomplete="dlg2.show()">
+                                        <f:setPropertyActionListener value="#{multa}"
+                                                                     target="#{aprobarMultaMB.aprobarMultasManagedBeanHelper.multaSeleccionada}"/>
+                                    </p:commandLink>
+                                </p:column>                             
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarDocumentoRenuentes.rfcVigente']}" />
+                                    </f:facet>
+                                    <h:outputText value="#{multa.rfc}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarMultas.numeroControl']}" />
+                                    </f:facet>
+                                    <h:outputText value="#{multa.numeroControl}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarMultas.montoTotalMulta']}" />
+                                    </f:facet>
+                                    <h:outputText value="#{multa.monto}"/>
+                                </p:column>
+                            </p:dataTable>
+                            <h:panelGrid columns="7">
+                                <p:commandButton value="Primero" 
+                                                 action="#{aprobarMultaMB.irA}"
+                                                 process="@this"
+                                                 update="@form">
+                                    <f:setPropertyActionListener value="1"
+                                                                 target="#{aprobarMultaMB.
+                                                                           aprobarMultasManagedBeanHelper.
+                                                                           pagina}"/>
+                                </p:commandButton>
+                                <p:commandButton value="Atras" 
+                                                 action="#{aprobarMultaMB.anterior}"
+                                                 process="@this"
+                                                 update="@form"/>
+                                <p:inputText value="#{aprobarMultaMB.aprobarMultasManagedBeanHelper.pagina}" size="5"/>
+                                <p:commandButton action="#{aprobarMultaMB.irA}" 
+                                                 process="@parent" update="@form"
+                                                 value="Ir"/>
+                                <h:outputText value=" De #{aprobarMultaMB.aprobarMultasManagedBeanHelper.paginador.numeroPaginas}"/>
+                                <p:commandButton value="Siguiente" 
+                                                 action="#{aprobarMultaMB.siguiente}"
+                                                 process="@this"
+                                                 update="@form"/>
+                                <p:commandButton value="Ultimo" 
+                                                 action="#{aprobarMultaMB.irA}"
+                                                 process="@this"
+                                                 update="@form">
+                                    <f:setPropertyActionListener value="#{aprobarMultaMB.
+                                                                          aprobarMultasManagedBeanHelper.
+                                                                          paginador.
+                                                                          numeroPaginas}"
+                                                                 target="#{aprobarMultaMB.
+                                                                           aprobarMultasManagedBeanHelper.
+                                                                           pagina}"/>
+                                </p:commandButton>                            
+                            </h:panelGrid>
+                        </p:panel>
+                        <p:panel header="#{mensajes['aprobarMultas.multasNoAprobar']}">
+                            <p:dataTable value="#{aprobarMultaMB.aprobarMultasManagedBeanHelper.listaMultaNoAprobar}"
+                                         var="multa"
+                                         paginator="true"
+                                         rows="12"
+                                         paginatorAlwaysVisible="false"
+                                         emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarMultas.numeroResolucion']}" />
+                                    </f:facet>
+                                    <p:commandLink value="#{multa.numeroResolucion}"
+                                                   action="#{aprobarMultaMB.obtieneDetalles}"
+                                                   process="@this"
+                                                   update="@form"
+                                                   oncomplete="dlg2.show()">
+                                        <f:setPropertyActionListener value="#{multa}"
+                                                                     target="#{aprobarMultaMB.aprobarMultasManagedBeanHelper.multaSeleccionada}"/>                                        
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarDocumentoRenuentes.rfcVigente']}" />
+                                    </f:facet>
+                                    <h:outputText value="#{multa.rfc}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarMultas.numeroControl']}" />
+                                    </f:facet>
+                                    <h:outputText value="#{multa.numeroControl}"/>
+                                </p:column>                               
+                            </p:dataTable>
+                        </p:panel>
+                        <h:panelGrid columns="2">
+                            <p:commandButton value="#{mensajes['btnRegresar']}" 
+                                             action="aprobarMultaGrupo" ajax="false"/>
+                            <p:commandButton value="#{mensajes['aprobarDocumentoRenuentes.botonEmitir']}"
+                                             rendered="#{aprobarMultaMB.tieneDocumentosAprobar and !aprobarMultaMB.firmaDigital}"
+                                             onclick="msgAceptar.show()" id="btnEmitir">
+                            </p:commandButton>
+                            <p:commandButton value="#{mensajes['aprobarDocumentoRenuentes.botonEmitir']}"
+                                             rendered="#{aprobarMultaMB.tieneDocumentosAprobar and aprobarMultaMB.firmaDigital}"
+                                             onclick="verDialogoFirmado();" id="btnEmitirFirma">
+                            </p:commandButton>
+                        </h:panelGrid>
+                    </h:panelGrid>                    
+                </p:panel>
+                <p:dialog header="Mensaje" widgetVar="msgErrorFirmado" modal="true"
+                          resizable="false" draggable="false" >
+                    <p><div id="msgErrorFirmaVal"></div></p>
+                    <p:commandButton value="Aceptar" onclick="msgErrorFirmado.hide();"/>
+                </p:dialog>
+                <p:remoteCommand name="redirigir" actionListener="#{aprobarMultaMB.redirigirMultasPrincipal}"/>
+                <p:remoteCommand name="emitirMultas" actionListener="#{aprobarMultaMB.emision}" update="mensajes"/>                
+            </h:form>                                    
+        </h:body>
+    </html>
+</f:view>

@@ -1,0 +1,48 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:batch="http://www.springframework.org/schema/batch" 
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+    
+    <bean id="afectacion-notificacion-writer" class="org.springframework.batch.item.file.FlatFileItemWriter">
+        <!-- write to this csv file -->
+        <property name="resource" value="file:/siat/cob/notificacion/report.txt" />
+        <property name="shouldDeleteIfExists" value="true" />
+ 
+        <property name="lineAggregator">
+            <bean
+                class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+                <property name="delimiter" value="," />
+                <property name="fieldExtractor">
+                    <bean
+                        class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">
+                        <property name="names" value="idDocumento" />
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+  
+   <bean id="consultar-documento-writer" class="org.springframework.batch.item.file.FlatFileItemWriter">
+    <!-- write to this csv file -->
+	<property name="resource" value="file:/siat/cob/notificacion/report.txt" />
+	<property name="shouldDeleteIfExists" value="true" />
+ 
+	<property name="lineAggregator">
+	  <bean
+		class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+		<property name="delimiter" value="," />
+		<property name="fieldExtractor">
+		  <bean
+			class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">
+			<property name="names" value="id" />
+		   </bean>
+		</property>
+	   </bean>
+	</property>
+  </bean>
+</beans>

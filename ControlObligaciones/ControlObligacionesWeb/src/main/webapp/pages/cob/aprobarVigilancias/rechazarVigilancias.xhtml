@@ -1,0 +1,285 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>Rechazar Vigilancias</title>           
+            <h:outputStylesheet library="css" name="estilos.css"/>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:body>
+            <ui:include src="/WEB-INF/templates/loader.xhtml"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <h:form id="mostrarVigilanciasForm" prependId="false">             
+                <p:messages id="mensajes" autoUpdate="true" showDetail="true" showSummary="true" closable="true"/>
+                <p:panel styleClass="panel-principal"> 
+                    <h:panelGrid>
+                        <p:dataTable value="#{rechazarVigilanciasManagedBean.
+                                              rechazarVigilanciasHelper.vigilanciasAdmonLocal}"
+                                     var="vigilancia"
+                                     paginator="false"
+                                     id="tblVigilancias"
+                                     emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+                            <f:facet name="header">
+                                <h:outputText value="Vigilancias SEPOMEX y Unidad de Diligenciación"/>
+                            </f:facet>
+                            <p:column style="text-align:center" 
+                                      width="35" >
+                                <f:facet name="header">
+                                    <b><h:outputText value="Rechazar" /></b>
+                                </f:facet>                      
+                                <p:commandButton oncomplete="mensajeError.show()"
+                                                 process="@this"
+                                                 update="@form"
+                                                 icon="ui-icon-close" >
+                                    <f:setPropertyActionListener value="#{vigilancia.numeroCarga}"
+                                                                 target="#{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.vigilanciaLocal.numeroCarga}"/>
+                                    <f:setPropertyActionListener value="#{vigilancia.descripcionVigilancia}"
+                                                                 target="#{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.vigilanciaLocal.descripcionVigilancia}"/>
+                                    <f:setPropertyActionListener value="#{vigilancia.fechaCarga}"
+                                                                 target="#{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.vigilanciaLocal.fechaEnvioArca}"/>
+                                    <f:setPropertyActionListener value="#{vigilancia.tipoMedio}"
+                                                                 target="#{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.vigilanciaLocal.medioEnvio}"/>
+                                    <f:setPropertyActionListener value="#{vigilancia.idAdministracionLocal}"
+                                                                 target="#{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.vigilanciaLocal.idAdministracionLocal}"/>
+                                    <f:setPropertyActionListener value="#{vigilancia.administracionLocal}"
+                                                                 target="#{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.vigilanciaLocal.administracionLocal}"/>
+                                </p:commandButton>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarVigilancias.numeroCarga']}" escape="false"/>
+                                </f:facet>
+                                <h:outputText value="#{vigilancia.numeroCarga}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarVigilancias.descripcionVigilancia']}" escape="false"/>
+                                </f:facet>
+                                <h:outputText value="#{vigilancia.descripcionVigilancia}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="ALSC" escape="false"/>
+                                </f:facet>
+                                <h:outputText value="#{vigilancia.administracionLocal}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarVigilancias.tipoDocumento']}" escape="false"/>
+                                </f:facet>
+                                <h:outputText value="#{vigilancia.tipoDocumento}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarVigilancias.cantidadDocumentos']}" escape="false"/>
+                                </f:facet>
+                                <h:outputText value="#{vigilancia.cantidadDocumentos}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarVigilancias.tipoFirma']}" escape="false"/>
+                                </f:facet>
+                                <h:outputText value="#{vigilancia.tipoFirma}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarVigilancias.fechaCorte']}" escape="false"/>
+                                </f:facet>
+                                <h:outputText value="#{vigilancia.fechaCorte}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarVigilancias.fechaCarga']}" escape="false"/>
+                                </f:facet>
+                                <h:outputText value="#{vigilancia.fechaCarga}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarVigilancias.tipoMedio']}" escape="false"/>
+                                </f:facet>                        
+                                <h:outputText value="#{vigilancia.tipoMedio}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarVigilancias.nombrePlantilla']}" escape="false"/>
+                                </f:facet>                        
+                                <h:outputText value="#{vigilancia.nombrePlantilla}" />
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                    <h:panelGrid columns="8">
+                        <p:commandButton value="Primero" 
+                                         action="#{rechazarVigilanciasManagedBean.irAAdmonLocal}"
+                                         process="@this"
+                                         update="@form">
+                            <f:setPropertyActionListener value="1"
+                                                         target="#{rechazarVigilanciasManagedBean.
+                                                                   rechazarVigilanciasHelper.
+                                                                   paginaAdmonLocal}"/>
+                        </p:commandButton>
+                        <p:commandButton value="Atras" 
+                                         action="#{rechazarVigilanciasManagedBean.anteriorAdmonLocal}"
+                                         process="@this"
+                                         update="@form"/>
+                        <p:inputText value="#{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.paginaAdmonLocal}" size="5"/>
+                        <p:commandButton action="#{rechazarVigilanciasManagedBean.irAAdmonLocal}" 
+                                         process="@parent" update="@form"
+                                         value="Ir"/>
+                        <h:outputText value=" De #{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.paginadorVigilanciasAdmonLocal.numeroPaginas}"/>
+                        <p:commandButton value="Siguiente" 
+                                         action="#{rechazarVigilanciasManagedBean.siguienteAdmonLocal}"
+                                         process="@this"
+                                         update="@form"/>
+                        <p:commandButton value="Ultimo" 
+                                         action="#{rechazarVigilanciasManagedBean.irAAdmonLocal}"
+                                         process="@this"
+                                         update="@form">
+                            <f:setPropertyActionListener value="#{rechazarVigilanciasManagedBean.
+                                                                  rechazarVigilanciasHelper.
+                                                                  paginadorVigilanciasAdmonLocal.
+                                                                  numeroPaginas}"
+                                                         target="#{rechazarVigilanciasManagedBean.
+                                                                   rechazarVigilanciasHelper.paginaAdmonLocal}"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                </p:panel>   
+                <p:panel styleClass="panel-principal"> 
+                    <p:dataTable id="tblVigilanciasEF" var="i" 
+                                 value="#{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.vigilanciasEntidadFederativa}" 
+                                 emptyMessage="#{mensajes['msg.dataTable.vacio']}"
+                                 paginator="false">
+                        <f:facet name="header">
+                            <h:outputText value="Vigilancias Entidad Federativa"/>
+                        </f:facet>
+                        <p:column headerText="#{mensajes['etRechazar']}" 
+                                  style="text-align:center" 
+                                  width="35" >
+                            <p:commandButton oncomplete="dlgRechazoEF.show();"
+                                             icon="ui-icon-close" 
+                                             process="@this"
+                                             update="@form">
+                                <f:setPropertyActionListener value="#{i}"  
+                                                             target="#{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.vigilanciaRechazada}" /> 
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="#{mensajes['aprobarVigilancias.numeroCarga']}">
+                            <h:outputText id="idVigilancia" value="#{i.idVigilancia}"/>
+                        </p:column>
+                        <p:column headerText="#{mensajes['aprobarVigilancias.descripcionVigilancia']}">  
+                            <h:outputText id="descripcionVigilancia" value="#{i.descripcionVigilancia}"/>
+                        </p:column>
+                        <p:column headerText="#{mensajes['aprobarVigilancias.entidadFederativa']}">  
+                            <h:outputText id="ef" value="#{i.nombreEntidadFederativa}"/>
+                        </p:column>
+                        <p:column headerText="#{mensajes['aprobarVigilancias.tipoDocumento']}">
+                            <h:outputText id="descTipoDocumento" value="#{i.descTipoDocumento}"/>
+                        </p:column>
+                        <p:column headerText="#{mensajes['aprobarVigilancias.fechaCorte']}">
+                            <h:outputText id="fechaCorte" value="#{i.fechaCorte}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <h:panelGrid columns="8">
+                        <p:commandButton value="Primero" 
+                                         action="#{rechazarVigilanciasManagedBean.irA}"
+                                         process="@this"
+                                         update="@form">
+                            <f:setPropertyActionListener value="1"
+                                                         target="#{rechazarVigilanciasManagedBean.
+                                                                   rechazarVigilanciasHelper.
+                                                                   paginaEntidadFederativa}"/>
+                        </p:commandButton>
+                        <p:commandButton value="Atras" 
+                                         action="#{rechazarVigilanciasManagedBean.anterior}"
+                                         process="@this"
+                                         update="@form"/>
+                        <p:inputText value="#{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.paginaEntidadFederativa}" size="5"/>
+                        <p:commandButton action="#{rechazarVigilanciasManagedBean.irA}" 
+                                         process="@parent" update="@form"
+                                         value="Ir"/>
+                        <h:outputText value=" De #{rechazarVigilanciasManagedBean.rechazarVigilanciasHelper.paginadorEntidadFederativa.numeroPaginas}"/>
+                        <p:commandButton value="Siguiente" 
+                                         action="#{rechazarVigilanciasManagedBean.siguiente}"
+                                         process="@this"
+                                         update="@form"/>
+                        <p:commandButton value="Ultimo" 
+                                         action="#{rechazarVigilanciasManagedBean.irA}"
+                                         process="@this"
+                                         update="@form">
+                            <f:setPropertyActionListener value="#{rechazarVigilanciasManagedBean.
+                                                                  rechazarVigilanciasHelper.paginadorEntidadFederativa.
+                                                                  numeroPaginas}"
+                                                         target="#{rechazarVigilanciasManagedBean.
+                                                                   rechazarVigilanciasHelper.paginaEntidadFederativa}"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                </p:panel>
+
+                <p:dialog widgetVar="mensajeError" id="mensajeRechazo" header="Rechazar Vigilancia">
+                    <p:panel>
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Seleccioné el motivo:"/>
+                            <p:selectOneMenu value="#{rechazarVigilanciasManagedBean.
+                                                      rechazarVigilanciasHelper.
+                                                      vigilanciaLocal.motivoRechazoVigilancia.
+                                                      idMotivoRechazoVig}"
+                                             required="true"
+                                             requiredMessage="El campo motivo es requerido">
+                                <f:selectItem itemLabel="Seleccioné una opción"/>
+                                <f:selectItems value="#{rechazarVigilanciasManagedBean.motivosRechazo}"
+                                               var="motivo"
+                                               itemLabel="#{motivo.nombre}"
+                                               itemValue="#{motivo.idMotivoRechazoVig}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <p:commandButton action="#{rechazarVigilanciasManagedBean.rechazarVigilanciasAL}"
+                                             value="Rechazar" 
+                                             process="mensajeRechazo"
+                                             oncomplete="if(!args.validationFailed){ mensajeError.hide()}"
+                                             update="tblVigilancias"/>
+                            <p:commandButton value="Cancelar"
+                                             onclick="mensajeError.hide();"
+                                             process="@this"/>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:dialog>
+
+                <p:dialog widgetVar="dlgRechazoEF" id="panelRechazo" header="Rechazar Vigilancia" >
+                    <p:panel>
+                    <h:panelGrid columns="2">
+                        <h:outputText value="Seleccioné el motivo:"/>
+                        <p:selectOneMenu  value="#{rechazarVigilanciasManagedBean.
+                                                   rechazarVigilanciasHelper.
+                                                   vigilanciaRechazada.idMotivoRechazo}"
+                                          required="true"
+                                          requiredMessage="El campo motivo es requerido" >
+                            <f:selectItem itemLabel="Seleccioné una opción"/>  
+                            <f:selectItems value="#{rechazarVigilanciasManagedBean.motivosRechazo}" 
+                                           var="cat"
+                                           itemLabel="#{cat.nombre}"
+                                           itemValue="#{cat.idMotivoRechazoVig}" />
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:commandButton action="#{rechazarVigilanciasManagedBean.rechazarVigilanciasEntidadFederativa}" 
+                                         value="Rechazar" 
+                                         process="panelRechazo"
+                                         oncomplete="if(!args.validationFailed){ dlgRechazoEF.hide();}"
+                                         update="tblVigilanciasEF">
+                        </p:commandButton>
+
+                        <p:commandButton value="#{mensajes['btnCancelar']}" 
+                                         onclick="dlgRechazoEF.hide();"
+                                         process="@this">
+                        </p:commandButton>
+                    </h:panelGrid>
+                    </p:panel>
+                </p:dialog>
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ConsultaDocumentosTemplate" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="daa414ba-6133-4f97-98c7-305316fa98c2">
+	<property name="com.jasperassistant.designer.Grid" value="false"/>
+	<property name="com.jasperassistant.designer.SnapToGrid" value="false"/>
+	<property name="com.jasperassistant.designer.GridWidth" value="12"/>
+	<property name="com.jasperassistant.designer.GridHeight" value="12"/>
+	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="96"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#FFBFBF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="Table Dataset 1" uuid="01c10563-f1f3-45d1-9d0b-927ab186a9d8"/>
+	<subDataset name="DatosReport" uuid="85c93165-a3b1-45b6-8c35-e4dc241c34d6"/>
+	<subDataset name="dataset1" uuid="43ee0207-6c2e-4a90-bc00-8f813ab101a1"/>
+	<subDataset name="Table Dataset 2" uuid="044d8000-7f41-418d-b7df-abbac674a71e"/>
+	<subDataset name="Table Dataset 3" uuid="745416ec-36c7-4a0f-a276-bf0fc9c75f77"/>
+	<parameter name="numRequerimiento" class="java.lang.String"/>
+	<parameter name="stdRequerimiento" class="java.lang.String"/>
+	<parameter name="dateNotificacion" class="java.lang.String"/>
+	<parameter name="dateVencimiento" class="java.lang.String"/>
+	<parameter name="dateEmision" class="java.lang.String"/>
+	<parameter name="tipoDocumento" class="java.lang.String"/>
+	<parameter name="rfc" class="java.lang.String"/>
+	<parameter name="nombre" class="java.lang.String"/>
+	<parameter name="alsc" class="java.lang.String"/>
+	<parameter name="medioEnvio" class="java.lang.String"/>
+	<parameter name="fechaNoTrabajado" class="java.lang.String"/>
+	<parameter name="fechaNoLocalizado" class="java.lang.String"/>
+	<parameter name="fechaCitatorio" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="dsListaObligaciones" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<field name="dsListaMultas" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<background>
+		<band height="752">
+			<image>
+				<reportElement uuid="5a0345f9-4441-4339-a29a-88b74001efe4" x="26" y="161" width="520" height="430" isRemoveLineWhenBlank="true"/>
+				<imageExpression><![CDATA["/siat/imagenes/fondo.png"]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="111">
+			<image>
+				<reportElement uuid="e198a94a-cec0-4f97-bea4-439bed834b83" x="492" y="17" width="78" height="80"/>
+				<imageExpression><![CDATA["reports/images/logoSAT.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement uuid="a02d1da9-fee0-4ce6-b40a-da9983a8d112" x="2" y="0" width="78" height="80"/>
+				<imageExpression><![CDATA["reports/images/logoSHCP.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement uuid="7db91565-b198-4d0d-a1a7-851ba1dd9e62" x="191" y="56" width="100" height="50"/>
+			</image>
+		</band>
+	</title>
+	<detail>
+		<band height="355">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="60644951-9ba2-4956-9f49-00c8164f9ce7" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="103" width="407" height="20" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nombre}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement uuid="dc9a956f-c016-4569-82e8-9c27d135feed" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="203" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="ef3cef72-f887-4b8a-a0d5-2f0d2da5c4e1" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="223" width="407" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateVencimiento}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement uuid="81b87ab4-fb0e-4940-9579-8bddd35e9578" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="63" width="568" height="285" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<staticText>
+				<reportElement uuid="6e7d81a3-f358-4d67-b5ec-3569aae16b33" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="250" width="161" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de no trabajado :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6a6f581d-f838-454c-845d-6c275ff1de40" x="283" y="31" width="209" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Constantia" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha y hora de impresión de reporte de consulta : ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="07721ae4-797e-49c0-95f6-19fcbff503c1" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="308" width="161" height="20" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Medio de envío  :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="eab6ab42-86d3-447b-9dbe-ec54c17e084e" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="163" width="161" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Estado del documento :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="bc59abdd-eba0-4817-8939-88eb2b7d05ed" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="123" width="161" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ALSC :]]></text>
+			</staticText>
+			<frame>
+				<reportElement uuid="2aa4f7bc-907b-4928-adf6-89db0627c7da" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="83" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<frame>
+				<reportElement uuid="8ccf8dd5-2d36-4ac9-99f5-fc89d6606db8" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="63" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<staticText>
+				<reportElement uuid="ea77ff73-d1fb-48bd-87d2-fed1ec691a32" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="203" width="161" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de notificación :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="bd6f9ce6-b03a-4db8-9281-3c3c94ffeb04" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="123" width="407" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{alsc}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement uuid="9a366289-a7bf-4961-803b-fd076af026ef" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="223" width="568" height="28" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="0ff9e35e-eb8e-4873-b649-b57f742cb0c6" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="250" width="407" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fechaNoTrabajado}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="eb879d48-2643-4650-b013-d24a8b66eda4" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="143" width="161" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de documento :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="408242f3-8b38-4ada-a9a5-fbf73ae26531" x="18" y="0" width="535" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="Constantia" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CONSULTA DE DOCUMENTOS DE CONTROL DE OBLIGACIONES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e902a518-78f1-4f01-b3ff-4c8c4c9b69e2" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="63" width="161" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Número de control :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="36d0ee6f-cfdf-4b71-978e-815a269a7931" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="103" width="161" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre :]]></text>
+			</staticText>
+			<frame>
+				<reportElement uuid="7cfc2767-404d-4e87-b9d2-cc4ef933525b" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="143" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<staticText>
+				<reportElement uuid="79cef1eb-2061-4965-b748-50cf7cde9b7f" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="83" width="161" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RFC :]]></text>
+			</staticText>
+			<frame>
+				<reportElement uuid="a4c166b7-49ea-4e5b-a15a-80d41f2635ac" x="0" y="122" width="568" height="20"/>
+			</frame>
+			<frame>
+				<reportElement uuid="2fb7b63d-6407-4f3b-ac89-765e0e97f84f" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="123" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<textField>
+				<reportElement uuid="596ebdc4-f2fc-460c-bb08-fa82fe761381" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="63" width="407" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{numRequerimiento}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy h:mm a">
+				<reportElement uuid="d833f3aa-8b28-42f0-8329-1a49c0359d98" x="492" y="31" width="78" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="66d63ec2-bd13-415e-ae02-53ba6c2283d5" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="183" width="161" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de emisión :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="ace02691-fa7f-455e-a18a-19e08e4a4d9f" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="203" width="407" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateNotificacion}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="c6610f08-b196-4d76-8d1b-74cc98a774f9" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="289" width="161" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de citatorio :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f8ceb225-6727-464f-b2de-254c122fbc13" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="270" width="161" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de no localizado :]]></text>
+			</staticText>
+			<frame>
+				<reportElement uuid="5999d312-2597-45a8-9a18-498b281fc2f4" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="183" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<frame>
+				<reportElement uuid="c2d15c87-3113-4945-a050-885f0b03a8a8" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="103" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="074d582c-e4dc-4ff3-ae2f-a3c222246cab" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="270" width="407" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fechaNoLocalizado}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="014d58c9-d761-49aa-aaec-4eb0e31025ed" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="289" width="407" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fechaCitatorio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="acdd8bc7-b743-4099-bc0c-df3bf9d6f241" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="143" width="407" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tipoDocumento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="3e8ecc77-2047-48c6-aa70-3fd69448b27b" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="163" width="407" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{stdRequerimiento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="913d70e3-df55-4760-afbf-ebd9cb19cc9a" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="308" width="407" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{medioEnvio}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="152a900c-34e7-4e54-bc32-819e19df48aa" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="83" width="407" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{rfc}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement uuid="c7890ab5-23c0-4406-a006-f72c633eaf52" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="163" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="b69b25f9-26d9-4c09-a297-81103bbdc016" positionType="Float" stretchType="RelativeToBandHeight" x="163" y="183" width="407" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{dateEmision}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement uuid="6a6bb117-aa56-4691-ba81-f51a2e30a423" x="0" y="271" width="570" height="20"/>
+			</frame>
+			<staticText>
+				<reportElement uuid="7b15f268-fc7b-4082-bd91-d476514f4812" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="223" width="161" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de vencimiento del documento :]]></text>
+			</staticText>
+			<frame>
+				<reportElement uuid="58acd62e-6cc7-4e14-bae7-8efc18e45ceb" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="251" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+		</band>
+		<band height="51">
+			<subreport isUsingCache="false">
+				<reportElement uuid="6715cb09-9c17-42e5-989d-75376015121e" style="table" positionType="Float" isPrintRepeatedValues="false" x="56" y="0" width="455" height="50" isRemoveLineWhenBlank="true"/>
+				<dataSourceExpression><![CDATA[$F{dsListaObligaciones}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/Afectaciones_subreport1.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="50">
+			<subreport isUsingCache="false">
+				<reportElement uuid="a097cd9a-1c2b-42d3-bb59-292f1b3202f9" style="table" positionType="Float" isPrintRepeatedValues="false" x="56" y="0" width="455" height="50" isRemoveLineWhenBlank="true"/>
+				<dataSourceExpression><![CDATA[$F{dsListaMultas}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/Multas_subreport1.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="10">
+			<textField>
+				<reportElement uuid="f79999dd-2957-4e2a-96dd-a8f347eff460" x="450" y="0" width="80" height="10"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pagina "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="3ad61b41-2c9b-454e-af72-36a28b0c208d" x="530" y="0" width="40" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

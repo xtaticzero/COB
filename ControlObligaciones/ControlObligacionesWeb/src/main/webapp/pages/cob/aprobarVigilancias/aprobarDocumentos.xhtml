@@ -1,0 +1,339 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">        
+        <script type="text/javascript">
+            var btnDisabled = false;
+            function habilitaValidar(){
+                var btnValidar = document.getElementById("mostrarDocumentos:btnValidar");
+                if (document.getElementById("mostrarDocumentos:idFiltroRFC").value.length > 0){                    
+                    btnValidar.disabled=true;
+                    btnDisabled = true;
+                }else{
+                    if(!btnDisabled){
+                        btnValidar.disabled=false;
+                    }
+                }
+            }
+            function onClickBuscar(){
+                if (document.getElementById("mostrarDocumentos:idFiltroRFC").value.length > 0){
+                    btnDisabled = false;
+                }
+            }
+            window.onload = function(){                  
+                habilitaValidar();                
+            };
+        </script>
+        <h:head>
+            <title>Aprobar Documentos</title>   
+            <h:outputStylesheet library="css" name="estilos.css"/>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:body>
+            <ui:include src="/WEB-INF/templates/loader.xhtml"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <p:panel styleClass="contenedor-principal" id="contenedorPantallas">
+                <h:panelGrid columns="3">
+                    <h:outputText value="Número de Carga: "/>
+                    <h:outputText value="#{aprobarDocumentosMB.aprobarDocumentosHelper.vigilanciaAprobar.numeroCarga}"/>
+                    <h:outputText value=""/>
+                    <h:outputText value="Descripción: "/>
+                    <h:outputText value="#{aprobarDocumentosMB.aprobarDocumentosHelper.vigilanciaAprobar.descripcionVigilancia}"/>
+                    <h:outputText value=""/>
+                    <h:outputText value="Medio de Envío: "/>
+                    <h:outputText value="#{aprobarDocumentosMB.aprobarDocumentosHelper.vigilanciaAprobar.tipoMedio}"/>
+                    <h:outputText value=""/>
+                    <h:outputText value="Fecha de Corte :"/>
+                    <h:outputText value="#{aprobarDocumentosMB.aprobarDocumentosHelper.vigilanciaAprobar.fechaCorte}"/>
+                    <h:outputText value=""/>
+                    <h:outputText value="Ultima validación de cumplimiento :"/>
+                    <h:outputText value="#{aprobarDocumentosMB.aprobarDocumentosHelper.vigilanciaAprobar.fechaValidacion}">
+                        <f:convertDateTime pattern="yyyy-MM-dd"/>
+                    </h:outputText>
+                    <h:outputText value=""/>
+                </h:panelGrid>                
+                <p:messages id="mensajesFaces" showDetail="true" showSummary="true" autoUpdate="true"/>
+                <h:form id="mostrarIceps" prependId="false">             
+                    <p:panel rendered="#{not empty aprobarDocumentosMB.
+                                         aprobarDocumentosHelper.icepsAprobar}"
+                             styleClass="panel-principal"
+                             id="panelIceps">
+                        <h:panelGrid>
+                            <p:dataTable value="#{aprobarDocumentosMB.aprobarDocumentosHelper.icepsAprobar}"
+                                         var="icep"
+                                         paginator="false"
+                                         emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarDocumentos.rfc']}" escape="false"/>
+                                    </f:facet>
+                                    <h:outputText value="#{icep.rfc}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarDocumentos.numeroControl']}" escape="false"/>
+                                    </f:facet>
+                                    <h:outputText value="#{icep.numeroControl}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['detalles.claveObligacion']}" escape="false"/>
+                                    </f:facet>
+                                    <h:outputText value="#{icep.claveIcep}" />
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['detalles.descripcionObligacion']}" escape="false"/>
+                                    </f:facet>
+                                    <h:outputText value="#{icep.descripcionObligacion}" />
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['detalles.estadoObligacion']}" escape="false"/>
+                                    </f:facet>
+                                    <h:outputText value="#{icep.estadoObligacion}" />
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Ejercicio" escape="false"/>
+                                    </f:facet>
+                                    <h:outputText value="#{icep.ejercicio}" />
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Periodo" escape="false"/>
+                                    </f:facet>
+                                    <h:outputText value="#{icep.periodo}" />
+                                </p:column>
+                            </p:dataTable>
+                            <h:panelGrid columns="7">
+                                <p:commandButton value="Primero" 
+                                                 action="#{aprobarDocumentosMB.irAIceps}"
+                                                 process="@this"
+                                                 update="@form">
+                                    <f:setPropertyActionListener value="1"
+                                                                 target="#{aprobarDocumentosMB.
+                                                                           aprobarDocumentosHelper.
+                                                                           paginaIceps}"/>
+                                </p:commandButton>
+                                <p:commandButton value="Atras" 
+                                                 action="#{aprobarDocumentosMB.anteriorIceps}"
+                                                 process="@this"
+                                                 update="@form"/>
+                                <p:inputText value="#{aprobarDocumentosMB.aprobarDocumentosHelper.paginaIceps}" size="5"/>
+                                <p:commandButton action="#{aprobarDocumentosMB.irAIceps}" 
+                                                 process="@form" update="@form"
+                                                 value="Ir"/>
+                                <h:outputText value=" De #{aprobarDocumentosMB.aprobarDocumentosHelper.paginadorIceps.numeroPaginas}"/>
+                                <p:commandButton value="Siguiente" 
+                                                 action="#{aprobarDocumentosMB.siguienteIceps}"
+                                                 process="@this"
+                                                 update="@form"/>
+                                <p:commandButton value="Último" 
+                                                 action="#{aprobarDocumentosMB.irAIceps}"
+                                                 process="@this"
+                                                 update="@form">
+                                    <f:setPropertyActionListener value="#{aprobarDocumentosMB.
+                                                                          aprobarDocumentosHelper.
+                                                                          paginadorIceps.
+                                                                          numeroPaginas}"
+                                                                 target="#{aprobarDocumentosMB.
+                                                                           aprobarDocumentosHelper.
+                                                                           paginaIceps}"/>
+                                </p:commandButton>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Exportar" 
+                                                 ajax="false" 
+                                                 onclick="pbAjax.start();
+                                                         dlgBarraEstado.show();"
+                                                 >
+                                    <p:fileDownload value="#{aprobarDocumentosMB.csv}"/>
+                                </p:commandButton>
+                                <p:commandButton value="Regresar" 
+                                                 action="#{aprobarDocumentosMB.regresarDocumentos}"
+                                                 ajax="false"/>
+                            </h:panelGrid>
+                            <p:dialog header="Generando Archivo" 
+                                      widgetVar="dlgBarraEstado"
+                                      draggable="false"
+                                      closable="false"
+                                      resizable="false"
+                                      modal="true">
+                                <h:outputText value="Generando archivo para su descarga, por favor espere..."/>
+                                <p:progressBar widgetVar="pbAjax" 
+                                               ajax="true" 
+                                               value="#{aprobarDocumentosMB.aprobarDocumentosHelper.progress.valor}" 
+                                               labelTemplate="{value}%" 
+                                               styleClass="animated"
+                                               interval="1000">  
+                                    <p:ajax event="complete" 
+                                            oncomplete="dlgBarraEstado.hide();pbAjax.setValue(0);"/>  
+                                </p:progressBar>  
+                            </p:dialog>
+                        </h:panelGrid>
+                    </p:panel>
+                </h:form>
+
+                <p:panel styleClass="panel-principal" 
+                         rendered="#{empty aprobarDocumentosMB.
+                                     aprobarDocumentosHelper.icepsAprobar}"> 
+                    <h:form id="mostrarDocumentos">
+                        <!--styleClass="width:420px; margin-left:auto; margin-right:auto; overflow: auto; border-width: 3px;" style="width: 477px"-->
+                        
+                        <h:panelGrid>
+                            <h:panelGrid columns="4">
+                                <p:column>
+                                    <h:outputText value="#{mensajes['aprobarDocumentos.filtro']}"/>    
+                                </p:column>
+                                <p:column styleClass="text-align: right">
+                                    <p:inputText id="idFiltroRFC" value="#{aprobarDocumentosMB.aprobarDocumentosHelper.filtroRFC}" onchange="habilitaValidar()" maxlength="14" onkeyup="this.value=this.value.toUpperCase();">
+                                        <f:ajax event="blur" listener="#{aprobarDocumentosMB.filtroRFC}"/>
+                                    </p:inputText>    
+                                </p:column>
+                                <p:column styleClass="text-align: right">
+                                    <p:commandButton id="btnFiltro" action="#{aprobarDocumentosMB.filtroRFC}" icon="ui-icon-search" update=":mostrarDocumentos" oncomplete="habilitaValidar()"/>
+                                </p:column>
+                                <p:column styleClass="text-align: right">
+                                    <p:commandButton id="btnCargarRegistros" value="#{mensajes['aprobarDocumentos.btn.cargar']}" action="#{aprobarDocumentosMB.cargarTodos}" icon="ui-icon-arrowrefresh-1-w" update=":mostrarDocumentos" oncomplete="habilitaValidar()"/>
+                                </p:column>
+                            </h:panelGrid>
+                            <p:dataTable value="#{aprobarDocumentosMB.aprobarDocumentosHelper.documentos}"
+                                         var="documento"
+                                         paginator="false"
+                                         emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarDocumentos.numeroControl']}" escape="false"/>
+                                    </f:facet>
+                                    <h:outputText value="#{documento.numeroControl}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Clave AL" escape="false"/>
+                                    </f:facet>
+                                    <h:outputText value="#{documento.idAdministracionLocal}" />
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="ALSC" escape="false"/>
+                                    </f:facet>
+                                    <h:outputText value="#{documento.administracionLocal}" />
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarDocumentos.rfc']}" escape="false"/>
+                                    </f:facet>
+                                    <h:outputText value="#{documento.rfc}" />
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['aprobarDocumentos.excluir']}" escape="false"/>
+                                    </f:facet>
+                                    <p:selectBooleanCheckbox value="#{documento.excluir}" disabled="#{documento.estadoValido}">
+                                        <p:ajax process="@this" listener="#{aprobarDocumentosMB.actualizarExcluidos}" update="@form"/>
+                                    </p:selectBooleanCheckbox>
+                                </p:column>
+                            </p:dataTable>                            
+                            <h:panelGrid columns="7">
+                                <p:commandButton value="Primero" 
+                                                 action="#{aprobarDocumentosMB.irA}"
+                                                 process="@this"
+                                                 update="@form">
+                                    <f:setPropertyActionListener value="1"
+                                                                 target="#{aprobarDocumentosMB.
+                                                                           aprobarDocumentosHelper.
+                                                                           pagina}"/>
+                                </p:commandButton>
+                                <p:commandButton value="Atras" 
+                                                 action="#{aprobarDocumentosMB.anterior}"
+                                                 process="@this"
+                                                 update="@form"/>
+                                <p:inputText value="#{aprobarDocumentosMB.aprobarDocumentosHelper.pagina}" size="5"/>
+                                <p:commandButton action="#{aprobarDocumentosMB.irA}" 
+                                                 process="@parent" update="@form"
+                                                 value="Ir"/>
+                                <h:outputText value=" De #{aprobarDocumentosMB.aprobarDocumentosHelper.paginador.numeroPaginas}"/>
+                                <p:commandButton value="Siguiente" 
+                                                 action="#{aprobarDocumentosMB.siguiente}"
+                                                 process="@this"
+                                                 update="@form"
+                                                 onclick="habilitaValidar()" oncomplete="habilitaValidar()"/>
+                                <p:commandButton value="Último" 
+                                                 action="#{aprobarDocumentosMB.irA}"
+                                                 process="@this"
+                                                 update="@form">
+                                    <f:setPropertyActionListener value="#{aprobarDocumentosMB.
+                                                                          aprobarDocumentosHelper.
+                                                                          paginador.
+                                                                          numeroPaginas}"
+                                                                 target="#{aprobarDocumentosMB.
+                                                                           aprobarDocumentosHelper.
+                                                                           pagina}"/>
+                                </p:commandButton>
+                            </h:panelGrid>
+                            <h:panelGrid columns="5" id="grdBotonesDocumentos">
+                                <!--Visible cuando no se ha seleccionado ningun elemento-->
+                                <p:commandButton value="Aceptar" 
+                                                 type="button"
+                                                 onclick="msgAceptar.show()" 
+                                                 rendered="#{not empty aprobarDocumentosMB.aprobarDocumentosHelper.documentosSeleccionados}"/>
+                                <!--Visible cuando hay al  menos un elemento seleccionado sin importar la pagina-->
+                                <p:commandButton value="Aceptar" 
+                                                 rendered="#{empty aprobarDocumentosMB.aprobarDocumentosHelper.documentosSeleccionados}"
+                                                 ajax="false"
+                                                 action="aprobarVigilancias"/>
+                                <p:commandButton id="btnValidar" value="Valida Cumplimiento" 
+                                                 action="#{aprobarDocumentosMB.validarCumplimientosThread}"
+                                                 oncomplete="progressCumplimientos.start();dlgBarraEstadoCumplimientos.show();"
+                                                 process="@this"/>
+                                <p:commandButton value="Detalle" 
+                                                 action="#{aprobarDocumentosMB.mostrarDetalle}"
+                                                 rendered="#{aprobarDocumentosMB.
+                                                             aprobarDocumentosHelper.
+                                                             cumplimientosEjecutados or aprobarDocumentosMB.
+                                                             aprobarDocumentosHelper.vigilanciaAprobar.fechaValidacion!=null}"
+                                                 process="@this"
+                                                 update="@all"/>
+                                <p:commandButton value="Cancelar" 
+                                                 action="aprobarVigilancias" ajax="false"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                        <p:confirmDialog widgetVar="msgAceptar"
+                                         message="Los documentos seleccionados no se procesaran , ¿Esta seguro de continuar?">
+                            <p:commandButton value="Aceptar" 
+                                             action="#{aprobarDocumentosMB.
+                                                       rechazarDocumentosExcluidos}"
+                                             ajax="false"/>
+                            <p:commandButton value="Cancelar" onclick="msgAceptar.hide()"/>
+                        </p:confirmDialog>
+                        <p:dialog header="Validando cumplimientos" 
+                                  widgetVar="dlgBarraEstadoCumplimientos"
+                                  draggable="false"
+                                  closable="false"
+                                  resizable="false"
+                                  modal="true">
+                            <h:outputText value="Validando cumplimientos, por favor espere..."/>
+                            <p:progressBar widgetVar="progressCumplimientos" 
+                                           ajax="true" 
+                                           value="#{aprobarDocumentosMB.aprobarDocumentosHelper.progressValidacion.valor}" 
+                                           labelTemplate="{value}%" 
+                                           styleClass="animated"
+                                           interval="1000">  
+                                <p:ajax event="complete" 
+                                        oncomplete="dlgBarraEstadoCumplimientos.hide();
+                                        progressCumplimientos.setValue(0);"
+                                        listener="#{aprobarDocumentosMB.afterValidacionCumplimiento}"
+                                        update="@form"/>  
+                            </p:progressBar>  
+                        </p:dialog>
+                    </h:form>
+                </p:panel>  
+            </p:panel>
+
+        </h:body>
+    </html>
+</f:view>

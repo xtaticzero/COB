@@ -1,0 +1,549 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:head>
+    </h:head>
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:outputScript library="js" name="funcionesCatalogos.js"/>
+    <h:outputStylesheet library="css/" name="estilos.css"/>
+    <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+    <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+              resizable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+    </p:dialog>
+
+    <h:form id="Campo" >
+        <p:messages id="messages"  showDetail="true" globalOnly="true" autoUpdate="true" closable="true" />
+
+        <p:panel id="pnlTbl" style="width:800px" visible="#{catalogoMultaMontoMB.oblisancionModel.tblVisible}">
+
+            <p:dataTable id="tbl" var="oblisancion" value="#{catalogoMultaMontoMB.oblisancionModel.listOblisancion}" emptyMessage="#{mensajes['msg.dataTable.vacio']}"
+                         filteredValue="#{catalogoMultaMontoMB.oblisancionModel.listOblisancionTmp}" paginator="true" paginatorPosition="bottom" rows="10" scrollable="true" scrollWidth= "778">
+                <f:facet name= "header">
+                    <h:outputText value="#{mensajes['multa.oblig.titulo']}"/>
+                    <h:commandLink action="#{catalogoMultaMontoMB.generaExcel}" immediate="true" style="margin-left:90%;">
+                        <h:graphicImage value="/resources/images/excel1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                    <p:spacer width="15" height="10"/>
+                    <h:commandLink  action="#{catalogoMultaMontoMB.generaPdf}" immediate="true" >
+                        <h:graphicImage value="/resources/images/pdf1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                </f:facet>
+                <p:column sortBy="#{oblisancion.idObligacion}"  filterBy="#{oblisancion.idObligacion}" headerText="#{mensajes['documentos.obligacion']}" style = "width:100px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipIdObligacion" value="#{oblisancion.idObligacion}" />
+                    <p:tooltip for="tipIdObligacion" value="#{oblisancion.idObligacion}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{oblisancion.descripcionLarga}"  filterBy="#{oblisancion.descripcionLarga}" headerText="#{mensajes['etIdObligacion']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipObligacion" style="border:none;resize:none" cols="30" rows="2" value="#{oblisancion.descripcionLarga}" readonly="true"/>
+                    <p:tooltip for="tipObligacion" value="#{oblisancion.descripcionLarga}"></p:tooltip> 
+                </p:column>
+
+                <p:column sortBy="#{oblisancion.resolMotivoDescr}"  filterBy="#{oblisancion.resolMotivoDescr}" headerText="#{mensajes['tipoMulta']}" style = "width:215px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipResolMotivo" value="#{oblisancion.resolMotivoDescr}"></h:outputText>
+                    <p:tooltip for="tipResolMotivo" value="#{oblisancion.resolMotivoDescr}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{oblisancion.sancion}" filterBy="#{oblisancion.sancion}" headerText="#{mensajes['etIdOblisancion']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipSancion" style="border:none;resize:none" cols="30" rows="2" value="#{oblisancion.sancion}" readonly="true"/>
+                    <p:tooltip for="tipSancion" value="#{oblisancion.sancion}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{oblisancion.infraccion}"  filterBy="#{oblisancion.infraccion}" headerText="#{mensajes['etIdInfraccion']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipFraccion" style="border:none;resize:none" cols="30" rows="2" value="#{oblisancion.infraccion}" readonly="true"/>
+                    <p:tooltip for="tipFraccion" value="#{oblisancion.infraccion}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{oblisancion.motivacion}"  filterBy="#{oblisancion.motivacion}" headerText="#{mensajes['etMotivacion']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipMotivacion" style="border:none;resize:none" cols="30" rows="2"  value="#{oblisancion.motivacion}" readonly="true"/>
+                    <p:tooltip for="tipMotivacion" value="#{oblisancion.motivacion}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{oblisancion.monto}"  filterBy="#{oblisancion.monto}" headerText="#{mensajes['etMonto']}" style = "width:110px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipMonto" value="#{oblisancion.monto}"></h:outputText>
+                    <p:tooltip for="tipMonto" value="#{oblisancion.monto}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{oblisancion.descripcionMonto}"  filterBy="#{oblisancion.descripcionMonto}" headerText="#{mensajes['etDescMonto']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipDescripcionMonto" value="#{oblisancion.descripcionMonto}"></h:outputText>
+                    <p:tooltip for="tipDescripcionMonto" value="#{oblisancion.descripcionMonto}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{oblisancion.fechaInicioStr}"  filterBy="#{oblisancion.fechaInicioStr}" headerText="#{mensajes['etFechaInicio']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipFechaInicio" value="#{oblisancion.fechaInicioStr}"></h:outputText>
+                    <p:tooltip for="tipFechaInicio" value="#{oblisancion.fechaInicioStr}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{oblisancion.fechaFinStr}"  filterBy="#{oblisancion.fechaFinStr}" headerText="#{mensajes['etFechaFin']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipFechaFin" value="#{oblisancion.fechaFinStr}"></h:outputText>
+                    <p:tooltip for="tipFechaFin" value="#{oblisancion.fechaFinStr}"></p:tooltip> 
+                </p:column>
+
+                <p:column headerText="#{mensajes['etEditar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this" update=":Campo:pnlEdita, :Campo:pnlTbl" action="#{catalogoMultaMontoMB.abrirEditar}"
+                                     icon="ui-icon-pencil" onclick="statusDialog.show();" onsuccess="statusDialog.hide();" rendered="#{oblisancion.fechaFinStr==null}">
+                        <f:setPropertyActionListener value="#{oblisancion}" 
+                                                     target="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEdit}" /> 
+                    </p:commandButton>
+                </p:column>
+                <p:column headerText="#{mensajes['etEliminar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this"  update=":Campo:pnlElimina, :Campo:pnlTbl" action="#{catalogoMultaMontoMB.abrirEliminar}"
+                                     icon="ui-icon-close" onclick="statusDialog.show();" onsuccess="statusDialog.hide();" rendered="#{oblisancion.fechaFinStr==null}">
+                        <f:setPropertyActionListener value="#{oblisancion}" 
+                                                     target="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEli}" /> 
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <div align="right">
+                <br />
+                <p:commandButton process="@this" update=":Campo:pnlAgrega, :Campo:pnlTbl" 
+                                 onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                 action="#{catalogoMultaMontoMB.abrirNuevo}" value="#{mensajes['btnNuevo']}" />
+            </div>
+
+        </p:panel>
+
+
+        <p:panel id="pnlAgrega" header="#{mensajes['multa.oblig.tituloAgrega']}" style="width:600px"  visible="#{catalogoMultaMontoMB.oblisancionModel.nvoVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridNvo" columns="2" cellspacing="3" cellpadding="3">
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdObligacion']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="Obligacion" value="#{catalogoMultaMontoMB.oblisancionModel.idObligacionSan}" 
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:380px" panelStyle="width:376px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{catalogoMultaMontoMB.oblisancionModel.listaComboObligacion}" var="val"
+                                   itemLabel="#{val.descripcion}" itemValue="#{val.idCombo}" /> 
+
+                </p:selectOneMenu>  
+
+                <h:outputText />
+                <p:message  id="cmbObligacion" for="Obligacion" display="text" /> 
+
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['tipoMulta']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="TipoMulta" value="#{catalogoMultaMontoMB.oblisancionModel.idTipoMultaSel}" 
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:380px" panelStyle="width:376px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{catalogoMultaMontoMB.oblisancionModel.listaComboTipoMulta}" var="valMulta"
+                                   itemLabel="#{valMulta.descripcion}" itemValue="#{valMulta.idCombo}" /> 
+
+                </p:selectOneMenu>  
+                <h:outputText />
+                <p:message  id="cmbTipoMulta" for="TipoMulta" display="text" /> 
+
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdOblisancion']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="Sancion" value="#{catalogoMultaMontoMB.oblisancionModel.sancion}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:370px"
+                                 rows="5" cols="30"
+                                 maxlength="300"
+                                 autoResize="false"
+                                 counter="counter1"
+                                 counterTemplate="{0} caracteres restantes."
+                                 >
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesSancion" for="Sancion" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter1"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdInfraccion']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="Infraccion" value="#{catalogoMultaMontoMB.oblisancionModel.infraccion}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:370px"
+                                 rows="5" cols="30"
+                                 maxlength="300"
+                                 autoResize="false"
+                                 counter="counter2"
+                                 counterTemplate="{0} caracteres restantes.">
+
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajeInfraccion" for="Infraccion" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter2"/>
+
+
+
+                <p:row>
+                    <p:column>
+
+                        <h:outputText value="#{mensajes['etMotivacion']} "/>
+                        <h:outputText value="*" style="color:red" />
+                        <p:messages id="tagMessages" for="tags" showDetail="true"/>
+
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="Motivacion" value="#{catalogoMultaMontoMB.oblisancionModel.motivacion}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:370px"
+                                 rows="9" cols="30"
+                                 maxlength="1000"
+                                 autoResize="false"
+                                 counter="counter3"
+                                 counterTemplate="{0} caracteres restantes.">
+                    <p:ajax  listener="#{catalogoMultaMontoMB.validaTags}" />    
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajeMotivacion" for="Motivacion" display="text"/>
+                <h:outputText />
+                <h:outputText id="counter3"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etMonto']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="Monto" value="#{catalogoMultaMontoMB.oblisancionModel.monto}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:370px"
+                                 rows="1" cols="30"
+                                 maxlength="7"
+                                 autoResize="false"
+                                 counter="counter4"
+                                 counterTemplate="{0} caracteres restantes." 
+                                 onkeypress="return isNumberKey(event)">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesMonto" for="Monto" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter4"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etDescMonto']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="DescripcionMonto" value="#{catalogoMultaMontoMB.oblisancionModel.descripcionMonto}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:370px"
+                                 rows="1" cols="30"
+                                 maxlength="100"
+                                 autoResize="false"
+                                 counter="counter5"
+                                 counterTemplate="{0} caracteres restantes." >
+
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesDescripcionMonto" for="DescripcionMonto" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter5"/>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarNvo" value="#{mensajes['btnGuardar']}" action="#{catalogoMultaMontoMB.agrega}" style="left:90%"
+                                     process="@this, Obligacion, Sancion, Infraccion, TipoMulta, Motivacion, Monto, DescripcionMonto " update="pnlAgrega, pnlTbl, messages"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();
+                                     " 
+                                     oncomplete="recargaTags('#Campo\\:tagMessages');" 
+                                     onsuccess="statusDialog.hide(); "/>
+
+                    <p:commandButton id="cmbCancelarNvo" value="#{mensajes['btnCancelar']}" action="#{catalogoMultaMontoMB.cerrar}" style="left:90%"
+                                     process="@this" update="pnlAgrega, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();" onsuccess="statusDialog.hide();" >
+                        <p:resetInput target="pnlAgrega" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <p:panel id="pnlEdita" header="#{mensajes['multa.oblig.tituloEditar']}"  style="width:600px" visible="#{catalogoMultaMontoMB.oblisancionModel.edtVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridEdt" columns="2" cellspacing="3" cellpadding="3">
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdObligacion']}" />
+
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="ObligacionEdit" value="#{catalogoMultaMontoMB.oblisancionModel.idObligacionSan}" 
+                                 effect="fade" style="width:380px" disabled="true">
+
+                    <f:selectItems value="#{catalogoMultaMontoMB.oblisancionModel.listaComboObligacion}" var="val"
+                                   itemLabel="#{val.descripcion}" itemValue="#{val.idCombo}" /> 
+
+                </p:selectOneMenu>  
+
+                <h:outputText />
+                <p:message  id="cmbObligacionEdit" for="ObligacionEdit" display="text" /> 
+
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['tipoMulta']}" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="TipoMultaEdit" value="#{catalogoMultaMontoMB.oblisancionModel.idTipoMultaSel}" 
+                                 effect="fade" style="width:380px" panelStyle="width:376px">
+
+                    <f:selectItems value="#{catalogoMultaMontoMB.oblisancionModel.listaComboTipoMulta}" var="valMot"
+                                   itemLabel="#{valMot.descripcion}" itemValue="#{valMot.idCombo}" /> 
+                </p:selectOneMenu> 
+
+                <h:outputText />
+                <p:message  id="cmbTipoMultaEdit" for="TipoMultaEdit" display="text" />   
+
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdOblisancion']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="SancionEdit" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEdit.sancion}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:370px"
+                                 rows="5" cols="30"
+                                 maxlength="300"
+                                 autoResize="false"
+                                 counter="counter6"
+                                 counterTemplate="{0} caracteres restantes.">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesSancionEdit" for="SancionEdit" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter6"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdInfraccion']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="InfraccionEdit" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEdit.infraccion}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:370px"
+                                 rows="5" cols="30"
+                                 maxlength="300"
+                                 autoResize="false"
+                                 counter="counter7"
+                                 counterTemplate="{0} caracteres restantes.">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesInfraccion" for="InfraccionEdit" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter7"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etMotivacion']}"/>
+                        <h:outputText value="*" style="color:red" />
+                        <p:messages id="tagMessagesEdit" for="tags" showDetail="true" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="MotivacionEdit" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEdit.motivacion}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:370px"
+                                 rows="9" cols="30"
+                                 maxlength="1000"
+                                 autoResize="false"
+                                 counter="counter8"
+                                 counterTemplate="{0} caracteres restantes.">
+                    <p:ajax  listener="#{catalogoMultaMontoMB.validaTagsEditar}" />  
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesMotivacionEdit" for="MotivacionEdit" display="text" />
+                <h:outputText />
+                <h:outputText id="counter8"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etMonto']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="MontoEdit" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEdit.monto}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:370px"
+                                 rows="1" cols="30"
+                                 maxlength="7"
+                                 autoResize="false"
+                                 counter="counter9"
+                                 counterTemplate="{0} caracteres restantes."
+                                 onkeypress="return isNumberKey(event)">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesMontoEdit" for="MontoEdit" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter9"/>     
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etDescMonto']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="DescripcionMontoEdit" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEdit.descripcionMonto}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:370px"
+                                 rows="1" cols="30"
+                                 maxlength="100"
+                                 autoResize="false"
+                                 counter="counter10"
+                                 counterTemplate="{0} caracteres restantes.">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesDescripcionMontoEdit" for="DescripcionMontoEdit" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter10"/>  
+                
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etFechaInicio']}"/>
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="FechaInicioEdit" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEdit.fechaInicioStr}"
+                                 disabled="true"
+                                 rows="1" cols="30"
+                                 maxlength="100"
+                                 autoResize="false"
+                                 >
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesFechaInicioEdit" for="FechaInicioEdit" display="text"  />
+                
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etFechaFin']}"/>
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="FechaFinEdit" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEdit.fechaFinStr}"
+                                 disabled="true"
+                                 rows="1" cols="30"
+                                 maxlength="100"
+                                 autoResize="false"
+                                 >
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesFechaFinEdit" for="FechaFinEdit" display="text"  />
+                <h:outputText />
+
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEdt" value="#{mensajes['btnGuardar']}" action="#{catalogoMultaMontoMB.edita}" style="left:90%"
+                                     process="@this, InfraccionEdit, SancionEdit, ObligacionEdit, TipoMultaEdit, MotivacionEdit, MontoEdit, DescripcionMontoEdit" update="pnlEdita, pnlTbl, messages"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" 
+                                     oncomplete="recargaTags('#Campo\\:tagMessagesEdit');"
+                                     onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarEdt" value="#{mensajes['btnCancelar']}" action="#{catalogoMultaMontoMB.cerrar}"  style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" 
+                                     onsuccess="statusDialog.hide();"
+                                     update="pnlEdita, pnlTbl, messages" process="@this" immediate="true">
+                        <p:resetInput target="pnlEdita" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+
+        <p:panel id="pnlElimina" header="#{mensajes['multa.oblig.tituloElimina']}" style="width:600px" visible="#{catalogoMultaMontoMB.oblisancionModel.elmVisible}">
+
+            <h:panelGrid id="gridEli" columns="2" cellspacing="3" cellpadding="3">
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdObligacion']}" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="ObligacionEli" value="#{catalogoMultaMontoMB.oblisancionModel.idObligacionSan}" 
+                                 disabled="true" effect="fade" style="width:360px">
+
+                    <f:selectItems value="#{catalogoMultaMontoMB.oblisancionModel.listaComboObligacion}" var="val"
+                                   itemLabel="#{val.descripcion}" itemValue="#{val.idCombo}" /> 
+                </p:selectOneMenu>  
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['tipoMulta']}" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="TipoMultaEli" value="#{catalogoMultaMontoMB.oblisancionModel.idTipoMultaSel}" 
+                                 disabled="true" effect="fade" style="width:360px">
+
+                    <f:selectItems value="#{catalogoMultaMontoMB.oblisancionModel.listaComboTipoMulta}" var="valMot"
+                                   itemLabel="#{valMot.descripcion}" itemValue="#{valMot.idCombo}" /> 
+                </p:selectOneMenu>                      
+
+                <h:outputText  value="#{mensajes['etIdOblisancion']}"/>
+                <p:inputText id="txtSancionEli" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEli.sancion}" disabled="true" style="width:350px"/>
+
+                <h:outputText  value="#{mensajes['etIdInfraccion']}"/>
+                <p:inputText id="txtRegimenEli" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEli.infraccion}" disabled="true" style="width:350px"/>
+
+                <h:outputText  value="#{mensajes['etMotivacion']}"/>
+                <p:inputText id="txtMotivacionEli" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEli.motivacion}" disabled="true" style="width:350px"/>
+
+                <h:outputText  value="#{mensajes['etMonto']}"/>
+                <p:inputText id="txtMontoEli" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEli.monto}" disabled="true" style="width:350px"/> 
+
+                <h:outputText  value="#{mensajes['etDescMonto']}"/>
+                <p:inputText id="txtDescripcionMontoEli" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEli.descripcionMonto}" disabled="true" style="width:350px"/> 
+
+                <h:outputText  value="#{mensajes['etFechaInicio']}"/>
+                <p:inputText id="txtFechaInicioEli" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEli.fechaInicioStr}" disabled="true" style="width:350px"/> 
+                
+                <h:outputText  value="#{mensajes['etFechaFin']}"/>
+                <p:inputText id="txtFechaFinEli" value="#{catalogoMultaMontoMB.oblisancionModel.oblisancionEli.fechaFinStr}" disabled="true" style="width:350px"/> 
+                
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEli" value="#{mensajes['btnEliminar']}" action="#{catalogoMultaMontoMB.elimina}" style="left:90%"
+                                     process="@this" update="pnlElimina, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlElimina').hide();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarEli" value="#{mensajes['btnCancelar']}" action="#{catalogoMultaMontoMB.cerrar}" style="left:90%"
+                                     process="@this" update="pnlElimina, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlElimina').hide();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlElimina" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+    </h:form>
+</html>

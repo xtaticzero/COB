@@ -1,0 +1,328 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <title>Afectacion por Autoridad</title>
+    </h:head>
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:outputStylesheet library="css/" name="estilos.css"/>
+    <h:body>
+
+        <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+        <p:dialog modal="true" widgetVar="statusDialog" header="Procesando" draggable="false" closable="false" resizable="false">
+            <table width="100%">
+                <tr align="center">
+                    <td align="center">
+                        <p:outputLabel value="#{mensajes['msgProcesando']}" />
+                    </td>
+                </tr>
+                <tr><td></td></tr>
+                <tr align="center">
+                    <td align="center">
+                        <p:graphicImage value="/resources/images/ajaxloading.gif" />  
+                    </td>
+                </tr>
+            </table>            
+        </p:dialog>  
+
+        <h:form id="searchForm" prependId="false">
+            <p:panel style="width:820px;margin-left:auto;margin-right:auto;border:0px">
+                <p:panel id="panelAfectacionAutoridad" header="Criterios de b&uacute;squeda"
+                         style="width:650px;margin-left:auto;margin-right:auto;" visible="true">
+
+                    <p:outputPanel id="outputPanel2">
+                        <h:panelGrid id="panel2" columns="3">
+                            <h:outputLabel for="opt1" value="#{mensajes['documentos.numeroControl']}" />
+                            <p:inputText id="numControlTxt2" value="#{consultaAfectacion.beanCancelacionXAutorizacionMain.numeroControl}" />
+                        </h:panelGrid>
+                    </p:outputPanel>
+
+                    <p:ajaxStatus onstart="statusDialog.show()" oncomplete="statusDialog.hide()" />
+
+                    <div align="right">
+                        <table>
+                            <tr>
+                                <td>
+                                    <p:commandButton id="searchBtn" value="Buscar" actionListener="#{consultaAfectacion.cancelacionAction}" 
+                                                     update=":searchForm:tabView, :searchForm " />
+                                </td>
+                                <td>
+                                    <p:commandButton id="newSeachBtn" value="#{mensajes['btnNuevaBusqueda']}"  actionListener="#{consultaAfectacion.cleanScreenCancelacion}" 
+                                                     update=":searchForm:tabView, :searchForm " />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </p:panel>
+                <br />
+                <br />
+                <p:messages id="validacion" closable="true" showDetail="true" autoUpdate="true" />
+
+                <br />
+                <p:panel id="panelBusqueda1" style="width:650px;margin-left:auto;margin-right:auto;" visible="#{consultaAfectacion.panelIceps}">                
+
+                    <table width="100%">
+
+                        <tr>
+                            <td width="20%">
+                                <h:outputText value="#{mensajes['afectacion.motivoCancelacion']}" />
+                                <h:outputText value="*" style="color:red" />
+                            </td>
+                            <td>
+                                <p:selectOneMenu id="comboCancelacion" value="#{consultaAfectacion.cancelacion.idMotivoCancelacion}" styleClass="combos" style="width:300px;" label="#{mensajes['afectacion.motivoCancelacion']}">
+                                    <f:selectItem itemLabel="Seleccionar motivo" itemValue="" /> 
+                                    <f:selectItems value="#{consultaAfectacion.catalogoCancelacion}" var="item" itemValue="#{item.idMotivoCancelacion}" itemLabel="#{item.nombre}"/>
+                                </p:selectOneMenu>
+                            </td>
+                            <td align="right">
+                                <p:commandButton id="btnProcess" 
+                                                 value="Procesar" 
+                                                 action="#{consultaAfectacion.validaCombo}" 
+                                                 type="submit" 
+                                                 onclick="if ($('#comboCancelacion_input').val() == '') {
+                                                             cd.hide();
+                                                         } else {
+                                                             cd.show();
+                                                         }
+                                                         ;
+                                                 " 
+                                                 />
+                            </td>
+                        </tr>
+                    </table> 
+                    <br/> 
+                    <p:tabView id="tabView" dynamic="true" activeIndex="#{consultaAfectacion.indexTab}" >  
+
+                        <p:tab id="tab1" title="#{mensajes['documentos.resultados']}">  
+
+                            <p:panel id="popup">
+                                <table>
+                                    <tr>
+                                        <td width="250px;">
+                                            <h:outputText value="#{mensajes['documentos.numeroControl']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.numeroControl}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.rfc']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.rfc}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.nombre']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.nombre}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.alsc']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.admonLocal}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.tipo.documento']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.tipoDoc}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.estado']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.estado}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.emision']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaRegistro}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.notificacion']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaNotificacion}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.vencimiento']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaVencimiento}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.notrabajado']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaNoTrabajado}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.nolocalizado']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaNoLocalizado}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.citatorio']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaCitatorio}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.medio.envio']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.tipoMedio}"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <p:panel id="panelIcepsDoc" header="#{mensajes['documentos.iceps']}"
+                                         visible="true" style="width:550px;margin-left:auto;margin-right:auto;text-align:center;">
+                                    <p:scrollPanel style="width:527px;height:115px" mode="native"> 
+
+                                        <p:dataTable id="tablaDetailInfo" value="#{consultaAfectacion.listaAfectacionDetail}" var="itemDetalle" emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+
+                                            <p:column sortBy="#{itemDetalle.claveObligacion}"  headerText="#{mensajes['documentos.obligacion']}" >
+                                                <h:outputText value="#{itemDetalle.claveObligacion}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalle.obDescripcion}"  headerText="#{mensajes['multa.desc.obligacion']}">
+                                                <h:outputText value="#{itemDetalle.obDescripcion}"  ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalle.solventado}"  headerText="#{mensajes['documentos.solventado']}">
+                                                <h:outputText value="#{itemDetalle.solventado}" ></h:outputText>
+                                            </p:column>
+
+                                        </p:dataTable>
+                                    </p:scrollPanel>
+                                </p:panel>      
+                            </p:panel>
+
+                            <br/>
+                            <p:dataTable id="docAsociadosPost" value="#{consultaAfectacion.listaDocsAsociadosPost}" var="itemPost" emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+                                <f:facet name="header">  
+                                    <h:outputText value="#{mensajes['documentos.posteriores']}" />
+                                </f:facet>
+                                <p:column width="150"  headerText="#{mensajes['documentos.numeroControl']}"  >
+                                    <p:commandLink id="docPost"  update=":searchForm:tabView, :searchForm "  actionListener="#{consultaAfectacion.recargaCancelacionDocumentos}">
+                                        <f:param name="idDocumento" value="#{itemPost.idDocumento}" />
+                                        <f:param name="idTipoPersona" value="#{consultaAfectacion.idTipoPersona}"/>
+                                        <h:outputText value="#{itemPost.idDocumento}" />
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column width="150" headerText="#{mensajes['documentos.tipo.documento']}">
+                                    <h:outputText value="#{itemPost.tipoDocumento}" />
+                                </p:column>
+                            </p:dataTable>
+                            <br/> 
+
+                        </p:tab> 
+
+                        <p:tab id="tab2" title="Multas">  
+
+                            <p:dataTable id="tablaDetailMultas" value="#{consultaAfectacion.listaMultasDocumento}" var="itemDetalleMulta" emptyMessage="#{mensajes['msg.dataTable.vacio']}" >
+                                <f:facet name="header">  
+                                    <h:outputText value="Multas" /> 
+                                </f:facet>
+                                <p:column width="50"  headerText="Detalle"  >
+                                    <p:commandLink id="multaDetalle"  update=":searchForm " oncomplete="detalleMulta.show();" actionListener="#{consultaAfectacion.obtenerDetalleMulta}">
+                                        <f:param name="tipoMulta" value="#{itemDetalleMulta.descObligacion}" />
+                                        <f:param name="numRes" value="#{itemDetalleMulta.numResolucion}" />
+                                        <p:outputLabel value="Ver detalle" style="color:blue"/>
+                                    </p:commandLink>
+                                </p:column>
+
+                                <p:column sortBy="#{itemDetalleMulta.tipoMulta}"  headerText="#{mensajes['multa.tipo.multa']}" style = "width:200px">
+                                    <h:outputText value="#{itemDetalleMulta.tipoMulta}" ></h:outputText>
+                                </p:column>
+                                <p:column sortBy="#{itemDetalleMulta.numResolucion}"  headerText="#{mensajes['multa.resolucion']}" style = "width:0px">
+                                    <h:outputText value="#{itemDetalleMulta.numResolucion}" ></h:outputText>
+                                </p:column>
+                            </p:dataTable>
+
+                            <p:dialog header="Detalle Multa" widgetVar="detalleMulta" id="detalleMul" showEffect="fade" hideEffect="fade" modal="true" resizable="false">
+                                <p:panel id="popupMulta" header="#{mensajes['documentos.iceps']}"
+                                         visible="true" style="width:550px;margin-left:auto;margin-right:auto;">
+                                    <p:scrollPanel style="width:527px;height:115px" mode="native"> 
+
+                                        <p:dataTable id="tablaDetailMultasDetalle" value="#{consultaAfectacion.listaMultasDocumentoDetalle}" var="itemDetalleMultaDetalle" emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.tipoMulta}"  headerText="#{mensajes['multa.tipo.multa']}" >
+                                                <h:outputText value="#{itemDetalleMultaDetalle.tipoMulta}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.numResolucion}"  headerText="#{mensajes['multa.resolucion']}" >
+                                                <h:outputText value="#{itemDetalleMultaDetalle.numResolucion}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.idObligacion}"  headerText="#{mensajes['multa.idObligacion']}" >
+                                                <h:outputText value="#{itemDetalleMultaDetalle.idObligacion}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.descObligacion}"  headerText="#{mensajes['multa.desc.obligacion']}" >
+                                                <h:outputText value="#{itemDetalleMultaDetalle.descObligacion}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.monto}"  headerText="#{mensajes['multa.monto']}" style = "text-align:right;">
+                                                <h:outputText value="#{itemDetalleMultaDetalle.monto}" ></h:outputText>
+                                            </p:column>
+                                        </p:dataTable>
+                                        <div id="divMonto" align="right"> 
+                                            <table>
+                                                <tr>
+                                                    <td align="right">
+                                                        <h3><h:outputText value="#{mensajes['multa.monto.total']}: "/></h3> 
+                                                    </td>
+                                                    <td>
+                                                        <h3><h:outputText value="#{consultaAfectacion.montoTotalMultas}"/></h3>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div> 
+                                    </p:scrollPanel>
+                                </p:panel>
+
+                            </p:dialog>
+                        </p:tab>  
+
+                    </p:tabView>    
+
+                    <!-- Mensaje de confirmacion de eliminacion de documentos  -->
+                    <p:confirmDialog widgetVar="cd" header="Confirmaci&oacute;n" message="Esta seguro de realizar la cancelación de los documentos" showEffect="fade" hideEffect="fade" closable="false">
+                        <p:commandButton value="Si" actionListener="#{consultaAfectacion.processAction}" oncomplete="cd.hide();searchForm:btnProcess.hide();" update=":searchForm:btnProcess" global="false" ajax="false" />  
+                        <p:commandButton value="No" onclick="cd.hide();" type="button" />       
+                    </p:confirmDialog>        
+                </p:panel> 
+
+
+            </p:panel>
+        </h:form>
+    </h:body>
+</html>
+

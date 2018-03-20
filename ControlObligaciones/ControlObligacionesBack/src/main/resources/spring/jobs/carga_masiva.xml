@@ -1,0 +1,168 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:batch="http://www.springframework.org/schema/batch" 
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+    
+    <bean id="cargaArchivosHolder" class="mx.gob.sat.siat.cob.background.holder.CargaArchivosHolder" />
+    <bean id="taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor"/>
+    
+    <!--jobs para cargar masiva de archivos en ARCA -->
+    <batch:job id="cargaMasivaArchivosJob" >
+        <!--Archivos--> 
+        <batch:step id="cargaMasivaDocumentosStep" 
+                    parent="cargaMasivaArchivoParent">
+            <batch:next on="COMPLETED" to="datosReqsAnterioresStep"/>
+            <batch:end on="FAILED"/>
+        </batch:step>
+        <batch:step id="datosReqsAnterioresStep" 
+                    parent="datosReqsAnterioresParent">
+            <batch:next on="COMPLETED" to="datosArchivoObligacionPeriodoStep"/>
+            <batch:end on="FAILED"/>
+        </batch:step>
+        <batch:step id="datosArchivoObligacionPeriodoStep" 
+                    parent="datosArchivoObligacionPeriodoParent">
+            <batch:next on="COMPLETED" to="cargaMasivaARCAStep"/>
+            <batch:end on="FAILED"/>
+        </batch:step>
+        <!--Proceso--> 
+        <batch:step id="cargaMasivaARCAStep" 
+                    parent="cargaMasivaARCAParent.master" 
+                    next="cargaObligacionPeriodoCOBStep">
+        </batch:step>
+        <batch:step id="cargaObligacionPeriodoCOBStep" 
+                    parent="cargaObligacionPeriodoCOBParent.master" 
+                    next="cargaReqsAnterioresStep">
+        </batch:step>
+        <batch:step id="cargaReqsAnterioresStep"
+                    parent="cargaReqsAnterioresParent.master">
+        </batch:step>
+    </batch:job>
+    
+    <!--Archivos-->
+    <!--Carga en memoria del archivo en el holder documentoReadListener-->
+    <batch:step id="cargaMasivaArchivoParent" >
+        <batch:tasklet>
+            <batch:chunk reader="archivoMasivoReader" 
+                         writer="archivoMasivoWriter" 
+                         commit-interval="10000">
+            </batch:chunk>
+            <batch:listeners>
+                <batch:listener  ref="documentoReadListenerHolder" />
+            </batch:listeners>
+        </batch:tasklet>
+    </batch:step>
+    <batch:step id="datosReqsAnterioresParent">
+        <batch:tasklet>
+            <batch:chunk reader="datosReqsAnterioresReader" 
+                         writer="archivoReqsAnterioresWriter" 
+                         commit-interval="10000">
+            </batch:chunk>
+            <batch:listeners>
+                <batch:listener  ref="reqsAnterioresReadListenerHolder" />
+            </batch:listeners>
+        </batch:tasklet>
+    </batch:step>
+    <batch:step id="datosArchivoObligacionPeriodoParent">
+        <batch:tasklet>
+            <batch:chunk reader="datosObligacionPeriodoCOBReader" 
+                         writer="archivoObligacionPeriodoWriter"
+                         commit-interval="10000">
+            </batch:chunk>
+            <batch:listeners>
+                <batch:listener  ref="obligacionPeriodoReadListenerHolder" />
+            </batch:listeners>
+        </batch:tasklet>
+    </batch:step>
+    
+    <!--Proceso-->
+    <batch:step id="cargaMasivaARCAParent.master" >
+        <partition step="cargaMasivaARCAParent.slave" 
+                   partitioner="cargaDocumentoPartitioner">
+            <handler grid-size="20" task-executor="taskExecutor" />
+        </partition>
+    </batch:step>
+    <batch:step id="cargaMasivaARCAParent.slave">
+        <batch:tasklet>
+            <batch:chunk reader="documentoSlaveItemReader"
+                         processor="archivoMasivoProcessor"
+                         writer="arcaCompositeWriter" 
+                         commit-interval="100"
+                         skip-limit="100">
+                <batch:skippable-exception-classes>
+                    <batch:include class="java.lang.Exception"/>
+                </batch:skippable-exception-classes>
+                <batch:listeners>
+                    <batch:listener ref="documentoArcaWriteListener"/>
+                    <batch:listener ref="documentoArcaWriterSkipListener"/>
+                </batch:listeners>
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+    
+    <batch:step id="cargaObligacionPeriodoCOBParent.master" >
+        <partition step="cargaObligacionPeriodoCOBParent.slave" 
+                   partitioner="cargaObligacionPeriodoPartitioner">
+            <handler grid-size="20" task-executor="taskExecutor" />
+        </partition>
+    </batch:step>
+    <batch:step id="cargaObligacionPeriodoCOBParent.slave">
+        <batch:tasklet transaction-manager="transactionManagerSqlServer">
+            <batch:chunk reader="obligacionPeriodoSlaveItemReader" 
+                         writer="obligacionPeriodoArcaCompositeWriter"
+                         commit-interval="100" skip-limit="100"> 
+                <batch:skippable-exception-classes>
+                    <batch:include class="java.lang.Exception"/>
+                </batch:skippable-exception-classes>
+                <batch:listeners>
+                    <batch:listener ref="obligacionPeriodoArcaWriterSkipListener"/>
+                </batch:listeners>
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+    
+    <batch:step id="cargaReqsAnterioresParent.master" >
+        <partition step="cargaReqsAnterioresParent.slave" 
+                   partitioner="cargaReqsAnterioresPartitioner">
+            <handler grid-size="20" task-executor="taskExecutor" />
+        </partition>
+    </batch:step>
+    <batch:step id="cargaReqsAnterioresParent.slave">
+        <batch:tasklet transaction-manager="transactionManagerSqlServer">
+            <batch:chunk reader="reqsAnterioresSlaveItemReader" 
+                         processor="datosReqsAnterioresProcessor"
+                         writer="insertReqsAnterioresARCAWriter" 
+                         commit-interval="100" skip-limit="100">
+                <batch:skippable-exception-classes>
+                    <batch:include class="java.lang.Exception"/>
+                </batch:skippable-exception-classes>
+                <batch:listeners>
+                    <batch:listener ref="requerimientoAnteriorWriterSkipListener"/>
+                </batch:listeners>
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+    
+    <bean id="arcaCompositeWriter" 
+          class="org.springframework.batch.item.support.CompositeItemWriter">
+        <property name="delegates">
+            <list>
+                <ref local="cargaMasivaARCAWriter"/>
+                <ref local="actualizaUltimoEstadoDocumentoWriter"/>
+                <ref local="insertarDocumentoEnBitacoraWriter"/>
+            </list>
+        </property>
+    </bean>
+    <bean id="obligacionPeriodoArcaCompositeWriter" 
+          class="org.springframework.batch.item.support.CompositeItemWriter">
+        <property name="delegates">
+            <list>
+                <ref local="datosPeriodoARCAWriter"/>
+                <ref local="datosObligacionARCAWriter"/>
+            </list>
+        </property>
+    </bean>
+</beans>

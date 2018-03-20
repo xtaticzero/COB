@@ -1,0 +1,245 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui"
+        >
+    <html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets">
+        <h:head>
+            <title>
+                #{mensajes[&apos;ui.title&apos;]}
+            </title>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:outputScript library="js" name="calendarioIdiomaEs.js"/>
+        <h:body>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <p:panel style="width:820px;margin-left:auto;margin-right:auto;border:0px" id="panelSup">
+                <h:form id="formaUploader" enctype="multipart/form-data">
+                    <p:messages globalOnly="true" id="messages"/>
+                    <p:panel id="pnluploader" header="#{mensajes['ui.uploader.panel.header']}"
+                             style="width:650px;margin-left:auto;margin-right:auto;" visible="true">
+                        <p:fileUpload fileUploadListener="#{cargaOmisos.handleFileUpload}" mode="advanced"
+                                      dragDropSupport="false"
+                                      sizeLimit="1000000000" multiple="false"
+                                      oncomplete="remoteCommandUpdateDataTable();poll.stop();"
+                                      onstart="poll.start()"
+                                      allowTypes="/(\.|\/)(txt|TXT)$/"
+                                      invalidFileMessage="#{mensajes['ui.componente.fileupload.invalidLabel']}"
+                                      label="#{mensajes['ui.componente.fileupload.examineLabel']}"
+                                      uploadLabel="#{mensajes['ui.componente.fileupload.uploadLabel']}"
+                                      cancelLabel="#{mensajes['ui.componente.fileupload.cancelLabel']}"/>
+                        <p:remoteCommand name="remoteCommandUpdateDataTable" update="messages :formaGeneral:panelArchivosOmisos"/>
+                        <!--
+                        <p:remoteCommand name="remoteCommandUpdateDataTable" update="messages :formaGeneral:panelArchivosOmisos"/>
+                        update="messages :formaGeneral:panelArchivosOmisos"
+                        oncomplete="remoteCommandUpdateDataTable()"
+                        -->
+                    </p:panel>
+                    <p:poll interval="20" listener="#{cargaOmisos.increment}"
+                            widgetVar="poll" autoStart="false"/>
+                </h:form>
+                <br/>
+                <h:form id="frmSup">
+                    <p:panel id="panelCatalogos" header="#{mensajes['ui.catalogos.panel.header']}" visible="true"
+                             style="width:650px;margin-left:auto;margin-right:auto;">
+                        <p:outputLabel value="* Campo requerido" style="color: red"></p:outputLabel>
+
+                        <h:panelGrid columns="1" cellpadding="0" cellspacing="0"
+                                     style="margin-left:auto;margin-right:auto;">
+
+                            <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0" width="120px">
+                                    <p:outputLabel value="*" style="color: red"/>
+                                    <h:outputText value="#{mensajes['ui.catalogo.doc.title']}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="1">
+                                    <p:selectOneMenu value="#{cargaOmisos.vigilancia.tipoDoc.id}" styleClass="combos"
+                                                     style="width:300px;" id="A" required="true"
+                                                     requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "
+                                                      itemValue="#{null}"/>
+                                        <f:selectItems value="#{cargaOmisos.catalogoTipoDocumento}" var="cat"
+                                                       itemLabel="#{cat.nombre}" itemValue="#{cat.id}"/>
+                                    </p:selectOneMenu>
+                                    <p:message for="A" display="text"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0" width="120px">
+                                    <p:outputLabel value="*" style="color: red"/>
+                                    <h:outputText value="#{mensajes['ui.catalogo.env.title']}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="1">
+                                    <p:selectOneMenu value="#{cargaOmisos.vigilancia.medio.id}" id="D" styleClass="combos"
+                                                     style="width:300px;" required="true"
+                                                     requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <f:ajax render="pgr01" />
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"
+                                                      itemValue="#{null}"/>
+                                        <f:selectItems value="#{cargaOmisos.catalogoMedioEnvio}" var="cat"
+                                                       itemLabel="#{cat.nombre}" itemValue="#{cat.id}"/>
+                                    </p:selectOneMenu>
+                                    <p:message for="D" display="text"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+
+                            <h:panelGrid id="pgr01" columns="2" cellpadding="0" cellspacing="0">
+                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0" width="120px"
+                                             rendered="#{(cargaOmisos.vigilancia.medio.id ne 2)}">
+                                    <p:outputLabel value="*" style="color: red"/>
+                                    <h:outputText value="#{mensajes['ui.catalogo.firm.title']}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="1" rendered="#{(cargaOmisos.vigilancia.medio.id ne 2)}" >
+                                    <p:selectOneMenu value="#{cargaOmisos.vigilancia.firma.id}" id="C" styleClass="combos"
+                                                     style="width:300px;"
+                                                     required="#{(cargaOmisos.vigilancia.medio.id ne 2)}"
+                                                     requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <!--                                    <p:ajax update="panelCatalogos" process="@this" event="change"/>-->
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"
+                                                      itemValue="#{null}"/>
+                                        <f:selectItems value="#{cargaOmisos.catalogoTipoFirma}" var="cat"
+                                                       itemLabel="#{cat.nombre}" itemValue="#{cat.id}"/>
+                                    </p:selectOneMenu>
+                                    <p:message for="C" display="text"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0" width="120px"
+                                             rendered="#{(cargaOmisos.vigilancia.medio.id ne 2)}">
+                                    <p:outputLabel value="*" style="color: red"/>
+                                    <h:outputText value="#{mensajes['ui.componente.omisos.nivelEmision.title']}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="1" rendered="#{(cargaOmisos.vigilancia.medio.id ne 2)}">
+                                    <p:selectOneMenu value="#{cargaOmisos.vigilancia.idNivelEmision}" id="NE" styleClass="combos"
+                                                     style="width:300px;"
+                                                     required="#{(cargaOmisos.vigilancia.medio.id ne 2)}"
+                                                     requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"
+                                                      itemValue="#{null}"/>
+                                        <f:selectItems value="#{cargaOmisos.catalogoNivelEmision}" var="cat"
+                                                       itemLabel="#{cat.nombre}" itemValue="#{cat.id}"/>
+                                        <p:ajax update="CM" listener="#{cargaOmisos.handleLevelChange}"/>
+                                    </p:selectOneMenu>
+                                    <p:message for="NE" display="text"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0" width="120px"
+                                             rendered="#{(cargaOmisos.vigilancia.medio.id ne 2)}">
+                                    <p:outputLabel value="*" style="color: red"/>
+                                    <h:outputText value="#{mensajes['ui.componente.omisos.cargoadmtvo.title']}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="1" rendered="#{(cargaOmisos.vigilancia.medio.id ne 2)}">
+                                    <p:selectOneMenu value="#{cargaOmisos.vigilancia.idCargoAdmtvo}" id="CM" styleClass="combos"
+                                                     style="width:300px;"
+                                                     required="#{(cargaOmisos.vigilancia.medio.id ne 2)}"
+                                                     requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"
+                                                      itemValue="#{null}"/>
+                                        <f:selectItems value="#{cargaOmisos.catalogoCargoAdmtvo}" var="cat"
+                                                       itemLabel="#{cat.nombre}" itemValue="#{cat.id}"/>
+                                    </p:selectOneMenu>
+                                    <p:message for="CM" display="text"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+
+
+                            <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0" width="120px">
+                                    <p:outputLabel value="*" style="color: red"/>
+                                    <h:outputText value="#{mensajes['ui.componente.omisos.fechaCorte.title']}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="1">
+                                    <p:calendar styleClass="calCargaOmisos" value="#{cargaOmisos.vigilancia.fechaCorte}" locale="es"
+                                                id="E" showOn="both"
+                                                readonlyInput="true" pattern="dd/MM/yyyy" required="true"
+                                                requiredMessage="#{mensajes['ui.validacion.required']}" >
+                                    </p:calendar>
+                                    <p:message for="E" display="text"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0" width="120px">
+                                    <p:outputLabel value="*" style="color: red"/>
+                                    <h:outputText value="#{mensajes['ui.componente.omisos.descripcion.title']}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="1" >
+                                    <p:selectOneMenu value="#{cargaOmisos.vigilancia.idDescripcionVigilancia}" id="F"
+                                                     styleClass="combos"
+                                                     style="width:300px;" required="true"
+                                                     requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"
+                                                      itemValue="#{null}"/>
+                                        <f:selectItems value="#{cargaOmisos.catalogoDescripcion}" var="cat"
+                                                       itemLabel="#{cat.nombre}" itemValue="#{cat.id}"  />
+                                    </p:selectOneMenu>
+                                    <p:message for="F" display="text"/>
+                                </h:panelGrid>
+
+
+                                <p:commandButton action="#{cargaOmisos.guardar}" value="Guardar" ajax="false"/>
+                                <p:commandButton  value="Cancelar" process="@this" immediate="true" ajax="false"
+                                                  update="@all" actionListener="#{cargaOmisos.resetFail}" >
+                                    <p:resetInput target=":formaUploader:pnluploader :frmSup:panelCatalogos" />
+                                </p:commandButton>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </p:panel>
+                    <br/>
+                </h:form>
+                <h:form id="formaGeneral">
+                    <p:panel id="panelArchivosOmisos" header="#{mensajes['ui.cifrascontrol.panel.header']}"
+                             visible="true" style="width:650px;margin-left:auto;margin-right:auto;">
+                        <p:scrollPanel style="width:627px;height:115px" mode="native"> 
+                            <p:dataTable var="detalle" value="#{cargaOmisos.listadoCargaOmisos}"
+                                         emptyMessage="No hay archivos cargados a&uacute;n" id="cifrasControl">
+                                <p:column style="text-align:center;height:30px;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['ui.componente.omisos.col1']}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{detalle.nombreOriginalArchivo}"/>
+                                </p:column>
+                                <p:column style="text-align:center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['ui.componente.omisos.col2']}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{detalle.numeroRegistros}"/>
+                                </p:column>
+                                <p:column style="text-align:center;">
+                                    <f:facet name="header">
+                                        <h:outputText escape="false" value="#{mensajes['ui.componente.omisos.col3']}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{detalle.totalRegistrosCorrectos}"/>
+                                </p:column>
+                                <p:column style="text-align:center;">
+                                    <f:facet name="header">
+                                        <h:outputText escape="false"
+                                                      value="#{mensajes['ui.componente.bitacora.detalle.col3']}"/>
+                                    </f:facet>
+                                    <h:outputText value="#{detalle.totalRegistrosConError}"/>
+                                </p:column>
+                                <p:column style="text-align:center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['ui.componente.bitacora.detalle.col4']}"/>
+                                    </f:facet>
+                                    <p:commandButton rendered="#{detalle.cargaInvalida}" ajax="false"
+                                                     icon="ui-icon-circle-arrow-s">
+                                        <p:fileDownload value="#{detalle.archivoBitacora}" id="downloader"/>
+                                    </p:commandButton>
+                                </p:column>
+                                <p:column style="text-align:center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['ui.componente.bitacora.detalle.col5']}"/>
+                                    </f:facet>
+                                    <p:commandButton ajax="true"
+                                                     action="#{cargaOmisos.eliminarArchivoSeleccionado}"
+                                                     update="cifrasControl"
+                                                     icon="ui-icon-circle-close">
+                                        <f:param name="archivo" value="#{detalle.nombreOriginalArchivo}" />
+                                    </p:commandButton>
+                                </p:column>
+                            </p:dataTable>
+                        </p:scrollPanel>
+                    </p:panel>
+                </h:form>
+            </p:panel>
+        </h:body>
+    </html>
+</f:view>

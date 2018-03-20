@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head></h:head>
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:outputStylesheet library="css/" name="estilos.css"/>
+    <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+    <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+              resizable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+    </p:dialog>
+    <h:form id="Campo" >
+        <p:messages id="messages"  showDetail="true" globalOnly="true" autoUpdate="true" closable="true" />
+        <p:panel id="pnlTbl"  style="width:800px" visible="#{catalogoAdscripcionMB.areaAdscripcionModel.tblVisible}">
+            <p:dataTable id="tbl" var="areaAdscripcion" value="#{catalogoAdscripcionMB.areaAdscripcionModel.listAreaAdscripcion}" emptyMessage="#{mensajes['msg.dataTable.vacio']}"
+                         filteredValue="#{catalogoAdscripcionMB.areaAdscripcionModel.listAreaAdscripcionTmp}" paginator="true" paginatorPosition="bottom" rows="10" resizableColumns="true">
+                <f:facet name= "header">
+                    <h:outputText value="#{mensajes['adscripcion.titulo']}"/>
+                    <h:commandLink action="#{catalogoAdscripcionMB.generaExcel}" immediate="true" style="margin-left:90%;">
+                        <h:graphicImage value="/resources/images/excel1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                    <p:spacer width="15" height="10"/>
+                    <h:commandLink  action="#{catalogoAdscripcionMB.generaPdf}" immediate="true" >
+                        <h:graphicImage value="/resources/images/pdf1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                </f:facet>
+                <p:column sortBy="#{areaAdscripcion.nombre}"  filterBy="#{areaAdscripcion.nombre}" headerText="#{mensajes['etNombre']}" style = "width:213px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipNombre" style="border:none;resize:none" cols="40" rows="2" value="#{areaAdscripcion.nombre}" readonly="true"/>
+                    <p:tooltip for="tipNombre" value="#{areaAdscripcion.nombre}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{areaAdscripcion.descripcion}" filterBy="#{areaAdscripcion.descripcion}" headerText="#{mensajes['etDescripcion']}" style = "width:213px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipDescripcion" style="border:none;resize:none" cols="40" rows="2" value="#{areaAdscripcion.descripcion}" readonly="true"/>
+                    <p:tooltip for="tipDescripcion" value="#{areaAdscripcion.descripcion}"></p:tooltip> 
+                </p:column>
+                <p:column headerText="#{mensajes['etEditar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this" update=":Campo:pnlEdita, :Campo:pnlTbl" action="#{catalogoAdscripcionMB.abrirEditar}"
+                                     icon="ui-icon-pencil" onclick="statusDialog.show();" onsuccess="statusDialog.hide();">
+                        <f:setPropertyActionListener value="#{areaAdscripcion}" 
+                                                     target="#{catalogoAdscripcionMB.areaAdscripcionModel.areaAdscripcionEdit}" /> 
+                    </p:commandButton>
+                </p:column>
+
+                <p:column headerText="#{mensajes['etEliminar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this"  update=":Campo:pnlElimina, :Campo:pnlTbl" action="#{catalogoAdscripcionMB.abrirEliminar}"
+                                     icon="ui-icon-close" onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                     rendered="#{areaAdscripcion.fechaFinStr==1}">
+                        <f:setPropertyActionListener value="#{areaAdscripcion}" 
+                                                     target="#{catalogoAdscripcionMB.areaAdscripcionModel.areaAdscripcionEli}" /> 
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <div align="right">
+                <br />
+                <p:commandButton process="@this" update=":Campo:pnlAgrega, :Campo:pnlTbl" 
+                                 onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                 action="#{catalogoAdscripcionMB.abrirNuevo}" value="#{mensajes['btnNuevo']}" />
+            </div>
+
+        </p:panel>
+
+        <p:panel id="pnlAgrega" header="#{mensajes['adscripcion.tituloAgrega']}" style="width:600px"  visible="#{catalogoAdscripcionMB.areaAdscripcionModel.nvoVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridNvo" columns="2" cellspacing="3" cellpadding="3">
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etNombre']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="Nombre" value="#{catalogoAdscripcionMB.areaAdscripcionModel.nombre}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="5" cols="30"
+                                 maxlength="200"
+                                 counter="counter0"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesNombre" for="Nombre" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter0"/>
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etDescripcion']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="Descripcion" value="#{catalogoAdscripcionMB.areaAdscripcionModel.descripcion}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="5" cols="30"
+                                 maxlength="200"  
+                                 counter="counter1"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesDescripcion" for="Descripcion" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter1"/>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarNvo" value="#{mensajes['btnGuardar']}" action="#{catalogoAdscripcionMB.agrega}" style="left:90%"
+                                     process="@this, Nombre, Descripcion" update="pnlAgrega, pnlTbl, messages"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarNvo" value="#{mensajes['btnCancelar']}" action="#{catalogoAdscripcionMB.cerrar}" style="left:90%"
+                                     process="@this" update="pnlAgrega, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlAgrega" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <p:panel id="pnlEdita" header="#{mensajes['adscripcion.tituloEditar']}"  style="width:600px" visible="#{catalogoAdscripcionMB.areaAdscripcionModel.edtVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridEdt" columns="2" cellspacing="3" cellpadding="3">
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etNombre']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="NombreEdt" value="#{catalogoAdscripcionMB.areaAdscripcionModel.areaAdscripcionEdit.nombre}"
+                                 required="true"
+                                 disabled="#{catalogoAdscripcionMB.areaAdscripcionModel.fechaFinStr==0}"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="5" cols="30"
+                                 maxlength="200"
+                                 counter="counter3"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesNombreEdt" for="NombreEdt" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter3"/>
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etDescripcion']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="DescripcionEdt"
+                                 value="#{catalogoAdscripcionMB.areaAdscripcionModel.areaAdscripcionEdit.descripcion}"
+                                 required="true"
+                                 disabled="#{catalogoAdscripcionMB.areaAdscripcionModel.fechaFinStr==0}"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="5" cols="30"
+                                 maxlength="200"  
+                                 counter="counter4"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesDescEdit" for="DescripcionEdt" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter4"/>
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbHabilitarEdt" value="#{mensajes['btnHabilitar']}" action="#{catalogoAdscripcionMB.reactiva}" style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     update="pnlEdita, pnlTbl, messages" process="@this" immediate="true"
+                                     rendered="#{catalogoAdscripcionMB.areaAdscripcionModel.fechaFinStr==0}">
+                        <p:resetInput target="pnlEdita" />
+                    </p:commandButton>
+                    <p:commandButton id="cmbGuardarEdt" value="#{mensajes['btnGuardar']}" action="#{catalogoAdscripcionMB.edita}" style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     process="@this, NombreEdt, DescripcionEdt" update="pnlEdita, pnlTbl, messages"
+                                     rendered="#{catalogoAdscripcionMB.areaAdscripcionModel.fechaFinStr==1}"/>
+                    <p:commandButton id="cmbCancelarEdt" value="#{mensajes['btnCancelar']}" action="#{catalogoAdscripcionMB.cerrar}"  style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     update="pnlEdita, pnlTbl, messages" process="@this" immediate="true">
+                        <p:resetInput target="pnlEdita" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <p:panel id="pnlElimina" header="#{mensajes['adscripcion.tituloElimina']}" style="width:600px" visible="#{catalogoAdscripcionMB.areaAdscripcionModel.elmVisible}">
+
+            <h:panelGrid id="gridEli" columns="2" cellspacing="3" cellpadding="3">
+                <h:outputText  value="#{mensajes['etNombre']}"/>
+                <p:inputText id="txtConEli" value="#{catalogoAdscripcionMB.areaAdscripcionModel.areaAdscripcionEli.nombre}" disabled="true" style="width:200px"/>
+
+                <h:outputText  value="#{mensajes['etDescripcion']}"/>
+                <p:inputTextarea id="txtDescripcionEli" value="#{catalogoAdscripcionMB.areaAdscripcionModel.areaAdscripcionEli.descripcion}" disabled="true" style="width:200px"/>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEli" value="#{mensajes['btnEliminar']}" action="#{catalogoAdscripcionMB.elimina}" style="left:90%"
+                                     process="@this" update="pnlElimina, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlElimina').hide();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarEli" value="#{mensajes['btnCancelar']}" action="#{catalogoAdscripcionMB.cerrar}" style="left:90%"
+                                     process="@this" update="pnlElimina, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlElimina').hide();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlElimina" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+    </h:form>
+
+</html>

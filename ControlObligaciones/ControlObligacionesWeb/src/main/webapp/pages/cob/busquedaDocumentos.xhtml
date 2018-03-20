@@ -1,0 +1,442 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <title>Afectacion por Autoridad</title>
+        <script type="text/javascript">
+            function showStatus() {
+                statusDialog.show();
+            }
+            function hideStatus() {
+                statusDialog.hide();
+            }
+        </script>
+    </h:head>
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+
+    <h:body>
+        <h:outputStylesheet library="css/" name="estilos.css"/>
+        <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+        
+        <p:dialog modal="true" widgetVar="statusDialog" onHide= "poll.stop()" onShow="poll.start()" 
+                  header="Procesando" draggable="false" closable="false" resizable="false">
+            <table width="100%">
+                <tr align="center">
+                    <td align="center">
+                        <p:outputLabel value="El proceso puede tardar varios minutos. Espere por favor." />
+                    </td>
+                </tr>
+                <tr><td></td></tr>
+                <tr align="center">
+                    <td align="center">
+                        <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+                    </td>
+                </tr>
+            </table>
+        </p:dialog>
+        
+          <p:dialog modal="true" widgetVar="statusDialogEspere" onHide= "poll.stop()" onShow="poll.start()" 
+                  header="Espere" draggable="false" closable="false" resizable="false">
+            <table width="100%">
+                <tr align="center">
+                    <td align="center">
+                        <p:outputLabel value="#{mensajes['msgBusquedaDocumentos']}" />
+                    </td>
+                </tr>
+                <tr><td></td></tr>
+                <tr align="center">
+                    <td align="center">
+                        <p:graphicImage value="/resources/images/ajaxloadingbar.gif" />
+                    </td>
+                </tr>
+            </table>
+        </p:dialog>  
+
+        <h:form id="searchForm" prependId="false">
+            <p:panel style="width:820px;margin-left:auto;margin-right:auto;border:0px">
+                <p:panel id="panelAfectacionAutoridad" header="#{mensajes['documentos.criterios']}"
+                         style="width:650px;margin-left:auto;margin-right:auto;" visible="#{consultaAfectacion.panelCriterios}">
+
+                    <p:outputPanel id="outputPanel">
+                        <p:selectOneRadio id="customRadio" layout="custom" value="#{consultaAfectacion.selected}">
+                            <p:ajax update='searchForm' event='change' listener='#{consultaAfectacion.enableDisable}' global="false" />
+                            <f:selectItem itemValue="1" />
+                            <f:selectItem itemValue="2" />
+                        </p:selectOneRadio>
+
+                        <h:panelGrid id="panelNumControl" columns="8">
+                            <p:radioButton id="opt2" for="customRadio" itemIndex="1"  />
+                            <h:outputLabel for="opt2" value="#{mensajes['documentos.rfc']}" style="width: 200px" />
+                            <p:inputText id="rfcTxt" value="#{consultaAfectacion.beanCancelacionXAutorizacionMain.rfc}" onkeyup="this.value = this.value.toUpperCase();" disabled="#{consultaAfectacion.disabledRFC}"/>
+
+                            <p:selectOneRadio id="customRadioTipoPer" layout="custom" value="#{consultaAfectacion.idTipoPersona}">
+                                <f:selectItem itemValue="F" />
+                                <f:selectItem itemValue="M" />
+                            </p:selectOneRadio>
+
+                            <p:radioButton id="opt3" for="customRadioTipoPer" itemIndex="0"  disabled="#{consultaAfectacion.showTipoPersona}" />
+                            <h:outputLabel for="opt3" value="#{mensajes['documentos.persona.fisica']}" style="width: 200px" />
+                            <p:radioButton id="opt4" for="customRadioTipoPer" itemIndex="1"  disabled="#{consultaAfectacion.showTipoPersona}" />
+                            <h:outputLabel for="opt4" value="#{mensajes['documentos.persona.moral']}" style="width: 200px" />    
+
+
+                            <p:radioButton id="opt1" for="customRadio" itemIndex="0" />
+                            <h:outputLabel for="opt1" value="#{mensajes['documentos.numeroControl']}" style="width: 50px" />
+                            <p:inputText id="numControlTxt" value="#{consultaAfectacion.beanCancelacionXAutorizacionMain.numeroControl}" disabled="#{consultaAfectacion.disabledNC}"/>
+
+
+                        </h:panelGrid>
+                    </p:outputPanel>
+
+                    <p:poll interval="5" listener="#{consultaAfectacion.increment}"
+                            widgetVar="poll" autoStart="false"/>
+
+                    <div align="right">
+                        <table>
+                            <tr>
+                                <td>
+                                    <p:commandButton id="searchBtn" value="#{mensajes['btnAceptar']}" ajax="false" actionListener="#{consultaAfectacion.searchAction}" 
+                                                     update=":searchForm:tabView, :searchForm " onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"/>
+                                </td>
+                                <td>
+                                    <p:commandButton id="newSeachBtn" value="#{mensajes['btnNuevaBusqueda']}"  actionListener="#{consultaAfectacion.cleanScreen}" 
+                                                     update=":searchForm" onclick="$('#customRadio\\:1').attr('checked', false);
+                                                             $('#customRadio\\:0').attr('checked', false);" >
+
+                                    </p:commandButton>                
+                                </td>
+
+                            </tr>
+                        </table>
+                    </div>    
+                </p:panel>
+                <br />
+                <br />
+                <p:messages id="validacion" closable="true" showDetail="true" autoUpdate="true" />
+
+                <p:panel id="panelBusqueda" header="#{mensajes['documentos.numerosControl']}" style="width:650px;margin-left:auto;margin-right:auto;" visible="#{consultaAfectacion.showResults}">
+
+                    <p:panel id="panelResDoc"  visible="true" style="width:550px;margin-left:auto;margin-right:auto;">
+                        <p:scrollPanel style="width:527px;height:115px" mode="native"> 
+                            <p:dataTable id="docAsociados" value="#{consultaAfectacion.listaAfectacionRenuentes}" emptyMessage="#{mensajes['msg.dataTable.vacio']}" var="item">
+                                <p:column  headerText="#{mensajes['documentos.rfc']}">
+                                    <h:outputText value="#{item.rfc}" />
+                                </p:column>
+                                <p:column headerText="#{mensajes['documentos.numeroControl']}" >
+                                    <p:commandLink id="docPostDoc"  
+                                                   update=":searchForm:tabView, :searchForm "  
+                                                   onclick="statusDialogEspere.show();" 
+                                                   onsuccess="statusDialogEspere.hide();"
+                                                   actionListener="#{consultaAfectacion.searchAsociateDetail}">
+                                        <f:param name="idDocumento" value="#{item.descripcion}" />
+                                        <f:param name="idTipoPersona" value="#{consultaAfectacion.idTipoPersona}"/>
+                                        <h:outputText value="#{item.descripcion}" />
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column  headerText="#{mensajes['documentos.contribuyente']}">
+                                    <h:outputText value="#{item.nombre}" />
+                                </p:column>
+                                <p:column  headerText="#{mensajes['documentos.tipo.documento']}">
+                                    <h:outputText value="#{item.tipoDoc}" />
+                                </p:column>
+                                <p:column  headerText="#{mensajes['documentos.periodo']}">
+                                    <h:outputText value="#{item.descripcionPeriodo}" />
+                                </p:column>
+                                <p:column  headerText="#{mensajes['documentos.ejercicio']}">
+                                    <h:outputText value="#{item.ejercicio}" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:scrollPanel>
+                    </p:panel>         
+                </p:panel>
+                <br />
+                <br />
+                <p:panel id="panelBusqueda1" style="width:650px;margin-left:auto;margin-right:auto;" visible="#{consultaAfectacion.panelIceps}">                
+                    <p:panel  style="border: 0px !important;" >
+                        <f:facet name="header">
+                            <p:outputLabel value="#{mensajes['documentos.documento']}" >
+                            </p:outputLabel>
+                            <h:commandLink  action="#{consultaAfectacion.btnGenerarReporte}" immediate="true" disabled="#{consultaAfectacion.btnImprimir}" >
+                                <h:graphicImage value="/resources/images/pdf1.png" height="20px" width="20px" style="margin-left:90%; border:none;"/>
+                            </h:commandLink>
+                        </f:facet>
+                    </p:panel>
+
+                    <p:tabView id="tabView" dynamic="true" activeIndex="#{consultaAfectacion.indexTab}" >  
+
+                        <p:tab id="tab1" title="#{mensajes['documentos.resultados']}">  
+                            <p:panel id="popup">
+                                <table>
+                                    <tr>
+                                        <td width="250px;">
+                                            <h:outputText value="#{mensajes['documentos.numeroControl']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.numeroControl}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.rfc']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.rfc}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.nombre']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.nombre}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.alsc']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.admonLocal}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.tipo.documento']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.tipoDoc}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.estado']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.estado}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.emision']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaRegistro}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.notificacion']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaNotificacion}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.vencimiento']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaVencimiento}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.notrabajado']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaNoTrabajado}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.nolocalizado']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaNoLocalizado}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.fecha.citatorio']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.fechaCitatorio}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h:outputText value="#{mensajes['documentos.medio.envio']}" />
+                                        </td>
+                                        <td>
+                                            <h:outputText value="#{consultaAfectacion.afectacionDetail.tipoMedio}"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <p:panel id="panelIcepsDoc" header="#{mensajes['documentos.iceps']}"
+                                         visible="true" style="width:550px;margin-left:auto;margin-right:auto;text-align:center;">
+                                    <p:scrollPanel style="width:527px;height:115px" mode="native"> 
+                                        <p:dataTable id="tablaDetailInfo" value="#{consultaAfectacion.listaAfectacionDetail}" var="itemDetalle" emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+
+                                            <p:column sortBy="#{itemDetalle.claveObligacion}"  headerText="#{mensajes['documentos.oblig']}" >
+                                                <h:outputText value="#{itemDetalle.claveObligacion}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalle.obDescripcion}"  headerText="#{mensajes['documentos.descripcion.obligacion']}">
+                                                <h:outputText value="#{itemDetalle.obDescripcion}"  ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalle.ejercicio}"  headerText="#{mensajes['documentos.ejercicio.obligacion']}">
+                                                <h:outputText value="#{itemDetalle.ejercicio}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalle.periodo}"  headerText="#{mensajes['documentos.periodo.obligacion']}">
+                                                <h:outputText value="#{itemDetalle.periodo}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalle.solventado}"  headerText="#{mensajes['documentos.solventado']}">
+                                                <h:outputText value="#{itemDetalle.solventado}" ></h:outputText>
+                                            </p:column>
+
+                                        </p:dataTable>
+                                    </p:scrollPanel>
+                                </p:panel>      
+                            </p:panel>
+
+                            <br/>
+                            <p:dataTable id="docAsociadosPre" value="#{consultaAfectacion.listaDocsAsociadosPre}" var="itemPre" emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+                                <f:facet name="header">  
+                                    <h:outputText value="#{mensajes['documentos.predecesores']}" />
+                                </f:facet>
+                                <p:column width="150"  headerText="#{mensajes['documentos.numeroControl']}" >
+                                    <p:commandLink id="docPre"  
+                                                   update=":searchForm:tabView, :searchForm " 
+                                                   actionListener="#{consultaAfectacion.searchAsociateDetail}"
+                                                   onclick="statusDialogEspere.show();" 
+                                                   onsuccess="statusDialogEspere.hide();"
+                                                   >
+                                        <f:param name="idDocumento" value="#{itemPre.idDocumento}" />
+                                        <f:param name="idTipoPersona" value="#{consultaAfectacion.idTipoPersona}"/>
+                                        <h:outputText value="#{itemPre.idDocumento}" />
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column width="150" headerText="#{mensajes['documentos.tipo.documento']}">
+                                    <h:outputText value="#{itemPre.tipoDocumento}" />
+                                </p:column>
+                            </p:dataTable>
+                            <br/>
+                            <p:dataTable id="docAsociadosPost" value="#{consultaAfectacion.listaDocsAsociadosPost}" var="itemPost" emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+                                <f:facet name="header">  
+                                    <h:outputText value="#{mensajes['documentos.posteriores']}" />
+                                </f:facet>
+                                <p:column width="150"  headerText="#{mensajes['documentos.numeroControl']}"  >
+                                    <p:commandLink id="docPost"  
+                                                   update=":searchForm:tabView, :searchForm "  
+                                                   actionListener="#{consultaAfectacion.searchAsociateDetail}"
+                                                   onclick="statusDialogEspere.show();" 
+                                                   onsuccess="statusDialogEspere.hide();"
+                                                   >
+                                        <f:param name="idDocumento" value="#{itemPost.idDocumento}" />
+                                        <f:param name="idTipoPersona" value="#{consultaAfectacion.idTipoPersona}"/>
+                                        <h:outputText value="#{itemPost.idDocumento}" />
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column width="150" headerText="#{mensajes['documentos.tipo.documento']}">
+                                    <h:outputText value="#{itemPost.tipoDocumento}" />
+                                </p:column>
+                            </p:dataTable>
+                            <br/> 
+                        </p:tab> 
+
+                        <p:tab id="tab2" title="Multas">  
+                            <p:panel id="panelDetalleMulta" header="Multas"
+                                     visible="true" style="width:550px;margin-left:auto;margin-right:auto;text-align:center;">
+                                <p:scrollPanel style="width:527px;height:115px" mode="native">
+                                    <p:dataTable id="tablaDetailMultas" value="#{consultaAfectacion.listaMultasDocumento}" var="itemDetalleMulta" emptyMessage="#{mensajes['msg.dataTable.vacio']}" >
+                                        <p:column width="50"  headerText="Detalle"  >
+                                            <p:commandLink id="multaDetalle"  
+                                                           update=":searchForm " 
+                                                           oncomplete="detalleMulta.show();" 
+                                                           actionListener="#{consultaAfectacion.obtenerDetalleMulta}"
+                                                           onclick="statusDialogEspere.show();" 
+                                                           onsuccess="statusDialogEspere.hide();"
+                                                           >
+                                                <f:param name="tipoMulta" value="#{itemDetalleMulta.descObligacion}" />
+                                                <f:param name="numRes" value="#{itemDetalleMulta.numResolucion}" />
+                                                <p:outputLabel value="Ver detalle" style="color:blue"/>
+                                            </p:commandLink>
+                                        </p:column>
+
+                                        <p:column sortBy="#{itemDetalleMulta.tipoMulta}"  headerText="#{mensajes['multa.tipo.multa']}">
+                                            <h:outputText value="#{itemDetalleMulta.tipoMulta}" ></h:outputText>
+                                        </p:column>
+                                        <p:column sortBy="#{itemDetalleMulta.numResolucion}"  headerText="#{mensajes['multa.resolucion']}" >
+                                            <h:outputText value="#{itemDetalleMulta.numResolucion}" ></h:outputText>
+                                        </p:column>
+                                        <p:column sortBy="#{itemDetalleMulta.nombreEstado}"  headerText="#{mensajes['multa.nombreEstado']}">
+                                            <h:outputText value="#{itemDetalleMulta.nombreEstado}" ></h:outputText>
+                                        </p:column>
+                                    </p:dataTable>  
+                                </p:scrollPanel>    
+
+                            </p:panel>
+
+
+
+                            <p:dialog header="Detalle Multa" widgetVar="detalleMulta" id="detalleMul" showEffect="fade" hideEffect="fade" modal="true" resizable="false">
+
+                                <p:panel id="popupMulta" header="#{mensajes['documentos.iceps']}"
+                                         visible="true" style="width:550px;margin-left:auto;margin-right:auto;">
+                                    <p:scrollPanel style="width:527px;height:115px" mode="native"> 
+
+                                        <p:dataTable id="tablaDetailMultasDetalle" value="#{consultaAfectacion.listaMultasDocumentoDetalle}" var="itemDetalleMultaDetalle" emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.tipoMulta}"  headerText="#{mensajes['multa.tipo.multa']}" >
+                                                <h:outputText value="#{itemDetalleMultaDetalle.tipoMulta}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.numResolucion}"  headerText="#{mensajes['multa.resolucion']}" >
+                                                <h:outputText value="#{itemDetalleMultaDetalle.numResolucion}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.idObligacion}"  headerText="#{mensajes['multa.idObligacion']}" >
+                                                <h:outputText value="#{itemDetalleMultaDetalle.idObligacion}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.descObligacion}"  headerText="#{mensajes['multa.desc.obligacion']}" >
+                                                <h:outputText value="#{itemDetalleMultaDetalle.descObligacion}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.ejercicio}"  headerText="#{mensajes['multa.ejercicio']}" >
+                                                <h:outputText value="#{itemDetalleMultaDetalle.ejercicio}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.periodo}"  headerText="#{mensajes['multa.periodo']}" >
+                                                <h:outputText value="#{itemDetalleMultaDetalle.periodo}" ></h:outputText>
+                                            </p:column>
+                                            <p:column sortBy="#{itemDetalleMultaDetalle.monto}"  headerText="#{mensajes['multa.monto']}" style = "text-align:right;">
+                                                <h:outputText value="#{itemDetalleMultaDetalle.monto}" ></h:outputText>
+                                            </p:column>
+                                        </p:dataTable>
+                                        <div id="divMonto" align="right"> 
+                                            <table>
+                                                <tr>
+                                                    <td align="right">
+                                                        <h3><h:outputText value="#{mensajes['multa.monto.total']}: "/></h3> 
+                                                    </td>
+                                                    <td>
+                                                        <h3><h:outputText value="#{consultaAfectacion.montoTotalMultas}"/></h3>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div> 
+                                    </p:scrollPanel>
+                                </p:panel>
+
+                            </p:dialog>
+                        </p:tab>  
+
+                    </p:tabView>     
+                </p:panel> 
+
+
+            </p:panel>
+
+        </h:form>
+    </h:body>
+</html>
+

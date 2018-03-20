@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="facturaVigilanciaSR_Cumplidos" language="groovy" pageWidth="544" pageHeight="612" orientation="Landscape" columnWidth="544" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="11a4f84b-3ac8-4d87-9e19-45e14d74f122">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="cumplimiento" class="java.lang.Long"/>
+	<field name="rfc" class="java.lang.String">
+		<fieldDescription><![CDATA[rfc]]></fieldDescription>
+	</field>
+	<field name="numeroControl" class="java.lang.String">
+		<fieldDescription><![CDATA[numeroControl]]></fieldDescription>
+	</field>
+	<title>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement uuid="62fd8b4c-8af1-49b1-9002-7b2e66d4b4a9" x="174" y="0" width="84" height="16"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="Arial"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{cumplimiento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="294a162b-7aee-4cd3-9869-a942c6c288fb" x="0" y="0" width="172" height="16"/>
+				<textElement>
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total de documentos cumplidos :]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="6c6242bd-031b-40fe-8a59-9833b8fa5c92" positionType="Float" x="0" y="0" width="272" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Número de Control]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4ea8ce36-df55-474b-8ff0-8d725454558e" positionType="Float" x="272" y="0" width="272" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RFC]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement uuid="9301fd1e-c076-4d82-942d-e8840111e6b3" x="0" y="0" width="272" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numeroControl}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="db889e66-2c05-4671-9795-dd803a7753cf" x="272" y="0" width="272" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rfc}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

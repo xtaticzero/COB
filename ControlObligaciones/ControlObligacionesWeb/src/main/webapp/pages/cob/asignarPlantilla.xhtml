@@ -1,0 +1,416 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui">
+    <html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets">
+        <h:head>
+            <title>Asignación de Plantillas</title>           
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+
+        <h:body>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <p:panel styleClass="panel-principal" >
+                <p:messages id="messages" globalOnly="true" showDetail="true" autoUpdate="true" closable="true" />  
+            </p:panel> 
+            <p:panel id="panelBotones" visible="#{cargarAsignarPlantilla.mostrarPanelContinuar}" styleClass="panel-principal">
+                <h:panelGrid columns="2">   
+                    <p:commandButton value="Continuar"
+                                     action="#{cargarAsignarPlantilla.guardarPlantillaArca}" 
+                                     rendered="#{cargarAsignarPlantilla.mostrarPanelContinuar}"
+                                     ajax="true" 
+                                     update=":panelBotones :formaGeneral:panelCatalogos :formaGeneral:panelPlantillas" >
+                    </p:commandButton>
+                    <p:commandButton value="Cancelar"
+                                     action="#{cargarAsignarPlantilla.cancelar}" 
+                                     rendered="#{cargarAsignarPlantilla.mostrarPanelContinuar}"
+                                     ajax="true" 
+                                     update=":panelBotones :formaGeneral:panelCatalogos :formaGeneral:panelPlantillas" >
+                    </p:commandButton>
+                </h:panelGrid> 
+            </p:panel>          
+
+            <h:form id="formaGeneral"> 
+                <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+                          resizable="false">
+                    <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+                </p:dialog>
+                <p:panel id="panelCatalogos" visible="#{cargarAsignarPlantilla.mostrarPanelAsignar}" header="Asignación de Plantillas"  styleClass="panel-principal" >
+
+                    <p:outputLabel value="* Campo requerido" style="color: red"></p:outputLabel>
+
+                    <h:panelGrid columns="1" >
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Plantillas Disponibles"/>
+                                <h:outputText value="*" style="color:red" />
+                            </p:column>
+                        </p:row>
+
+                        <p:selectOneMenu  id="plantillas" 
+                                          style="width:750px;" 
+                                          styleClass="combos"
+                                          required="true"
+                                          value="#{cargarAsignarPlantilla.plantillaDocumentoDTO.descripcion}" 
+                                          requiredMessage="#{mensajes['ui.validacion.required']}">
+                            <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"    
+                                          itemValue="#{null}"/>
+                            <f:selectItems value="#{cargarAsignarPlantilla.catalogoPlantillas}" var="cat"
+                                           itemLabel="#{cat.nombre}"
+                                           itemValue="#{cat.idString}" />
+                        </p:selectOneMenu>
+                        <p:message for="plantillas" display="text"/>
+                    </h:panelGrid>    
+
+
+                    <h:panelGrid  cellpadding="5" cellspacing="5"  style="margin-left:auto;margin-right:auto;" columns="2"> 
+                        <h:panelGrid columns="2">     
+
+                            <h:panelGrid>     
+                                <h:panelGrid columns="1" 
+                                             cellpadding="0" 
+                                             cellspacing="0">
+
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputText id="idLeyenda" value="¿Es plantilla para multas?"/> 
+                                            <h:outputText value="*" style="color:red" />
+                                        </p:column>
+                                    </p:row>
+                                    <p:selectOneMenu  id="B" style="width:300px;" 
+                                                      styleClass="combos"
+                                                      value="#{cargarAsignarPlantilla.plantillaDocumentoDTO.blnPlantillaDIOT}" 
+                                                      disabled="#{cargarAsignarPlantilla.mostrarPanelDIOT}"
+                                                      required="#{!cargarAsignarPlantilla.mostrarPanelDIOT}"
+                                                      requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <p:ajax update="catTipoMotivo" listener="#{cargarAsignarPlantilla.habilitarMultas}" event="change" />   
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"    
+                                                      itemValue="#{null}"/>
+                                        <f:selectItems value="#{cargarAsignarPlantilla.catalogoValorBoolean}" var="cat"
+                                                       itemLabel="#{cat.nombre}"
+                                                       itemValue="#{cat.id}" />
+                                    </p:selectOneMenu>
+
+                                    <p:message display="text" for="B"/>
+                                </h:panelGrid>    
+
+                            </h:panelGrid>
+
+                            <h:panelGrid>
+
+                                <h:panelGrid columns="1">
+                                    <h:outputText value="Tipo Multa"/>
+                                    <p:selectOneMenu value="#{cargarAsignarPlantilla.plantillaDocumentoDTO.idTipoMotivo}"
+                                                     styleClass="combos" 
+                                                     style="width:300px;"
+                                                     required="#{!cargarAsignarPlantilla.mostrarPanelTipoMotivo}"
+                                                     disabled="#{cargarAsignarPlantilla.mostrarPanelTipoMotivo}"
+                                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                                     id="catTipoMotivo"> 
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "   
+                                                      itemValue="#{null}" />
+                                        <f:selectItems value="#{cargarAsignarPlantilla.catalogoTipoMotivo}" var="o"
+                                                       itemLabel="#{o.descripcion}"
+                                                       itemValue="#{o.idCombo}" />                                                       
+                                    </p:selectOneMenu>
+                                    <p:message display="text" for="catTipoMotivo"/>
+                                </h:panelGrid> 
+                            </h:panelGrid>     
+
+                            <h:panelGrid>
+                                <h:panelGrid columns="1">
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputText 
+                                                value="#{mensajes['funcionarios.responsables.nivelEmision']}"/>
+                                            <h:outputText value="*" style="color:red" />
+
+                                        </p:column>
+                                    </p:row>
+                                    <p:selectOneMenu  id="idNvlEmision" style="width:300px;" 
+                                                      styleClass="combos"
+                                                      required="true"
+                                                      requiredMessage="#{mensajes['ui.validacion.required']}"
+                                                      value="#{cargarAsignarPlantilla.plantillaDocumentoDTO.nivelEmision}" >
+                                        <p:ajax update="idCargoEmp" listener="#{cargarAsignarPlantilla.loadCargosAdministrativos}" event="change" />   
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"
+                                                      itemValue="#{cargarAsignarPlantilla.notSelected}"/>
+                                        <f:selectItems value="#{cargarAsignarPlantilla.nivelesEmision}" var="cat"
+                                                       itemLabel="#{cat.nombre}"
+                                                       itemValue="#{cat.id}" />
+                                    </p:selectOneMenu>
+                                    <p:message display="text" for="idNvlEmision"/>
+                                </h:panelGrid>   
+
+                            </h:panelGrid>
+
+
+                            <h:panelGrid>
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="#{mensajes['funcionarios.responsables.cargoempleado']}"/>
+                                        <h:outputText value="*" style="color:red" />
+                                    </p:column>
+                                </p:row>
+                                <p:selectOneMenu   id="idCargoEmp" style="width:300px;" 
+                                                   styleClass="combos"
+                                                   required="true"
+                                                   requiredMessage="#{mensajes['ui.validacion.required']}"
+                                                   value="#{cargarAsignarPlantilla.plantillaDocumentoDTO.idCargoAdministrativo}" >
+                                    <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"  
+                                                  itemValue="#{null}"/>
+                                    <f:selectItems value="#{cargarAsignarPlantilla.cargosAdministrativos}" var="cat"
+                                                   itemLabel="#{cat.nombre}"
+                                                   itemValue="#{cat.id}" />
+                                </p:selectOneMenu>
+                                <p:message display="text" for="idCargoEmp"/>
+                            </h:panelGrid>
+
+
+                            <h:panelGrid columns="1" >
+                                <p:row>
+                                    <p:column>
+                                        <h:outputText value="#{mensajes['ui.catalogo.doc.title']}"/>
+                                        <h:outputText value="*" style="color:red" />  
+                                    </p:column>
+                                </p:row>
+                                <p:selectOneMenu value="#{cargarAsignarPlantilla.tipDocumento}"
+                                                 styleClass="combos" 
+                                                 style="width:300px;" 
+                                                 id="catTipoDocumento" 
+                                                 required="true"
+                                                 requiredMessage="#{mensajes['ui.validacion.required']}">
+                                    <p:ajax update="catEtapaVigilancia catTipoDias" listener="#{cargarAsignarPlantilla.handleTipoDocumento}" event="change" />   
+                                    <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "   
+                                                  itemValue="#{cargarAsignarPlantilla.notSelected}" />
+                                    <f:selectItems value="#{cargarAsignarPlantilla.catalogoTipoDocumento}" var="cat"
+                                                   itemLabel="#{cat.nombre}"
+                                                   itemValue="#{cat.id}" />                                                     
+                                </p:selectOneMenu>
+                                <p:message for="catTipoDocumento" display="text"/> 
+                            </h:panelGrid>
+
+                            <h:panelGrid>
+
+                                <h:panelGrid columns="1">
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputText value="Etapa"/><h:outputText value="*" style="color:red" />
+                                        </p:column>
+                                    </p:row>    
+                                    <p:selectOneMenu value="#{cargarAsignarPlantilla.idEtapaVigilancia}"
+                                                     styleClass="combos" 
+                                                     style="width:300px;"
+                                                     required="true"
+                                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                                     id="catEtapaVigilancia"> 
+                                        <p:ajax update="catTipoDias" listener="#{cargarAsignarPlantilla.handleEtapaVigilancia}" event="change"/>
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} " 
+                                                      itemValue="#{cargarAsignarPlantilla.notSelected}" />
+                                        <f:selectItems value="#{cargarAsignarPlantilla.catalogoEtapaVigilancia}" var="o"
+                                                       itemLabel="#{o.nombreDocumentoEtapa}"
+                                                       itemValue="#{o.idEtapaVigilancia}" />                                                       
+                                    </p:selectOneMenu>
+                                    <p:message display="text" for="catEtapaVigilancia"/>
+                                </h:panelGrid> 
+                            </h:panelGrid>   
+
+                            <h:panelGrid>
+
+                                <h:panelGrid columns="1">
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputText value="Días"/>
+                                        </p:column>
+                                    </p:row>
+                                    <p:selectOneMenu value="#{cargarAsignarPlantilla.plantillaDocumentoDTO.idTipoDias}"
+                                                     styleClass="combos" 
+                                                     style="width:300px;"
+                                                     required="#{!cargarAsignarPlantilla.mostrarPanelDias}"
+                                                     disabled="#{cargarAsignarPlantilla.mostrarPanelDias}"
+                                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                                     id="catTipoDias"> 
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "   
+                                                      itemValue="#{cargarAsignarPlantilla.notSelected}" />
+                                        <f:selectItems value="#{cargarAsignarPlantilla.catalogoDiasMonto}" var="o"
+                                                       itemLabel="#{o.nombre}"
+                                                       itemValue="#{o.id}" />                                                       
+                                    </p:selectOneMenu>
+                                    <p:message display="text" for="catTipoDias"/>
+                                </h:panelGrid> 
+                            </h:panelGrid>     
+
+                            <h:panelGrid>     
+                                <h:panelGrid columns="1" 
+                                             cellpadding="0" 
+                                             cellspacing="0">
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputText value="Medio de Envío"/>
+                                            <h:outputText value="*" style="color:red" />  
+                                        </p:column>
+                                    </p:row>
+                                    <p:selectOneMenu  id="medioEnvio" style="width:300px;" 
+                                                      styleClass="combos"
+                                                      value="#{cargarAsignarPlantilla.plantillaDocumentoDTO.idMedioEnvio}"
+                                                      required="true"
+                                                      requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"    
+                                                      itemValue="#{null}"/>
+                                        <f:selectItems value="#{cargarAsignarPlantilla.catalogoMedioEnvio}" var="cat"
+                                                       itemLabel="#{cat.nombre}"
+                                                       itemValue="#{cat.id}" />
+                                    </p:selectOneMenu>
+                                    <p:message display="text" for="medioEnvio"/>
+                                </h:panelGrid>    
+
+                            </h:panelGrid>     
+
+                            <h:panelGrid>     
+                                <h:panelGrid columns="1" 
+                                             cellpadding="0" 
+                                             cellspacing="0">
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputText value="Tipo de Firma"/>
+                                            <h:outputText value="*" style="color:red" />  
+                                        </p:column>
+                                    </p:row>
+                                    <p:selectOneMenu  id="tipoFirma" style="width:300px;" 
+                                                      styleClass="combos"
+                                                      value="#{cargarAsignarPlantilla.plantillaDocumentoDTO.idTipoFirma}" 
+                                                      required="true"
+                                                      requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"    
+                                                      itemValue="#{null}"/>
+                                        <f:selectItems value="#{cargarAsignarPlantilla.catalogoTipoFirma}" var="cat"
+                                                       itemLabel="#{cat.nombre}"
+                                                       itemValue="#{cat.id}" />
+                                    </p:selectOneMenu>
+                                    <p:message display="text" for="tipoFirma"/>
+                                </h:panelGrid>    
+
+                            </h:panelGrid> 
+
+                            <h:panelGrid>  
+                                <p:commandButton id="warnButton2" value="Guardar" 
+                                                 rendered="#{cargarAsignarPlantilla.mostrarBotonGuardar}" 
+                                                 update=":formaGeneral:panelCatalogos :panelBotones :formaGeneral:panelPlantillas"
+                                                 actionListener="#{cargarAsignarPlantilla.addWarn}"/>  
+                            </h:panelGrid> 
+
+                        </h:panelGrid>  
+
+                        <br></br>
+
+                    </h:panelGrid>
+
+                </p:panel>
+
+
+                <p:panel id="panelPlantillas"  visible="#{cargarAsignarPlantilla.mostrarPanelAsignar}" styleClass="panel-principal" >
+                    <h:panelGrid columns="1">
+                        <p:dataTable id="tbl" var="i" value="#{cargarAsignarPlantilla.listaPlantillas}" 
+                                     paginator="true"
+                                     rows="10"
+                                     paginatorPosition="bottom"
+                                     emptyMessage="#{mensajes['msg.dataTable.vacio']}" >
+                            <f:facet name="header">
+                                <h:outputText value="Plantillas Arca"/>
+                            </f:facet>
+                            <p:column headerText="#{mensajes['etEliminar']}" style="text-align:center" width="35">
+                                <p:commandButton process="@this"  ajax="true" update=":formaGeneral:panelCatalogos :formaGeneral:panelPlantillas :formaGeneral:panelEliminar" 
+                                                 action="#{cargarAsignarPlantilla.abrirEliminar}"
+                                                 disabled="#{i.fechaFin!=null}"
+                                                 icon="ui-icon-close" onclick="statusDialog.show();" 
+                                                 onsuccess="statusDialog.hide();">
+                                    <f:setPropertyActionListener value="#{i}"  target="#{cargarAsignarPlantilla.plantillaPanel}" /> 
+                                </p:commandButton>
+                            </p:column>
+                            <p:column headerText="#{mensajes['plantilla.nombre']}" >
+                                <h:outputText id="descripcion" value="#{i.descripcion}"></h:outputText>
+                            </p:column>
+                            <p:column headerText="#{mensajes['ui.componente.omisos.nivelEmision.title']}" >
+                                <h:outputText id="nvlemision" value="#{i.descNivelEmision}"></h:outputText>
+                            </p:column>
+                            <p:column headerText="#{mensajes['funcionarios.responsables.cargoempleado']}">
+                                <h:outputText id="cargoEmpleado" value="#{i.descCargoAdmin}"></h:outputText>
+                            </p:column>
+                            <p:column headerText="#{mensajes['plantilla.tipoDocumento']}">
+                                <h:outputText id="descripcionTipoDoc" value="#{i.descripcionTipoDoc}"></h:outputText>
+                            </p:column>
+                            <p:column headerText="#{mensajes['plantilla.etapaDocumento']}">
+                                <h:outputText id="descripcionEtapaVig" value="#{i.descripcionEtapaVig}"></h:outputText>
+                            </p:column>
+
+                            <!--<p:column headerText="DIOT">
+                                <h:outputText id="blnDiot" value="#{i.descDIOT}"></h:outputText>
+                            </p:column>-->
+
+                            <p:column headerText="Tipo Multa" style="text-align:center" >
+                                <h:outputText id="descTipoMotivo" value="#{ i.idTipoMotivo !=null ? i.idTipoMotivo :'-'}"></h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Días" >
+                                <h:outputText id="descDias" value="#{i.idTipoDias}"></h:outputText>
+                            </p:column>
+
+
+                            <p:column headerText="#{mensajes['plantilla.medioEnvio']}" >
+                                <h:outputText id="descMedioEnvio" value="#{i.descMedioEnvio}"></h:outputText>
+                            </p:column>
+
+
+                            <p:column headerText="#{mensajes['plantilla.tipoFirma']}">
+                                <h:outputText id="descTipoFirma" value="#{i.descTipoFirma}"></h:outputText>
+                            </p:column>
+
+
+
+                        </p:dataTable>
+                    </h:panelGrid>
+                </p:panel>
+
+
+
+
+                <p:panel id="panelEliminar" header="Catalogo de Plantillas - Eliminar" style="width:820px;margin-left:auto;margin-right:auto;"  visible="#{cargarAsignarPlantilla.mostrarPanelEliminar}">
+                    <h:panelGrid id="gridEli" columns="2" cellspacing="3" cellpadding="3">
+                        <h:outputText  value="#{mensajes['plantilla.nombre']}"/>
+                        <p:inputText id="desc" value="#{cargarAsignarPlantilla.plantillaPanel.descripcion}" disabled="true" style="width:200px"/>
+
+                        <h:outputText  value="#{mensajes['plantilla.tipoDocumento']}"/>
+                        <p:inputText id="descTp" value="#{cargarAsignarPlantilla.plantillaPanel.descripcionTipoDoc}" disabled="true" style="width:200px"/>
+
+                        <h:outputText  value="#{mensajes['plantilla.etapaDocumento']}"/>
+                        <p:inputTextarea id="descEp" value="#{cargarAsignarPlantilla.plantillaPanel.descripcionEtapaVig}" disabled="true" style="width:200px"/>
+
+                        <h:outputText  value="#{mensajes['plantilla.medioEnvio']}"/>
+                        <p:inputTextarea id="descMe" value="#{cargarAsignarPlantilla.plantillaPanel.descMedioEnvio}" disabled="true" style="width:200px"/>
+
+                        <h:outputText  value="#{mensajes['plantilla.tipoFirma']}"/>
+                        <p:inputTextarea id="descTf" value="#{cargarAsignarPlantilla.plantillaPanel.descTipoFirma}" disabled="true" style="width:200px"/>
+
+                        <h:outputText  value="#{mensajes['ui.componente.omisos.nivelEmision.title']}"/>
+                        <p:inputTextarea id="descMd" value="#{cargarAsignarPlantilla.plantillaPanel.descNivelEmision}" disabled="true" style="width:200px"/>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="2">
+                        <p:commandButton id="cmbGuardarEli" value="#{mensajes['btnEliminar']}" action="#{cargarAsignarPlantilla.eliminarRegistroArca}" style="left:90%"
+                                         process="@this" update="panelEliminar, panelCatalogos, panelPlantillas " 
+                                         onclick="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+                        <p:commandButton id="cmbCancelarEli" value="#{mensajes['btnCancelar']}" action="#{cargarAsignarPlantilla.cerrar}" style="left:90%"
+                                         process="@this"  ajax="true" update="panelEliminar, panelCatalogos, panelPlantillas " 
+                                         onclick="statusDialog.show();" onsuccess="statusDialog.hide();">
+                            <p:resetInput target="panelEliminar" />
+                        </p:commandButton>
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+
+        </h:body>
+    </html>
+</f:view>

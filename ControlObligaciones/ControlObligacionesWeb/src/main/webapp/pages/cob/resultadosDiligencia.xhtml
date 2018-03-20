@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>Resultados Diligenciacion</title>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:outputScript library="js" name="calendarioIdiomaEs.js"/>
+        <script type="text/javascript">
+            function tiempoEspera() {
+                setTimeout("enviaMensaje()", 200000);
+            }
+            function enviaMensaje() {
+                msgSesionCaducada.show();
+            }
+        </script>
+        <h:body>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/> 
+
+            <p:dialog modal="true" widgetVar="msgSesionCaducada" 
+                      header="El proceso de carga de resultados se está ejecutando."
+                      draggable="false" 
+                      closable="false" resizable="false">
+                <h:panelGrid columns="1" style="text-align: center;">
+                    <p:outputLabel value="Al finalizar exitosamente recibirá un correo electrónico de notificación"/>
+
+                    <p:commandButton value="Cerrar" action="#{resultDig.reloadPage}"/>
+                </h:panelGrid>
+            </p:dialog>
+            <p:dialog modal="true" widgetVar="statusDialog" 
+                      header="#{mensajes['msgEspere']}" draggable="false" 
+                      closable="false" resizable="false">
+                <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+            </p:dialog>
+
+            <h:form id="formaArchivo">
+                <p:panel id="panelArchivo" header="Carga por archivo previa" visible="#{resultDig.mostrarPanelArchivo}"
+                         style="width:820px;margin-left:auto;margin-right:auto;" >
+                    <h:panelGrid id="gridArchivo" columns="3" cellspacing="3" cellpadding="3">
+
+                        <h:outputText  value="#{mensajes['etNombreArchivo']}"/>
+                        <p:outputLabel value="#{resultDig.nombreArchivoDiligencias}" />
+                        <h:outputText />
+                        <h:outputText  value="#{mensajes['etFechaCarga']}"/>
+                        <p:outputLabel value="#{resultDig.fechaCargaStr}" />
+                        <h:outputText />
+                        <h:outputText  value="#{mensajes['etRegistrosArchivo']}"/>
+                        <p:outputLabel value="#{resultDig.numeroRegistroDiligencias}" />
+                        <h:outputText />
+                        <h:outputText  value="#{mensajes['etRegistrosProcesados']}"/>
+                        <p:outputLabel value="#{resultDig.numeroRegistroDiligenciasRegistrados}" />
+                        <h:outputText />
+                        <h:outputText  value="#{mensajes['etBitacoraCarga']}"/>
+                        <p:commandButton ajax="false" value="Descargar" rendered="#{resultDig.mostrarBotonDescargaArchivo}">
+                            <p:fileDownload value="#{resultDig.archivoResultado}" id="downloaderArchivo"/>
+                        </p:commandButton>
+                        <p:outputLabel value="#{resultDig.muestraMensaje}" rendered="#{resultDig.mostrarMensajeArchivo}"/>
+
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+            <br/>
+            <h:form id="formaGeneral" enctype="multipart/form-data" >
+                <p:panel id="panelOmisos" header="Carga Masiva Resultados Diligenciación"
+                         style="width:820px;margin-left:auto;margin-right:auto;" rendered="#{resultDig.mostrarPaneles}">
+                    <p:fileUpload  fileUploadListener="#{resultDig.handleFileUpload}" mode="advanced"
+                                   auto="true" disabled="#{resultDig.isCargaPorArchivo}"
+                                   dragDropSupport="false"
+                                   sizeLimit="1000000000" multiple="false"
+                                   update=":formaArchivo, :messages"
+                                   onstart="tiempoEspera(); statusDialog.show();remoteCommandUpdateFileUpload();"
+                                   oncomplete="statusDialog.hide();"
+                                   allowTypes="/(\.|\/)(txt|TXT)$/"
+                                   invalidFileMessage="#{mensajes['ui.componente.fileupload.invalidLabel']}"
+                                   label="#{mensajes['ui.componente.fileupload.examineLabel']}"
+                                   uploadLabel="#{mensajes['ui.componente.fileupload.uploadLabel']}"
+                                   cancelLabel="#{mensajes['ui.componente.fileupload.cancelLabel']}" />
+                    <p:remoteCommand name="remoteCommandUpdateFileUpload" update=":formaGeneral:panelOmisos"/>
+
+                    <p:inputText type="hidden" value="#{resultDig.rutaArchivoResultado}"></p:inputText>
+                    <p:commandButton ajax="false" rendered="#{resultDig.mostrarBotonDescarga}" value="Descargar">
+                        <p:fileDownload value="#{resultDig.archivoResultado}" id="downloader"/>
+                    </p:commandButton>
+                </p:panel>
+            </h:form>
+
+            <p:panel style="width:820px;margin-left:auto;margin-right:auto;border:none">
+                <p:messages id="messages" globalOnly="true" closable="true"/>
+            </p:panel>
+
+            <h:form id="formaRegistroInd">
+                <p:panel id="panelGuardar" header="Registro Individual"
+                         style="width:820px;margin-left:auto;margin-right:auto;" rendered="#{resultDig.mostrarPaneles}">
+                    <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red"></p:outputLabel>
+                    <h:panelGrid id="gridRadio" columns="4">
+                        <h:outputText value="Opciones: "/>
+                        <p:selectOneRadio id="opcionesBusqueda" value="#{resultDig.selected.valor}" required="true"
+                                          requiredMessage="#{mensajes['ui.validacion.required']}">
+                            <f:selectItem itemLabel="Registrar" itemValue="1"/>
+                            <f:selectItem itemLabel="Modificar" itemValue="2"/>
+                        </p:selectOneRadio>
+                        <p:message display="text" for="opcionesBusqueda"/>
+                    </h:panelGrid>
+                    <h:panelGrid id="gridAlta" columns="4">
+                        <h:outputText value="Número Control"/>
+                        <h:outputText value="*" style="color:red"/>
+                        <p:inputText id="numEm" value="#{resultDig.input.numeroControl}" required="true" maxlength="21"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}" style="width:200px"/>
+                        <p:message display="text" for="numEm"/>
+                        <h:outputText value="Fecha Diligencia"/>
+                        <h:outputText value="*" style="color:red"/>
+                        <p:calendar value="#{resultDig.input.fechaDiligencia}" pattern="dd/MM/yyyy" locale="es" mindate="01/01/2013"
+                                    required="true"
+                                    requiredMessage="#{mensajes['ui.validacion.required']}" id="popupButtonCal2"
+                                    showOn="button"/>
+                        <p:message display="text" for="popupButtonCal2"/>
+                        <h:outputText value="Resultado Diligencia"/>
+                        <h:outputText value="*" style="color:red"/>
+                        <p:selectOneMenu id="resDig" style="width:300px;" styleClass="combos" required="true"
+                                         requiredMessage="#{mensajes['ui.validacion.required']}"
+                                         value="#{resultDig.input.resultado}">
+                            <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}" itemValue="#{null}"/>
+                            <f:selectItems value="#{resultDig.comboResultados}" var="cat" itemLabel="#{cat.nombre}"
+                                           itemValue="#{cat.id}"/>
+                        </p:selectOneMenu>
+                        <p:message display="text" for="resDig"/>
+                        <h:outputText value="Fecha Citatorio"/>
+                        <h:outputText/>
+                        <p:calendar value="#{resultDig.input.fechaCitatorio}" pattern="dd/MM/yyyy" 
+                                    locale="es" mindate="01/01/2013" id="calCitatorio"
+                                    showOn="button"/>
+                        <p:message display="text" for="calCitatorio"/>
+                        <br/>
+                    </h:panelGrid>
+                    <p:commandButton action="#{resultDig.manejarBusqueda}" value="Aceptar" 
+                                     type="submit" ajax="false" onclick="statusDialog.show();" 
+                                     onsuccess="statusDialog.hide();"/>
+                </p:panel>
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">    
+    <h:head></h:head>
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:outputStylesheet library="css/" name="estilos.css"/>
+    <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+    <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+              resizable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+    </p:dialog>
+
+    <h:form id="Campo" >
+        <p:messages id="messages"  showDetail="true" globalOnly="true" autoUpdate="true" closable="true"/>
+
+        <p:panel id="pnlTbl"  style="width:800px" visible="#{estadoAdmonLocalMATMB.estadoAdmonLocalMATModel.tblVisible}">
+
+            <p:dataTable id="tbl" var="admonLocal" value="#{estadoAdmonLocalMATMB.estadoAdmonLocalMATModel.listEstadoAdmonLocalMAT}" emptyMessage="#{mensajes['msg.dataTable.vacio']}"
+                         filteredValue="#{estadoAdmonLocalMATMB.estadoAdmonLocalMATModel.listEstadoAdmonLocalMATTmp}" paginator="true" paginatorPosition="bottom" rows="10" >
+                <f:facet name= "header">
+                    <h:outputText value="#{mensajes['estadoAdmonLocal.titulo']}"/>
+                    <h:commandLink action="#{estadoAdmonLocalMATMB.generaExcel}" immediate="true" style="margin-left:90%;">
+                        <h:graphicImage value="/resources/images/excel1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                    <p:spacer width="15" height="10"/>
+                    <h:commandLink  action="#{estadoAdmonLocalMATMB.generaPdf}" immediate="true" >
+                        <h:graphicImage value="/resources/images/pdf1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                </f:facet>
+                <p:column sortBy="#{admonLocal.idAdmonLocal}" filterBy="#{admonLocal.idAdmonLocal}" headerText="#{mensajes['etIdAdmonLocal']}" style = "width:220px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipIdAdmonLocal" value="#{admonLocal.idAdmonLocal}"></h:outputText>
+                    <p:tooltip for="tipIdAdmonLocal" value="#{admonLocal.idAdmonLocal}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{admonLocal.entidadDesc}"  filterBy="#{admonLocal.entidadDesc}" headerText="#{mensajes['etNombre']}" style = "width:220px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipNombre" style="border:none;resize:none" cols="30" rows="2" value="#{admonLocal.entidadDesc}" readonly="true"/>
+                    <p:tooltip for="tipNombre" value="#{admonLocal.entidadDesc}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{admonLocal.esOperacionMATDesc}" filterBy="#{admonLocal.esOperacionMATDesc}" headerText="#{mensajes['esOperacionMAT']}" style = "width:220px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipEsOperacionMAT" style="border:none;resize:none" cols="30" rows="2" value="#{admonLocal.esOperacionMATDesc}" readonly="true"/>
+                    <p:tooltip for="tipEsOperacionMAT" value="#{admonLocal.esOperacionMATDesc}"></p:tooltip> 
+                </p:column>
+                <p:column headerText="#{mensajes['etEditar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this" update=":Campo:pnlEdita, :Campo:pnlTbl" action="#{estadoAdmonLocalMATMB.abrirEditar}"
+                                     icon="ui-icon-pencil" onclick="statusDialog.show();" onsuccess="statusDialog.hide();">
+                        <f:setPropertyActionListener value="#{admonLocal}" 
+                                                     target="#{estadoAdmonLocalMATMB.estadoAdmonLocalMATModel.estadoAdmonLocalMATEdit}" /> 
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+        </p:panel>
+
+        <p:panel id="pnlEdita" header="#{mensajes['estadoAdmonLocal.tituloEditar']}"  style="width:600px" visible="#{estadoAdmonLocalMATMB.estadoAdmonLocalMATModel.edtVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridEdt" columns="2" cellspacing="3" cellpadding="3">
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdAdmonLocal']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="IdAdmonLocalEdt" value="#{estadoAdmonLocalMATMB.estadoAdmonLocalMATModel.estadoAdmonLocalMATEdit.idAdmonLocal}"
+                                 required="true"
+                                 disabled="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="2" cols="30"
+                                 maxlength="15"
+                                 autoResize="false"
+                                 >
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesIdAdmonLocalEdt" for="IdAdmonLocalEdt" display="text"  />
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etNombre']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="NombreEdt" value="#{estadoAdmonLocalMATMB.estadoAdmonLocalMATModel.estadoAdmonLocalMATEdit.entidadDesc}"
+                                 required="true"
+                                 disabled="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="2" cols="30"
+                                 maxlength="200"
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesNombreEdt" for="NombreEdt" display="text"  />
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etEntidad']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="EsOperacionEdt" value="#{estadoAdmonLocalMATMB.estadoAdmonLocalMATModel.estadoAdmonLocalMATEdit.esOperacionMAT}"
+                                 effect="fade" required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}" style="width:210px" panelStyle="width:206px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{estadoAdmonLocalMATMB.estadoAdmonLocalMATModel.listaComboBoolean}" var="valEstado"
+                                   itemLabel="#{valEstado.descripcion}" itemValue="#{valEstado.idCombo}" /> 
+
+                </p:selectOneMenu>  
+                <h:outputText />
+                <p:message  id="cmbEstadoEdt" for="EsOperacionEdt" display="text" /> 
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEdt" value="#{mensajes['btnGuardar']}" action="#{estadoAdmonLocalMATMB.edita}" style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     process="@this, IdAdmonLocalEdt, NombreEdt, EsOperacionEdt" update="pnlEdita, pnlTbl, messages"/>
+                    <p:commandButton id="cmbCancelarEdt" value="#{mensajes['btnCancelar']}" action="#{estadoAdmonLocalMATMB.cerrar}"  style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     update="pnlEdita, pnlTbl, messages" process="@this" immediate="true">
+                        <p:resetInput target="pnlEdita" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+    </h:form>
+</html>

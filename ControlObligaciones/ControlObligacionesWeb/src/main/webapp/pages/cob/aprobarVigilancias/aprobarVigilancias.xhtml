@@ -1,0 +1,269 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>Aprobar Vigilancias</title>
+            <h:outputScript library="js" name="procesamientoFirmas.js"/>
+            <h:outputStylesheet library="css" name="estilos.css"/>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <script type="text/javascript">
+            /*<![CDATA[ */
+            
+            var numEmpl;
+            var numVigilancia;
+            var idFirma;
+            URL_TOTALDATOS="../../../restServices/aprobarVigilancia/getTotalRegistros";
+            URL_OBTENERDATOS="../../../restServices/aprobarVigilancia/getDatos";
+            URL_GUARDARFIRMAS="../../../restServices/aprobarVigilancia/guardarDatos";
+            URL_PROCESOTOMADO = "../../../restServices/aprobarVigilancia/procesoTomado";
+            var URL_TOMARPROCESO = "../../../restServices/aprobarVigilancia/tomarProceso";
+            var Browser = detectarNavegador();
+            
+            function iniciarFirmado() {
+                rfc=document.getElementById('rfcEmp').value;
+                numEmpl=document.getElementById('numEmp').value;
+                parametrosDatos = 'vigilancia='+numVigilancia+"&numEmp="+numEmpl;
+                flgContador=1;
+                var fecha1=new Date();
+                console.log('inicio:'+fecha1.getMinutes()+':'+fecha1.getSeconds()+'.'+fecha1.getMilliseconds());
+                totalRegistros=getRegistrosTotales();
+                var fecha1=new Date();
+                console.log('despues de total:'+fecha1.getMinutes()+':'+fecha1.getSeconds()+'.'+fecha1.getMilliseconds());
+                
+                paginaRegistros=Math.ceil(totalRegistros/NUMERO_PAGINAS);
+                console.log('paginaRegistros:'+paginaRegistros);
+                if(paginaRegistros<NUMERO_PAGINAS){
+                    FLG_SALIDA=paginaRegistros;
+                }else{
+                    FLG_SALIDA=NUMERO_PAGINAS;
+                }
+                
+                indexRegistros=1;
+                longRegistros=paginaRegistros;
+                
+                dialogFirmadoDoc.hide();
+                msgConfirmarProceso.hide();
+                dlgBarraEstado.show();
+                
+                procesamientoFirma();
+                
+                var fecha1=new Date();
+                console.log('termina for:'+fecha1.getMinutes()+':'+fecha1.getSeconds()+'.'+fecha1.getMilliseconds());
+
+            }
+            
+            function validaErrores(){
+                if(flgTieneErrores>0 && (flgContadorPagina+flgTieneErrores)===PAGINAS_PARCIAL){
+                    dlgBarraEstado.hide();
+                    $('#msgErrorFirmaVal').html(motivoErrores);
+                    msgErrorFirmado.show();
+                }
+            }
+            
+            function validaFinProceso(){
+                console.log('flgContador:'+flgContador+', FLG_SALIDA:'+FLG_SALIDA+', indexRegistros:'+indexRegistros);
+                if(flgContador>=FLG_SALIDA && indexRegistros>totalRegistros ){
+                    console.log('termina todos los procesos');
+                    //funcion original de aprobacion y pdf
+                    pbAjax.start();
+                    procesarFactura();
+                }else{
+                    flgContador++;
+                }
+            }
+            
+            function guardarDatos(resultado){
+                tomarProceso();
+                $.ajax({
+                    type: 'POST',
+                    cache: false,
+                    url: URL_GUARDARFIRMAS,
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data: '{"vigilancia":"'+numVigilancia+'","empleadoFirma":"'+numEmpl+
+                            '","lista":'+JSON.stringify(resultado)+'}',
+                    success: function(msg) {
+                        console.log('estatus guardado:'+msg.estatus);
+                        if(flgContadorPagina>=PAGINAS_PARCIAL){
+                            console.log('--------termina los procesos de pagina');
+                            indexRegistros=indexRegistros+paginaRegistros;
+                            validaFinProceso(resultado);
+                            procesamientoFirma();
+                        }else{
+                            flgContadorPagina++;
+                        }
+                    }
+                });
+            }
+
+            function sobreEscribirBoton(){
+                setTimeout(function() {
+                    console.log('ini');
+                    document.getElementById('btnEnviarForm').onclick=function(){
+                        iniciarFirmado();
+                    };
+                }, 1400);
+            }
+            
+            function setValorVigilancia(vigilancia,claveFirma){
+                numVigilancia=vigilancia;
+                idFirma=claveFirma;
+                console.log('idFirma:'+idFirma);
+            }
+            
+            function procesoTomado() {
+                var tomado = 2;
+                var numEmpl=document.getElementById('numEmp').value;
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: URL_PROCESOTOMADO,
+                    data: 'vigilancia='+numVigilancia+'&idFirma='+idFirma+'&numEmp='+numEmpl,
+                    async: false,
+                    success: function(msg) {
+                        if (msg.estatus === 1) {
+                            tomado = msg.bloqueado;
+                        } else {
+                            $('#msgErrorFirmaVal').html('No se puede determinar si las multas están siendo firmadas');
+                            msgErrorFirmado.show();
+                        }
+                    },
+                    error: function(jqXHR, status, errorTHrown) {
+                        console.log('error:' + jqXHR.status + ", error:" + errorTHrown);
+                        $('#msgErrorFirmaVal').html('Error al determinar si las multas están siendo firmadas');
+                        msgErrorFirmado.show();
+                    }
+                });
+                return tomado;
+            }
+            
+            function tomarProceso() {
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: URL_TOMARPROCESO,
+                    async: false,
+                    success: function(msg) {
+                        if (msg.estatus === 1) {
+                            tomado = msg.bloqueado;
+                        } else {
+                            $('#msgErrorFirmaVal').html('No se puede bloquear la vigilancia para aprobar');
+                            msgErrorFirmado.show();
+                        }
+                    },
+                    error: function(jqXHR, status, errorTHrown) {
+                        console.log('error:' + jqXHR.status + ", error:" + errorTHrown);
+                        $('#msgErrorFirmaVal').html('Error al bloquear la vigilancia para aprobar');
+                        msgErrorFirmado.show();
+                    }
+                });
+                return tomado;
+            }
+            
+            function tipoProcesoVigilancias(){
+                console.log('idFirma:'+idFirma);
+                var tomado=procesoTomado();
+                if (tomado===1) {
+                    $('#msgErrorFirmaVal').html('Ya existe otro usuario aprobando estos registros.');
+                    msgErrorFirmado.show();
+                    msgConfirmarProceso.hide();
+                } else if (tomado===0) {
+                    if(idFirma===2){//tipo firma electronica
+                        if(!browserCompatible() ){
+                            msgConfirmarProceso.hide();
+                        }else{
+                            dialogFirmadoDoc.show();
+                            $('#pwdLlavePriv').val('');
+                            $('#certificate').val('');
+                            $('#privateKey').val('');
+                            $('#txtRFC').val('');
+                            sobreEscribirBoton();
+                            msgConfirmarProceso.hide();
+                        }
+                    }else{
+                        msgConfirmarProceso.hide();
+                        dlgBarraEstado.show();
+                        pbAjax.start();
+                        procesarFactura();
+                    }
+                }
+            }
+            
+            /* ]]> */
+        </script>
+        <h:body>
+            <f:metadata>
+                <f:event type="preRenderView" listener="#{aprobarVigilancias.cargarVigilanciasAprobar}"/>
+            </f:metadata>
+            <ui:include src="/WEB-INF/templates/loader.xhtml"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <p:dialog header="firmado individual" widgetVar="dialogFirmadoDoc">
+                <ui:include src="../../firmadoMAT/fiel.xhtml" />
+            </p:dialog>
+            <script type="text/javascript">
+                /*<![CDATA[ */
+                $.noConflict();
+                /* ]]> */
+            </script>
+            <h:form id="mostrarVigilanciasForm" prependId="false">
+                <h:inputHidden id="numEmp" value="#{aprobarVigilancias.numEmp}" />
+                <h:inputHidden id="rfcEmp" value="#{aprobarVigilancias.rfcEmp}" />
+                <p:panel styleClass="panel-principal">
+                    <p:messages id="mensajes" showDetail="true" showSummary="true" rendered="#{!aprobarVigilancias.isInfoSystem}"/>
+                    <p:growl id="growl" showDetail="true" sticky="true" rendered="#{aprobarVigilancias.isInfoSystem}"/>
+                    <h:panelGrid>
+                        <ui:include src="tablaVigilancias.xhtml" >
+                            <ui:param name="rechazo" value="false"/>
+                        </ui:include>
+                    </h:panelGrid>
+                </p:panel>
+                <p:outputLabel >
+                    <div style="padding-left: 3%; padding-top: 10px;" id="msgInfoNavegador"></div>
+                </p:outputLabel>
+                         
+                <p:remoteCommand name="procesarFactura" action="#{aprobarVigilancias.factura}"/>
+                <p:dialog header="Mensaje" widgetVar="msgConfirmarProceso" modal="true"
+                          resizable="false" draggable="false" >
+                    <p>¿Ésta seguro que desea aprobar la vigilancia?</p>
+                    <p:commandButton value="Aceptar" type="button"
+                                     onclick="tipoProcesoVigilancias();"/>
+                    <p:commandButton value="Cancelar" type="button" onclick="msgConfirmarProceso.hide();"/>
+                </p:dialog>
+                
+                <p:dialog header="Generando Archivo"
+                          widgetVar="dlgBarraEstado"
+                          draggable="false"
+                          closable="false"
+                          resizable="false"
+                          modal="true"
+                          id="dialogoBarra">
+                    <h:outputText value="Aprobando vigilancia , por favor espere..."/>
+                    <p:progressBar widgetVar="pbAjax"
+                                   ajax="true"
+                                   value="#{aprobarVigilancias.aprobarVigilanciasHelper.progress.valor}"
+                                   labelTemplate="{value}%"
+                                   styleClass="animated"
+                                   interval="5000">
+                        <p:ajax event="complete"
+                                oncomplete="dlgBarraEstado.hide();pbAjax.setValue(0);" />
+                    </p:progressBar>
+                </p:dialog>
+                <p:dialog header="Mensaje" widgetVar="msgValidacionPlantilla" modal="true"
+                          resizable="false" draggable="false" >
+                    <p>La vigilancia no puede ser procesada porque no tiene asociada una plantilla de documento</p>
+                    <p:commandButton value="Aceptar" onclick="msgValidacionPlantilla.hide();"/>
+                </p:dialog>
+                <p:dialog header="Mensaje" widgetVar="msgErrorFirmado" modal="true"
+                          resizable="false" draggable="false" >
+                    <p><div id="msgErrorFirmaVal"></div></p>
+                    <p:commandButton value="Aceptar" onclick="msgErrorFirmado.hide();"/>
+                </p:dialog>
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

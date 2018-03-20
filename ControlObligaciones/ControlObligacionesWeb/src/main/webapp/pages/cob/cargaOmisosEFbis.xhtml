@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui">
+    <html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets">
+        <h:head>
+            <title>Carga de Omisos Por Entidad Federativa</title>           
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+
+        <h:body>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <h:form id="formaGeneral" > 
+                <p:panel id="panelOmisos"  header="Vigilancias Entidad Federativa" style="text-align:center;" styleClass="panel-principal" visible="#{cargaOmisosEfBis.mostrarPanelVigilancias}">
+                    <p:messages id="messages" globalOnly="true" closable="true" />  
+                    <h:panelGrid> 
+                        <p:dataTable id="tbl" var="i" value="#{cargaOmisosEfBis.vigilancias}" style="overflow:auto" 
+                                     paginator="true"
+                                     rows="10"
+                                     paginatorPosition="bottom"
+                                     emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+
+                            <p:column headerText="#{mensajes['aprobarVigilancias.aceptarVigilancia']}" style="text-align:center;">
+                                <p:commandButton ajax="false" disabled="#{!i.mostrarBtnDescarga}" icon="ui-icon-check" onclick="PrimeFaces.monitorDownload(null, stop)">
+                                    <f:setPropertyActionListener value="#{i}"  target="#{cargaOmisosEfBis.vigilanciaAceptada}" /> 
+                                    <p:fileDownload value="#{cargaOmisosEfBis.archivoZip}" id="downloader1"/>
+                                    <p:remoteCommand name="stop" update=":formaGeneral:panelOmisos"/>
+                                </p:commandButton>
+                            </p:column>
+                            <p:column headerText="#{mensajes['aprobarVigilancias.numeroCarga']}">
+                                <h:outputText id="idVigilancia" value="#{i.idVigilancia}"></h:outputText>
+                            </p:column>
+                            <p:column headerText="#{mensajes['aprobarVigilancias.descripcionVigilancia']}"> 
+                                <h:outputText id="descripcionVigilancia" value="#{i.descripcionVigilancia}"></h:outputText>
+                            </p:column>
+                            <p:column headerText="#{mensajes['aprobarVigilancias.situacionArchivo']}">
+                                <h:outputText id="descSituacionArchivo" value="#{i.descSituacionArchivo}"></h:outputText>
+                            </p:column>
+                            <p:column headerText="#{mensajes['aprobarVigilancias.fechadescarga']}">
+                                <h:outputText id="fechaDescarga" value="#{i.fechaDescarga!='' ? i.fechaDescarga : 'N/A'}"></h:outputText>
+                            </p:column>
+                            <p:column headerText="#{mensajes['aprobarVigilancias.tipoDocumento']}">
+                                <h:outputText id="descTipoDocumento" value="#{i.descTipoDocumento}"></h:outputText>
+                            </p:column>
+                            <p:column headerText="#{mensajes['aprobarVigilancias.fechaCorte']}">
+                                <h:outputText id="fechaCorte" value="#{i.fechaCorte}"></h:outputText>
+                            </p:column>
+                            <p:column  headerText="#{mensajes['aprobarVigilancias.fechaCarga']}">
+                                <h:outputText id="fechaCargaArchivos" value="#{i.descFechaCargaArchivos}"></h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid> 
+                </p:panel>
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

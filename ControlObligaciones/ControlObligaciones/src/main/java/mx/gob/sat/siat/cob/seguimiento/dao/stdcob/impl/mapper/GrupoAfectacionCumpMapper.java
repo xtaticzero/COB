@@ -1,0 +1,27 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package mx.gob.sat.siat.cob.seguimiento.dao.stdcob.impl.mapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import mx.gob.sat.siat.cob.seguimiento.dto.stdcob.GrupoAfectacionCumpDTO;
+import org.springframework.jdbc.core.RowMapper;
+
+/**
+ *
+ * @author root
+ */
+public class GrupoAfectacionCumpMapper implements RowMapper {
+
+    @Override
+    public Object mapRow(ResultSet rs, int i) throws SQLException {
+        GrupoAfectacionCumpDTO grupoAfectacionCump= new GrupoAfectacionCumpDTO();
+        grupoAfectacionCump.setConteo(rs.getInt("conteo"));
+        grupoAfectacionCump.setIdAdmonLocal(rs.getString("admonLocal"));
+        grupoAfectacionCump.setVigilancia(rs.getString("vigilancia"));
+        return grupoAfectacionCump;
+    }
+    
+}

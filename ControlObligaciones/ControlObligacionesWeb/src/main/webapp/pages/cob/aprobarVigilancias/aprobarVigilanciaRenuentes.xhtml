@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>Aprobar Vigilancias Renuentes</title>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:outputScript library="js/jquery" name="jquery-1.11.0.min.js"/>
+        <h:outputScript library="js" name="visualizaDocsFirmaJs.js"/>
+        <f:event listener="#{aprobarVigilanciaRenuentesMB.mensajeEmision}" type="preRenderView" />
+        <h:body>            
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <ui:include src="/WEB-INF/templates/loader.xhtml"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <h:form id="mostrarVigilanciasForm" prependId="false">
+                <p:messages id="mensajes" showDetail="true" showSummary="true"/>
+                <p:panel styleClass="panel-princial">                   
+                    <p:dataTable value="#{aprobarVigilanciaRenuentesMB.aprobarVigilanciaRenuentesHelper.vigilancias}"
+                                 var="vigilancia"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 rows="12"
+                                 paginatorAlwaysVisible="false"
+                                 id="tblVigilancias"
+                                 emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.fechaEmision']}"/>
+                            </f:facet>
+                            <h:commandLink value="#{vigilancia.fechaEmision}" 
+                                           action="#{aprobarVigilanciaRenuentesMB.irDocumentosRenuentes}">
+                                <f:setPropertyActionListener value="#{vigilancia}"
+                                                             target="#{aprobarVigilanciaRenuentesMB.vigilanciaGrupo}"/>
+                            </h:commandLink>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.medioEnvio']}"/>
+                            </f:facet>
+                            <h:outputText value="#{vigilancia.medioEnvio}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.tipoFirma']}"/>
+                            </f:facet>
+                            <h:outputText value="#{vigilancia.tipoFirma}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.tipoDocumento']}"/>
+                            </f:facet>
+                            <h:outputText value="#{vigilancia.tipoDocumento}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.cantidadDocumentos']}"/>
+                            </f:facet>
+                            <h:outputText value="#{vigilancia.cantidadDocumentos}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+                <p:commandButton value="descarga" styleClass="botonDescargaInicio" ajax="false"
+                                 rendered="#{aprobarVigilanciaRenuentesMB.botonDescargaVisible}">
+                    <p:fileDownload value="#{aprobarVigilanciaRenuentesMB.descargaEmision}"/>
+                </p:commandButton> 
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

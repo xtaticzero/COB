@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets">
+        <h:head>
+            <title>Carga de Omisos Por Entidad Federativa</title>           
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+
+        <h:body>
+            <f:metadata>
+                <f:event type="preRenderView" listener="#{cargaOmisosEf.obtenerVigilanciasEF}">
+                </f:event>
+            </f:metadata>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <h:form id="formaGeneral" >
+                <p:panel styleClass="panel-principal"> 
+                    <p:messages id="mensajes" autoUpdate="true" showDetail="true" showSummary="true"/>
+                    <h:panelGrid>
+                        <ui:include src="/pages/cob/componenteVigilanciasEF.xhtml" >
+                            <ui:param name="aceptar" value="true"/>
+                        </ui:include>
+                    </h:panelGrid>
+                </p:panel>
+
+
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

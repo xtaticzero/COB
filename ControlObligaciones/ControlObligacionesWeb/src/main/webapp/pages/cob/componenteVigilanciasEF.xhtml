@@ -1,0 +1,90 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <p:dataTable id="tblVigilanciasEF" var="i" 
+                 value="#{cargaOmisosEf.vigilancias}" 
+                 emptyMessage="#{mensajes['msg.dataTable.vacio']}"
+                 paginator="true"
+                 rows="10"
+                 paginatorPosition="bottom">
+        <f:facet name="header">
+            <h:outputText value="Vigilancias Entidad Federativa " />
+            <h:outputText value=" rev.4982 21082014"  style="color: #A4A4A4" />
+        </f:facet>
+
+        <p:column headerText="#{mensajes['aprobarVigilancias.aceptarVigilancia']}" rendered="#{aceptar}" style="text-align:center;">
+            <p:commandButton ajax="false" disabled="#{!i.mostrarBtnDescarga}" icon="ui-icon-check" onclick="PrimeFaces.monitorDownload(null, stop)">
+                <f:setPropertyActionListener value="#{i}"  target="#{cargaOmisosEf.vigilanciaAceptada}" /> 
+                <p:fileDownload value="#{cargaOmisosEf.archivoDescarga}" id="downloader1"/>
+                <p:remoteCommand name="stop" update="tblVigilanciasEF"/>
+            </p:commandButton>
+        </p:column>
+
+        <p:column headerText="#{mensajes['aprobarVigilancias.descargarFundamentos']}" 
+                  style="text-align:center;" rendered="#{aceptar}">
+            <p:commandButton ajax="false" 
+                             icon="ui-icon-circle-arrow-s">
+                <f:setPropertyActionListener value="#{i}"  target="#{cargaOmisosEf.vigilanciaAceptada}" /> 
+                <p:fileDownload value="#{cargaOmisosEf.archivoFundamento}" id="downloader2"/>
+            </p:commandButton>
+        </p:column>
+
+        <p:column headerText="#{mensajes['aprobarVigilancias.descargarFactura']}" style="text-align:center;" rendered="#{aceptar}">
+            <p:commandButton ajax="false"  icon="ui-icon-circle-arrow-s">
+                <f:setPropertyActionListener value="#{i}"  target="#{cargaOmisosEf.vigilanciaAceptada}" /> 
+                <p:fileDownload value="#{cargaOmisosEf.archivoFactura}" id="downloader3"/>
+            </p:commandButton>
+        </p:column>
+
+
+        <p:column headerText="#{mensajes['etRechazar']}" 
+                  style="text-align:center" 
+                  width="35" 
+                  rendered="#{!aceptar}">
+            <p:commandButton oncomplete="dlgRechazoEF.show();"
+                             icon="ui-icon-close" 
+                             process="@this">
+                <f:setPropertyActionListener value="#{i}"  
+                                             target="#{cargaOmisosEf.vigilanciaRechazada}" /> 
+            </p:commandButton>
+        </p:column>
+        <p:column headerText="#{mensajes['aprobarVigilancias.numeroCarga']}"
+                  filterBy="#{i.idVigilancia}">
+            <h:outputText id="idVigilancia" value="#{i.idVigilancia}"/>
+        </p:column>
+        <p:column headerText="#{mensajes['aprobarVigilancias.descripcionVigilancia']}"
+                  filterBy="#{i.descripcionVigilancia}">  
+            <h:outputText id="descripcionVigilancia" value="#{i.descripcionVigilancia}"/>
+        </p:column>
+        <p:column rendered="#{!aceptar}" headerText="#{mensajes['aprobarVigilancias.entidadFederativa']}"
+                  filterBy="#{i.nombreEntidadFederativa}">  
+            <h:outputText id="ef" value="#{i.nombreEntidadFederativa}"/>
+        </p:column>
+        <p:column rendered="#{aceptar}" 
+                  headerText="#{mensajes['aprobarVigilancias.situacionArchivo']}"
+                  filterBy="#{i.descSituacionArchivo}">
+            <h:outputText id="descSituacionArchivo" value="#{i.descSituacionArchivo}"/>
+        </p:column>
+        <p:column rendered="#{aceptar}" 
+                  headerText="#{mensajes['aprobarVigilancias.fechadescarga']}"
+                  filterBy="#{i.fechaDescarga!='' ? i.fechaDescarga : 'N/A'}">
+            <h:outputText id="fechaDescarga" value="#{i.fechaDescarga!='' ? i.fechaDescarga : 'N/A'}"/>
+        </p:column>
+        <p:column headerText="#{mensajes['aprobarVigilancias.tipoDocumento']}"
+                  filterBy="#{i.descTipoDocumento}">
+            <h:outputText id="descTipoDocumento" value="#{i.descTipoDocumento}"/>
+        </p:column>
+        <p:column headerText="#{mensajes['aprobarVigilancias.fechaCorte']}"
+                  filterBy="#{i.fechaCorte}">
+            <h:outputText id="fechaCorte" value="#{i.fechaCorte}"/>
+        </p:column>
+        <p:column rendered="#{aceptar}" 
+                  headerText="#{mensajes['aprobarVigilancias.fechaCarga']}"
+                  filterBy="#{i.descFechaCargaArchivos}">
+            <h:outputText id="fechaCargaArchivos" value="#{i.descFechaCargaArchivos}"/>
+        </p:column>
+
+
+    </p:dataTable>
+</html>

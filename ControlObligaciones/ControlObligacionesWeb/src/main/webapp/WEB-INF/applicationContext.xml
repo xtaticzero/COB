@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans                                     http://www.springframework.org/schema/beans/spring-beans-3.2.xsd                                                               http://www.springframework.org/schema/tx                                                     http://www.springframework.org/schema/tx/spring-tx-3.2.xsd                                                               http://www.springframework.org/schema/context                                                http://www.springframework.org/schema/context/spring-context-3.2.xsd                                           http://www.springframework.org/schema/util                                     http://www.springframework.org/schema/util/spring-util-3.2.xsd                            http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd">
+    
+    <!--<util:properties id="mensajes" location="/WEB-INF/mensajes.properties"></util:properties> -->
+    <util:properties id="properties" location="/WEB-INF/application.properties"/>
+    <util:properties id="ftpConfig" location="/WEB-INF/ftpConfig.properties"/>
+    <util:properties id="urlRedirect" location="file:///siat/cob/configuracion/session.properties"/>
+    <util:properties id="urlWidgetFirmado" location="file:///siat/cob/configuracion/widgetFirmado.properties"/>
+    
+    <util:properties id="validacionCumplimientoProperties" location="/WEB-INF/properties/validacioncumplimiento.properties"/>
+    
+    <jee:jndi-lookup id="dataSourceAdm" jndi-name="jdbc/cob_adm"/>
+    <bean id="transactionManagerAdm" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSourceAdm"/> 
+    </bean>
+   
+    <jee:jndi-lookup id="dataSourceCOB" jndi-name="jdbc/cob_sgt"/>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSourceCOB"/> 
+    </bean>
+    <bean id="taskExecutorMail" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="2"/>
+        <property name="maxPoolSize" value="2"/>
+        <property name="queueCapacity" value="1000000"/>
+    </bean>
+    <jee:jndi-lookup id="dataSourceSqlServer" jndi-name="jdbc/cob_arca"/>
+    <bean id="transactionManagerARCA" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSourceSqlServer"/>
+    </bean>
+    <jee:jndi-lookup id="dataSourceAmpliado" jndi-name="jdbc/cob_rfca"/>
+    <bean id="transactionManagerAmpliado" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSourceAmpliado"/>
+    </bean>
+    <jee:jndi-lookup id="dataSourceDB2" jndi-name="jdbc/cob_ec"/>
+    <bean id="transactionManagerDB2" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSourceDB2"/>
+    </bean>
+    <tx:annotation-driven/>
+    <!--Inyecta los servicios-->
+    <context:component-scan base-package="mx.gob.sat.siat.cob.seguimiento.service"/>
+    <!--Inyecta los managedbean-->
+    <context:component-scan base-package="mx.gob.sat.siat.cob.seguimiento.web.controller.bean.backing"/>
+    <!--Inyecta los reglas de negocio-->
+    <context:component-scan base-package="mx.gob.sat.siat.cob.seguimiento.br"/>
+    <!--Inyecta bitacora-->
+    <context:component-scan base-package="mx.gob.sat.siat.modelo.dao.impl"/>
+    <bean id="seguridad" class="mx.gob.sat.siat.cob.seguimiento.utils.SIATSeguridadDefault"/>
+    <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+        <property name="scopes">
+            <map>
+                <entry key="view">
+                    <bean class="mx.gob.sat.siat.cob.seguimiento.utils.ViewScope"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+    <import resource="classpath*:applicationContext.xml"/>
+    <import resource="classpath*:applicationContext-Comp.xml"/>
+    <import resource="classpath*:applicationContext-Catalogos.xml"/>
+    <import resource="classpath*:applicationContext-ARCA.xml"/>
+    <import resource="classpath*:applicationContext-Monitor.xml"/>
+    <!--<import resource="classpath*:applicationContext-CobranzaWeb.xml"/>-->
+    <import resource="classpath*:applicationContext-RfcAmpliado.xml"/>
+    <import resource="classpath*:applicationContext-Mail.xml"/>
+    <import resource="classpath*:applicationContext-DBD2.xml"/>
+    <import resource="classpath*:applicationContext-ADM.xml"/>
+    <import resource="classpath*:spring/contextBatchJobs.xml"/>
+    <!--    <import resource="classpath*:gestorProcesosNegocioDAO.xml"/>
+    <import resource="classpath*:gestorProcesosNegocioLecturaDAO.xml"/>
+    <import resource="classpath:/mx/gob/sat/siat/cobranza/negocio/objeto/dao/impl/DescripcionObjDAO.xml"/>-->
+    
+</beans>

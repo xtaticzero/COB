@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Funcionarios Responsables</title>
+    </h:head>
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:body>
+        <h:outputStylesheet library="css/" name="estilos.css"/>
+        <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>             
+        <p:panel styleClass="panel-principal">
+            <p:messages id="messages" globalOnly="true" closable="true" autoUpdate="true"/>
+        </p:panel>
+
+        <h:form id="formaGeneral">
+            <br></br>
+            <p:panel id="panelAlta" styleClass="panel-principal" visible="#{admonFuncionarios.mostrarPanelTabla}">
+                <h:panelGrid>
+                    <p:dataTable id="tbl" paginator="true" rows="10" paginatorPosition="bottom" var="i"
+                                 value="#{admonFuncionarios.funcionarios}"
+                                 filteredValue="#{admonFuncionarios.funcionariosTemp}"
+                                 emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+                        <f:facet name="header">
+                            <h:outputText value="#{mensajes['funcionarios.responsables.titulo']}"/>
+                        </f:facet>
+                        <p:column headerText="#{mensajes['etEliminar']}" style="text-align:center" width="35">
+                            <p:commandButton process="@this" ajax="true"
+                                             update=":formaGeneral :formaEliminar:panelEliminar"
+                                             action="#{admonFuncionarios.abrirEliminar}"
+                                             rendered="#{i.fechaFin==null}" icon="ui-icon-close"
+                                             onclick="statusDialog.show();" onsuccess="statusDialog.hide();">
+                                <f:setPropertyActionListener value="#{i}" target="#{admonFuncionarios.empleado}"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="Editar" style="text-align:center" width="35">
+                            <p:commandButton process="@this" ajax="true"
+                                             update=":formaGeneral :formaEliminar:panelEliminar :formaActualizar:panelActualizar"
+                                             icon="ui-icon-pencil" action="#{admonFuncionarios.abrirEditar}"
+                                             onclick="statusDialog.show();" onsuccess="statusDialog.hide();">
+                                <f:setPropertyActionListener value="#{i}"
+                                                             target="#{admonFuncionarios.empleadoEditar}"/>
+                                <f:setPropertyActionListener value="#{i}"
+                                                             target="#{admonFuncionarios.empleadoAux}"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column filterBy="#{i.numeroTabla}" filterMaxLength="18" style="text-align:center"
+                                  filterMatchMode="exact" filterStyle="margin:auto; width:60px;"
+                                  headerText="#{mensajes['funcionarios.responsables.noEmpleado']}">
+                            <h:outputText id="numEmpleado" value="#{i.numeroTabla}"></h:outputText>
+                        </p:column>
+                        <p:column filterBy="#{i.nombreEmpleado}" filterMaxLength="18" style="text-align:center"
+                                  filterStyle="margin:auto; width:60px;" filterMatchMode="contains"
+                                  headerText="#{mensajes['funcionarios.responsables.nombreEmpleado']}">
+                            <h:outputText id="nombreEmpleado" value="#{i.nombreEmpleado}"></h:outputText>
+                        </p:column>
+                        <!-- <p:column headerText="#{mensajes['funcionarios.responsables.noEmpleadoSuperior']}" >
+                        <h:outputText id="numEmpleadoSuperior" value="#{i.numeroEmpleadoSuperior}"></h:outputText>
+                    </p:column>-->
+                        <p:column filterBy="#{i.descNivelEmision}" filterMaxLength="18" style="text-align:center"
+                                  filterStyle="margin:auto; width:60px;" filterMatchMode="contains"
+                                  headerText="#{mensajes['funcionarios.responsables.nivelEmision']}">
+                            <h:outputText id="descNivelEmision" value="#{i.descNivelEmision}"></h:outputText>
+                        </p:column>
+                        <p:column filterBy="#{i.descCargoAdministrativo}" filterMaxLength="18"
+                                  style="text-align:center" filterStyle="margin:auto; width:60px;"
+                                  filterMatchMode="contains"
+                                  headerText="#{mensajes['funcionarios.responsables.cargoempleado']}">
+                            <h:outputText id="descCargoEmpleado" value="#{i.descCargoAdministrativo}"></h:outputText>
+                        </p:column>
+                        <p:column filterBy="#{i.descEventoCarga}" filterMaxLength="18" style="text-align:center;"
+                                  filterStyle="margin:auto; width:60px;" filterMatchMode="contains"
+                                  headerText="#{mensajes['funcionarios.responsables.eventocarga']}">
+                            <h:outputText id="descEventoCarga" value="#{i.descEventoCarga}"></h:outputText>
+                        </p:column>
+                        <p:column filterBy="#{i.nombreAlsc}" filterMaxLength="18" style="text-align:center"
+                                  filterStyle="margin:auto; width:60px;" filterMatchMode="contains"
+                                  headerText="#{mensajes['funcionarios.responsables.alr']}">
+                            <h:outputText id="region" value="#{i.nombreAlsc!=null? i.nombreAlsc : 'N/A'}"></h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGrid>
+                <br></br>
+                <div align="right">
+                    <h:panelGrid columns="2">
+                        <p:commandButton value="#{mensajes['btnNuevo']}" action="#{admonFuncionarios.abrirGuardar}"
+                                         ajax="true"
+                                         update=":formaGeneral :formaGuardar:panelGuardar :formaEliminar:panelEliminar">
+                            <p:resetInput target=":formaGuardar:panelGuardar"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                </div>
+            </p:panel>
+        </h:form>
+
+        <h:form id="formaGuardar">
+            <p:panel id="panelBotones" visible="#{admonFuncionarios.mostrarPanelContinuar}"
+                     styleClass="panel-principal">
+                <h:panelGrid columns="2">
+                    <p:commandButton value="Continuar" action="#{admonFuncionarios.guardar}"
+                                     rendered="#{admonFuncionarios.mostrarPanelContinuar}" ajax="true"
+                                     update=":formaGeneral:panelAlta :formaGuardar:panelBotones :formaGeneral :formaEliminar:panelEliminar :formaGuardar:panelGuardar :formaActualizar:panelActualizar"></p:commandButton>
+                    <p:commandButton value="Cancelar" action="#{admonFuncionarios.cancelar}"
+                                     rendered="#{admonFuncionarios.mostrarPanelContinuar}" ajax="true"
+                                     update=":formaGeneral:panelAlta :formaGuardar:panelBotones :formaGeneral :formaEliminar:panelEliminar :formaGuardar:panelGuardar :formaActualizar:panelActualizar"></p:commandButton>
+                </h:panelGrid>
+            </p:panel>
+            <p:panel id="panelGuardar" header="#{mensajes['funcionarios.responsables.altaFuncionarios']}"
+                     style="width:820px;margin-left:auto;margin-right:auto;"
+                     visible="#{admonFuncionarios.mostrarPanelGuardar}">
+                <h:panelGrid id="gridAlta" columns="4">
+                    <br></br>
+                    <p:row> 
+                        <p:column>
+                            <h:outputText value="#{mensajes['funcionarios.responsables.empleado']}"/>
+                            <h:outputText value="*" style="color:red" />  
+                        </p:column>
+                    </p:row>
+                    <p:selectOneMenu id="idEmpleado" style="width:300px;" styleClass="combos" required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                     value="#{admonFuncionarios.empleadoDTO.numeroEmpleado}">
+                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}" itemValue="#{null}"/>
+                        <f:selectItems value="#{admonFuncionarios.empleadosAdmtvo}" var="cat"
+                                       itemLabel="#{cat.descripcion}" itemValue="#{cat.idCombo}"/>
+                    </p:selectOneMenu>
+                    <p:message display="text" for="idEmpleado"/>
+                    <br></br>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{mensajes['funcionarios.responsables.nivelEmision']}"/>
+                            <h:outputText value="*" style="color:red" />  
+                        </p:column>
+                    </p:row>
+                    <p:selectOneMenu id="idNvlEmision" style="width:300px;" styleClass="combos" required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                     value="#{admonFuncionarios.empleadoDTO.nivelEmision}">
+                        <p:ajax update="idRegionAlr idCargoEmp idEventoCarga"
+                                listener="#{admonFuncionarios.habilitarComboRegion}" event="change"/>
+                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}" itemValue="#{null}"/>
+                        <f:selectItems value="#{admonFuncionarios.nivelesEmision}" var="cat"
+                                       itemLabel="#{cat.nombre}" itemValue="#{cat.id}"/>
+                    </p:selectOneMenu>
+                    <p:message display="text" for="idNvlEmision"/>
+                    <br></br>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{mensajes['funcionarios.responsables.cargoempleado']}"/>
+                            <h:outputText value="*" style="color:red" />  
+                        </p:column>
+                    </p:row>
+                    <p:selectOneMenu id="idCargoEmp" style="width:300px;" styleClass="combos" required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                     value="#{admonFuncionarios.empleadoDTO.idCargoAdministrativo}">
+                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}" itemValue="#{null}"/>
+                        <f:selectItems value="#{admonFuncionarios.cargosAdministrativos}" var="cat"
+                                       itemLabel="#{cat.nombre}" itemValue="#{cat.id}"/>
+                    </p:selectOneMenu>
+                    <p:message display="text" for="idCargoEmp"/>
+                    <br></br>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{mensajes['funcionarios.responsables.eventocarga']}"/>
+                            <h:outputText value="*" style="color:red" />  
+                        </p:column>
+                    </p:row>
+                    <p:selectOneMenu id="idEventoCarga" style="width:300px;" styleClass="combos" required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                     value="#{admonFuncionarios.empleadoDTO.idEventoCarga}">
+                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}" itemValue="#{null}"/>
+                        <f:selectItems value="#{admonFuncionarios.eventoCarga}" var="cat" itemLabel="#{cat.nombre}"
+                                       itemValue="#{cat.id}"/>
+                    </p:selectOneMenu>
+                    <p:message display="text" for="idEventoCarga"/>
+                    <br></br>
+                    <h:outputText value="#{mensajes['funcionarios.responsables.alr']}"/>
+                    <p:selectOneMenu id="idRegionAlr" style="width:300px;" styleClass="combos"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                     required="#{admonFuncionarios.mostrarComboRegion}"
+                                     disabled="#{!admonFuncionarios.mostrarComboRegion}"
+                                     value="#{admonFuncionarios.empleadoDTO.idRegionAlr}">
+                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}" itemValue="#{null}"/>
+                        <f:selectItems value="#{admonFuncionarios.regionALR}" var="cat"
+                                       itemLabel="#{cat.descripcion}" itemValue="#{cat.idCombo}"/>
+                    </p:selectOneMenu>
+                    <p:message display="text" for="idRegionAlr"/>
+                    <br></br>
+                    <br></br>
+                </h:panelGrid>
+                <div align="center">
+                    <h:panelGrid columns="2">
+                        <p:commandButton id="cmbGuardar" value="#{mensajes['btnGuardar']}"
+                                         action="#{admonFuncionarios.addWarn}" style="left:90%"
+                                         update=":formaGeneral :formaGuardar:panelGuardar :formaEliminar:panelEliminar :formaGuardar:panelBotones"
+                                         rendered="#{admonFuncionarios.mostrarBotonGuardar}"
+                                         onclick="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+                        <p:commandButton id="cmbCancelarGuardar" value="#{mensajes['btnCancelar']}"
+                                         actionListener="#{admonFuncionarios.cerrar}" style="left:90%"
+                                         process="@this" ajax="true"
+                                         rendered="#{admonFuncionarios.mostrarBotonGuardar}"
+                                         update=":formaGeneral :formaGuardar:panelGuardar :formaEliminar:panelEliminar :formaGuardar:panelBotones">
+                            <p:resetInput target="panelGuardar"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                </div>
+            </p:panel>
+        </h:form>
+
+        <h:form id="formaEliminar">
+            <p:panel id="panelEliminar" header="Eliminar Funcionarios"
+                     style="width:820px;margin-left:auto;margin-right:auto;"
+                     visible="#{admonFuncionarios.mostrarPanelEliminar}">
+                <h:panelGrid id="gridEliminar" columns="2" cellspacing="2" cellpadding="2">
+                    <h:outputText value="#{mensajes['funcionarios.responsables.noEmpleado']}"/>
+                    <p:inputText id="empElim" value="#{admonFuncionarios.empleado.numeroTabla}" disabled="true"
+                                 style="width:200px"/>
+                    <h:outputText value="#{mensajes['funcionarios.responsables.nombreEmpleado']}"/>
+                    <p:inputText id="empNombElim" value="#{admonFuncionarios.empleado.nombreEmpleado}"
+                                 disabled="true" style="width:200px"/>
+                    <h:outputText value="#{mensajes['funcionarios.responsables.cargoempleado']}"/>
+                    <p:inputTextarea id="cargoEmpElim" value="#{admonFuncionarios.empleado.descCargoAdministrativo}"
+                                     disabled="true" style="width:200px"/>
+                    <h:outputText value="#{mensajes['funcionarios.responsables.nivelEmision']}"/>
+                    <p:inputTextarea id="nvlEmElim" value="#{admonFuncionarios.empleado.descNivelEmision}"
+                                     disabled="true" style="width:200px"/>
+                    <h:outputText value="#{mensajes['funcionarios.responsables.eventocarga']}"/>
+                    <p:inputTextarea id="eventoCargaElim" value="#{admonFuncionarios.empleado.descEventoCarga}"
+                                     disabled="true" style="width:200px"/>
+                    <h:outputText value="#{mensajes['funcionarios.responsables.alr']}"/>
+                    <p:inputTextarea id="idRegionTabla"
+                                     value="#{admonFuncionarios.empleado.nombreAlsc!=null ? admonFuncionarios.empleado.nombreAlsc : 'N/A'}"
+                                     disabled="true" style="width:200px"/>
+                </h:panelGrid>
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEli" value="#{mensajes['btnEliminar']}"
+                                     action="#{admonFuncionarios.eliminarRegistroEmpleado}" style="left:90%"
+                                     process="@this" ajax="true"
+                                     update=":formaGeneral :formaGuardar:panelGuardar :formaEliminar:panelEliminar"
+                                     onclick="statusDialog.show();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarEli" value="#{mensajes['btnCancelar']}"
+                                     action="#{admonFuncionarios.cerrar}" style="left:90%" process="@this"
+                                     ajax="true"
+                                     update=":formaGeneral :formaGuardar:panelGuardar :formaEliminar:panelEliminar"
+                                     onclick="statusDialog.show();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="panelEliminar"/>
+                    </p:commandButton>
+                </h:panelGrid>
+            </p:panel>
+        </h:form>
+
+        <h:form id="formaActualizar">
+            <p:panel id="panelBotones" visible="#{admonFuncionarios.mostrarPanelHabilitarContinuar}"
+                     styleClass="panel-principal">
+                <h:panelGrid columns="2">
+                    <p:commandButton value="Continuar" action="#{admonFuncionarios.guardar}"
+                                     rendered="#{admonFuncionarios.mostrarPanelHabilitarContinuar}" 
+                                     update=":formaGeneral:panelAlta :formaActualizar:panelBotones :formaEliminar:panelEliminar :formaActualizar:panelActualizar"/>
+                    <p:commandButton value="Cancelar" action="#{admonFuncionarios.cancelar}"
+                                     rendered="#{admonFuncionarios.mostrarPanelHabilitarContinuar}" 
+                                     update=":formaGeneral:panelAlta :formaActualizar:panelBotones :formaEliminar:panelEliminar :formaActualizar:panelActualizar"/>
+                </h:panelGrid>
+            </p:panel>
+            <p:panel id="panelActualizar" header="#{mensajes['funcionarios.responsables.actualizarFuncionarios']}"
+                     style="width:820px;margin-left:auto;margin-right:auto;"
+                     visible="#{admonFuncionarios.mostrarPanelEditar}">
+                <h:panelGrid id="gridEliminar" columns="3" cellspacing="3" cellpadding="3">
+                    <h:outputText value="#{mensajes['funcionarios.responsables.noEmpleado']}"/>
+                    <p:inputText id="empleadoAct" value="#{admonFuncionarios.empleadoEditar.numeroTabla}"
+                                 disabled="true" style="width:290px"/>
+                    <br></br>
+                    <h:outputText value="#{mensajes['funcionarios.responsables.nombreEmpleado']}"/>
+                    <p:inputText id="empleadoNom" value="#{admonFuncionarios.empleadoEditar.nombreEmpleado}"
+                                 disabled="true" style="width:290px"/>
+                    <br></br>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{mensajes['funcionarios.responsables.nivelEmision']}"/>
+                            <h:outputText value="*" style="color:red" />  
+                        </p:column>
+                    </p:row>
+                    <p:selectOneMenu id="idNvlEmisionAct" style="width:300px;" styleClass="combos" required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                     value="#{admonFuncionarios.empleadoEditar.nivelEmision}"
+                                     disabled="#{admonFuncionarios.empleadoEditar.fechaFin!=null}">
+                        <p:ajax update="idRegionAlrAct idCargoEmpEditar idEventoCargaAct :formaGeneral"
+                                listener="#{admonFuncionarios.habilitarComboRegionUpdate}" event="change"/>
+                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}" itemValue=""/>
+                        <f:selectItems value="#{admonFuncionarios.nivelesEmision}" var="cat"
+                                       itemLabel="#{cat.nombre}" itemValue="#{cat.id}"/>
+                    </p:selectOneMenu>
+                    <p:message display="text" for="idNvlEmisionAct"/>
+                    <p:row>
+                        <p:column>
+                            <h:outputText value="#{mensajes['funcionarios.responsables.cargoempleado']}"/>
+                            <h:outputText value="*" style="color:red" />  
+                        </p:column>
+                    </p:row>
+                    <p:selectOneMenu id="idCargoEmpEditar" style="width:300px;" styleClass="combos" required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                     value="#{admonFuncionarios.empleadoEditar.idCargoAdministrativo}"
+                                     disabled="#{admonFuncionarios.empleadoEditar.fechaFin!=null}">
+                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}" itemValue=""/>
+                        <f:selectItems value="#{admonFuncionarios.cargosAdministrativos}" var="cat"
+                                       itemLabel="#{cat.nombre}" itemValue="#{cat.id}"/>
+                    </p:selectOneMenu>
+                    <p:message display="text" for="idCargoEmpEditar"/>
+                    <h:outputText value="#{mensajes['funcionarios.responsables.eventocarga']}"/>
+                    <p:selectOneMenu id="idEventoCargaAct" style="width:300px;" styleClass="combos" required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                     value="#{admonFuncionarios.empleadoEditar.idEventoCarga}"
+                                     disabled="true">
+                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}" itemValue=""/>
+                        <f:selectItems value="#{admonFuncionarios.eventoCarga}" var="cat" itemLabel="#{cat.nombre}"
+                                       itemValue="#{cat.id}"/>
+                    </p:selectOneMenu>
+                    <p:message display="text" for="idEventoCargaAct"/>
+                    <h:outputText value="#{mensajes['funcionarios.responsables.alr']}"/>
+                    <p:selectOneMenu id="idRegionAlrAct" style="width:300px;" styleClass="combos"
+                                     required="#{admonFuncionarios.mostrarComboRegion}"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                     value="#{admonFuncionarios.empleadoEditar.idRegionAlr}"
+                                     disabled="#{!admonFuncionarios.mostrarComboRegion || admonFuncionarios.empleadoEditar.fechaFin!=null}" >
+                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}" itemValue=""/>
+                        <f:selectItems value="#{admonFuncionarios.regionALR}" var="cat"
+                                       itemLabel="#{cat.descripcion}" itemValue="#{cat.idCombo}"/>
+                    </p:selectOneMenu>
+                    <p:message display="text" for="idRegionAlrAct"/>
+                    <br></br>
+                </h:panelGrid>
+                <div align="center">
+                    <h:panelGrid columns="5">
+                        <p:commandButton id="cmbAct" value="#{mensajes['btnGuardar']}"
+                                         action="#{admonFuncionarios.addWarn}" process="@this"
+                                         ajax="true" rendered="#{admonFuncionarios.empleadoEditar.fechaFin==null and !admonFuncionarios.mostrarPanelHabilitarContinuar}"
+                                         update=":formaGeneral :formaActualizar:panelActualizar"
+                                         onclick="statusDialog.show();" onsuccess="statusDialog.hide();">
+                            <p:resetInput target="panelActualizar"/>
+                        </p:commandButton>
+                        <br></br>
+                        <p:commandButton id="cmbHabiltarAct" value="#{mensajes['btnHabilitar']}"
+                                         action="#{admonFuncionarios.addWarn}" process="@this"
+                                         ajax="true" rendered="#{admonFuncionarios.empleadoEditar.fechaFin!=null and !admonFuncionarios.mostrarPanelHabilitarContinuar}"
+                                         update=":formaGeneral :formaActualizar:panelActualizar "
+                                         onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                         >
+                            <p:resetInput target="panelActualizar"/>
+                        </p:commandButton>
+                        <p:commandButton id="cmbCancelarAct" value="#{mensajes['btnCancelar']}"
+                                         action="#{admonFuncionarios.cancelar}" process="@this"
+                                         update=":formaGeneral :formaActualizar:panelActualizar"
+                                         immediate="true"
+                                         rendered="#{!admonFuncionarios.mostrarPanelHabilitarContinuar}"></p:commandButton>
+                    </h:panelGrid>
+                </div>
+            </p:panel>
+        </h:form>
+    </h:body>
+</html>

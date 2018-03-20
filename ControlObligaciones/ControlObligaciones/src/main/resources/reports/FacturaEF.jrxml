@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="FacturaEF" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="d633126c-7ca3-4089-a276-1a2b80eebaba">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.background.image.properties" value="true,true,0.25,8,3,0,-4,620,620"/>
+	<parameter name="pDescEntidadFed" class="java.lang.String"/>
+	<parameter name="pDescVigilancia" class="java.lang.String"/>
+	<parameter name="pCantidadDocs" class="java.lang.String"/>
+	<parameter name="pIdVigilancia" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pIdentidadFed" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="rowNum" class="java.lang.Integer"/>
+	<field name="numeroControl" class="java.lang.String"/>
+	<field name="rfc" class="java.lang.String"/>
+	<field name="codigoPostal" class="java.lang.String"/>
+	<background>
+		<band height="670" splitType="Prevent">
+			<image scaleImage="FillFrame">
+				<reportElement uuid="03d47368-5b93-4adc-bda9-01ca52cd414f" x="1" y="0" width="571" height="670"/>
+				<imageExpression><![CDATA["/siat/imagenes/fondo.png"]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="177" splitType="Stretch">
+			<textField pattern="yyyy/MM/dd">
+				<reportElement uuid="bfaba8ad-13e4-466a-896d-abd3d9828cc5" positionType="Float" x="7" y="145" width="100" height="15"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="724e1b71-14ce-4733-837f-bae40789fd6c" x="380" y="86" width="185" height="15"/>
+				<textElement textAlignment="Right">
+					<font fontName="Constantia" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CONTROL DE OBLIGACIONES]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="c1f5763e-e800-4d66-b918-594534cc1abf" positionType="Float" x="116" y="161" width="94" height="14"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{pCantidadDocs}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1794eceb-e3b7-4034-8432-37e84cb2accd" x="7" y="115" width="558" height="30" isPrintWhenDetailOverflows="true"/>
+				<textElement>
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{pDescVigilancia}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d25030bd-ce71-4fee-bb07-e1ee3eb55946" x="7" y="100" width="187" height="15"/>
+				<textElement>
+					<font fontName="Constantia" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RELACIÓN DE DOCUMENTOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="4a0241e5-3dc1-45b3-b229-85891e7df6ea" positionType="Float" x="7" y="161" width="109" height="15"/>
+				<textElement>
+					<font fontName="Constantia"/>
+				</textElement>
+				<text><![CDATA[Total de documentos:]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="3ae52ea0-da66-488d-a4f1-6323e31e8a72" x="333" y="72" width="232" height="14"/>
+				<textElement textAlignment="Right">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{pDescEntidadFed}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement uuid="4682c865-5038-4432-b70b-d7f9c1362173" x="1" y="1" width="250" height="74"/>
+				<imageExpression><![CDATA["reports/images/logoSHCP.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement uuid="b37e1a8d-0d62-470a-9acb-910e69e98f7e" x="500" y="19" width="72" height="37"/>
+				<imageExpression><![CDATA["reports/images/logoSAT.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="27" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="cc44235d-0908-4a97-9dd4-87d90c266688" mode="Transparent" x="59" y="9" width="178" height="18"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="9a9503d1-3f77-48fe-ab8c-f24217575eab" x="89" y="10" width="108" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Constantia" size="9" isBold="true" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Número de Control]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="27adb145-9ed6-4015-9e3f-e37320750f92" mode="Transparent" x="237" y="9" width="169" height="18"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="caa9fd69-f233-4b1a-9265-7193c5ffaa18" mode="Transparent" x="406" y="9" width="159" height="18"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="cdc5d72a-d5be-4770-96ad-b45ef40d3b99" x="269" y="10" width="100" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Constantia" size="9" isBold="true" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[RFC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3f09201e-fdb4-4e9c-ae43-66dbb3298c03" x="435" y="10" width="100" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Constantia" size="9" isBold="true" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Código Postal]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="b80d91c4-be3f-4e23-842f-3c05fc9cd8cb" mode="Transparent" x="7" y="9" width="52" height="18"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="70696673-a332-4653-ad3f-eeaa75e7c732" x="11" y="10" width="43" height="17"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Constantia" size="9" isBold="true" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Num.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="3e564c51-68a3-4078-a972-a54e8b85deb9" mode="Transparent" x="59" y="0" width="178" height="13"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="32c0ecb2-e9b3-4617-9b61-ac2bca6ceae4" mode="Transparent" x="237" y="0" width="169" height="13"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="e185e40d-30eb-4de6-b660-6f4680a979fc" mode="Transparent" x="406" y="0" width="159" height="13"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<textField>
+				<reportElement uuid="5b81a744-7fa9-48ab-b2b9-29a0822fa609" x="87" y="2" width="108" height="10"/>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numeroControl}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="f31de005-333e-40e5-837b-67fac086431f" x="267" y="2" width="100" height="10"/>
+				<textElement textAlignment="Center">
+					<font fontName="Constantia" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rfc}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement uuid="49110fe1-f92e-41b3-ada0-e910aef720a6" x="436" y="2" width="100" height="10"/>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigoPostal}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement uuid="cd06d844-b229-4c75-8b5a-6e1c4bd73f7f" mode="Transparent" x="7" y="0" width="52" height="13"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<textField>
+				<reportElement uuid="0a686d28-726d-43e2-9818-a01ecb554cd4" x="6" y="2" width="52" height="10"/>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rowNum}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement uuid="9dc92ad2-63e2-4924-aad4-15454760e863" x="477" y="6" width="67" height="14"/>
+				<textElement textAlignment="Right">
+					<font fontName="Constantia" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pagina "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="1f4159ab-a059-4152-9130-22c439d6ce99" x="544" y="6" width="33" height="14"/>
+				<textElement textAlignment="Left">
+					<font fontName="Constantia" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="6a10f395-4e7b-4120-9e99-b9c5bd4f03e6" x="171" y="9" width="121" height="10"/>
+				<textElement textAlignment="Right">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CONTROL DE OBLIGACIONES -]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="52b0f5c9-6311-4685-8d63-88c1b92b847f" x="294" y="9" width="171" height="10"/>
+				<textElement textAlignment="Left">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{pDescEntidadFed}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

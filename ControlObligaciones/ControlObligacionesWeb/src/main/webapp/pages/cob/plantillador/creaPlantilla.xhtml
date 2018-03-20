@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Creador Plantilla</title>
+    </h:head>
+    <h:outputStylesheet library="css/" name="estilos.css"/>
+    <h:outputScript library="js" name="funcionesCatalogos.js"/>
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:body>
+        <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>   
+
+        <script type="text/javascript">
+            function submitConcatena() {
+                document.getElementById("btnConcatena").click();
+            }
+        </script>
+        <p:panel visible="false">
+            <p:commandButton id="btnConcatena" value="Submit" action="#{creaPlantillaMB.concatenaTxt}"
+                             update=":frmPlantilla:cuerpoPlantilla" />
+        </p:panel>
+        <p:messages id="messages"  showDetail="true" globalOnly="true" autoUpdate="true" closable="true" />
+        <h:form id="frmPlantilla" prependId="false">
+
+            <p:panel id="panelCabecera" style="width:820px;margin-left:auto;margin-right:auto;"> 
+                <p:layout style="min-width:800px; min-height: 105px;">
+                    <p:layoutUnit header="#{mensajes['etEncabezado']}" position="center" size="10">
+                        <p:graphicImage cache="false" id="encabezado" value="#{cargaArchivoMbean.inputImagen}" 
+                                        height="98%" width="99%"/>
+                    </p:layoutUnit>
+                    <p:layoutUnit header="#{mensajes['etEncabezado']}" position="east" size="150">
+                        <p:fileUpload id="header" fileUploadListener="#{cargaArchivoMbean.handleFileUpload}" mode="advanced"
+                                      auto="true"
+                                      dragDropSupport="false"
+                                      sizeLimit="1000000000" multiple="false"
+                                      update="encabezado"
+                                      allowTypes="/(\.|\/)(jpe?g|png)$/"
+                                      invalidFileMessage="#{mensajes['ui.componente.fileupload.invalidLabel']}"
+                                      label="#{mensajes['ui.componente.fileupload.selectImage']}"
+                                      uploadLabel="#{mensajes['ui.componente.fileupload.uploadLabel']}"
+                                      cancelLabel="#{mensajes['ui.componente.fileupload.cancelLabel']}" />
+                    </p:layoutUnit>
+                </p:layout>
+            </p:panel>
+            <p:panel style="width:820px; margin-left:auto; margin-right:auto;"> 
+                <p:layout style="min-width:800px; min-height:450px;">
+                    <p:layoutUnit position="center" size="10" >
+                        <p:editor id="cuerpoPlantilla" value="#{creaPlantillaMB.textoPlantilla}" 
+                                  width="635" height="425"/>
+                    </p:layoutUnit>
+                    <p:layoutUnit position="east" size="150" header="Atributos" collapsible="true">
+                        <p:selectOneListbox value="#{creaPlantillaMB.atributoSelect}" var="atr" 
+                                            onchange="submitConcatena();">
+                            <f:selectItems value="#{creaPlantillaMB.atributos}" var="atributo" 
+                                           itemLabel="#{atributo}" 
+                                           itemValue="#{atributo}"/>
+                            <p:column>
+                                <h:outputText id="valAtr" value="#{atr}"/>
+                            </p:column>
+                        </p:selectOneListbox>
+                        <br/>
+                        <p:commandButton value="Crear tabla" onclick="statusDialog.show();"/>
+                    </p:layoutUnit>
+                </p:layout>
+            </p:panel>
+        </h:form>
+        <!--Propiedades de la tabla-->
+        <p:dialog modal="true" widgetVar="statusDialog" header="Crear nueva tabla" 
+                  draggable="false" closable="false" resizable="false">
+            <h:panelGrid columns="2" style="text-align: center;">
+                <p:row>
+                    <p:column>
+                        <h:outputText value="Filas"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputText id="filas" value="#{creaPlantillaMB.fila}" 
+                             required="true" 
+                             requiredMessage="#{mensajes['msgRequerido']}"
+                             maxlength="2"
+                             onkeypress="return isNumberKey(event);">
+                </p:inputText>
+                <h:outputText />
+                <p:message id="mensajesFilas" for="filas" display="text"  />
+                <p:row>
+                    <p:column>
+                        <h:outputText value="Columnas"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputText id="columnas" value="#{creaPlantillaMB.columna}" 
+                             required="true"
+                             requiredMessage="#{mensajes['msgRequerido']}"
+                             maxlength="2"
+                             onkeypress="return isNumberKey(event);">
+                </p:inputText>
+                <h:outputText />
+                <p:message id="mensajesColumnas" for="columnas" display="text"  />
+
+                <p:commandButton value="Crear tabla" action="#{creaPlantillaMB.crearTabla}" 
+                                 update=":frmPlantilla, messages" />
+                <p:commandButton value="Regresar" action="#{creaPlantillaMB.limpiar}" onsuccess="statusDialog.hide();" 
+                                 update=":frmPlantilla, messages" />
+            </h:panelGrid>
+        </p:dialog>
+        <h:form id="frmFooter" prependId="false">
+            <p:panel id="panelPie" style="width:820px;margin-left:auto;margin-right:auto;"> 
+                <p:layout style="min-width:800px; min-height:105px;">
+                    <p:layoutUnit header="#{mensajes['etPiePagina']}" position="center" size="10">
+                        <p:graphicImage cache="false" id="piePagina" value="#{cargaArchivoMbean.inputImagenPie}" 
+                                        height="98%" width="99%"/>
+                    </p:layoutUnit>
+                    <p:layoutUnit header="#{mensajes['etPiePagina']}" position="east" size="150">
+                        <p:fileUpload id="footer" fileUploadListener="#{cargaArchivoMbean.handleFileUploadPie}" mode="advanced"
+                                      auto="true"
+                                      dragDropSupport="false"
+                                      sizeLimit="1000000000" multiple="false"
+                                      update="piePagina"
+                                      allowTypes="/(\.|\/)(jpe?g|png)$/"
+                                      invalidFileMessage="#{mensajes['ui.componente.fileupload.invalidLabel']}"
+                                      label="#{mensajes['ui.componente.fileupload.selectImage']}"
+                                      uploadLabel="#{mensajes['ui.componente.fileupload.uploadLabel']}"
+                                      cancelLabel="#{mensajes['ui.componente.fileupload.cancelLabel']}" />
+                    </p:layoutUnit>
+                </p:layout> 
+            </p:panel>  
+        </h:form>
+    </h:body>
+</html>
+

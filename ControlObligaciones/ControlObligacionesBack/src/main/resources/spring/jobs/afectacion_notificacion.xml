@@ -1,0 +1,23 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" 
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+    
+  
+
+  <batch:job id="afectacion-notificacion-job">
+	<batch:step id="afectacion-notificacion-step">
+	  <batch:tasklet>
+		<batch:chunk reader="afectacion-notificacion-reader" 
+                             processor="afectacion-notificacion-processor" 
+                             writer="afectacion-notificacion-writer"
+			commit-interval="2">
+		</batch:chunk>
+	  </batch:tasklet>
+	</batch:step>
+  </batch:job>  
+</beans>

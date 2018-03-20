@@ -1,0 +1,571 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <script name="jquery/jquery.js" library= "primefaces"></script>
+    </h:head>
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:outputScript library="js" name="calendarioIdiomaEs.js"/>
+    <h:outputStylesheet library="css/" name="estilos.css"/>
+    <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+    <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+              resizable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+    </p:dialog>
+
+    <!-- #########################################tabla principal##################################################################### --> 
+    <!-- ############################################################################################################## --> 
+    <p:messages id="messages"  showDetail="true" globalOnly="true" autoUpdate="true" closable="true" />
+    <h:form id="formGral">
+        
+        <p:panel id="pnlTbl" style="width:800px" visible="#{catalogoFundamentoLegalMB.fundamentoLegalModel.tblVisible}">
+            <h:panelGrid id="gridCombo" columns="2" cellspacing="3" cellpadding="3">
+            <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdEjercicioFiscal']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="EjercicioFiscalCombo" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.idEjercicioFiscalFun}"
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:400px" panelStyle="width:396px">
+                    <f:selectItems value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listaComboEjercicioFiscal}" var="valEjer"
+                                   itemLabel="#{valEjer.descripcion}" itemValue="#{valEjer.idCombo}" /> 
+                    <p:ajax event="change" update=":formGral:pnlTbl" listener="#{catalogoFundamentoLegalMB.buscarFundamentosPorEjercicioFiscal}" /> 
+                </p:selectOneMenu> 
+
+                <h:outputText />
+                <p:message id="mensajesEjercicioFiscalCombo" for="EjercicioFiscalCombo" display="text"  />
+            </h:panelGrid>
+                 <h:outputText />
+            
+            <p:dataTable id="tbl" var="fundamentoLegal" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listFundamentoLegal}" emptyMessage="#{mensajes['msg.dataTable.vacio']}"
+                         filteredValue="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listFundamentoLegalTmp}" paginator="true" paginatorPosition="bottom" rows="10" scrollable="true" scrollWidth= "778">
+                <f:facet name= "header">
+                    <h:outputText value="#{mensajes['fundamentoLegal.titulo']}"/>
+                    <h:commandLink action="#{catalogoFundamentoLegalMB.generaExcel}" immediate="true" style="margin-left:90%;">
+                        <h:graphicImage value="/resources/images/excel1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                    <p:spacer width="15" height="10"/>
+                    <h:commandLink  action="#{catalogoFundamentoLegalMB.generaPdf}" immediate="true" >
+                        <h:graphicImage value="/resources/images/pdf1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                </f:facet>
+                <p:column sortBy="#{fundamentoLegal.idObligacion}"  filterBy="#{fundamentoLegal.idObligacion}" headerText="#{mensajes['documentos.obligacion']}" style = "width:100px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipIdObligacion" value="#{fundamentoLegal.idObligacion}"/>
+                    <p:tooltip for="tipIdObligacion" value="#{fundamentoLegal.idObligacion}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{fundamentoLegal.descripcionLarga}"  filterBy="#{fundamentoLegal.descripcionLarga}" headerText="#{mensajes['etIdObligacion']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipObligacion" style="border:none;resize:none" cols="30" rows="2" value="#{fundamentoLegal.descripcionLarga}" readonly="true"/>
+                    <p:tooltip for="tipObligacion" value="#{fundamentoLegal.descripcionLarga}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{fundamentoLegal.idRegimenDescr}" filterBy="#{fundamentoLegal.idRegimenDescr}" headerText="#{mensajes['etIdRegimen']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipRegimen" style="border:none;resize:none" cols="30" rows="2" value="#{fundamentoLegal.idRegimenDescr}" readonly="true"/>
+                    <p:tooltip for="tipRegimen" value="#{fundamentoLegal.idRegimenDescr}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{fundamentoLegal.idEjercicioFiscalDescr}" filterBy="#{fundamentoLegal.idEjercicioFiscalDescr}" headerText="#{mensajes['etIdEjercicioFiscal']}" style = "width:110px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipEjercicioFiscal" value="#{fundamentoLegal.idEjercicioFiscalDescr}"></h:outputText>
+                    <p:tooltip for="tipEjercicioFiscal" value="#{fundamentoLegal.idEjercicioFiscalDescr}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{fundamentoLegal.idPeriodoDescr}" filterBy="#{fundamentoLegal.idPeriodoDescr}" headerText="#{mensajes['etIdPeriodo']}" style = "width:160px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipPeriodo" value="#{fundamentoLegal.idPeriodoDescr}"></h:outputText>
+                    <p:tooltip for="tipPeriodo" value="#{fundamentoLegal.idPeriodoDescr}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{fundamentoLegal.fechaVencimiento}" filterBy="#{fundamentoLegal.fechaVencimientoStr}" headerText="#{mensajes['etFechaVencimiento']}" style = "width:160px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains" >
+                    <h:outputText id="tipfechaVencimiento" value="#{fundamentoLegal.fechaVencimientoStr}"></h:outputText>
+                    <p:tooltip for="tipfechaVencimiento" value="#{fundamentoLegal.fechaVencimientoStr}"  ></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{fundamentoLegal.fundamentoLegal}" filterBy="#{fundamentoLegal.fundamentoLegal}" headerText="#{mensajes['etFundamentoLegal']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipFundamentoLegal" style="border:none;resize:none" cols="30" rows="2" value="#{fundamentoLegal.fundamentoLegal}" readonly="true"/>
+                    <p:tooltip for="tipFundamentoLegal" value="#{fundamentoLegal.fundamentoLegal}"></p:tooltip> 
+                </p:column>
+
+                <p:column sortBy="#{fundamentoLegal.fechaInicio}" filterBy="#{fundamentoLegal.fechaInicioStr}" headerText="#{mensajes['etFechaInicio']}" style = "width:160px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains" >
+                    <h:outputText id="tipfechaInicio" value="#{fundamentoLegal.fechaInicioStr}"></h:outputText>
+                    <p:tooltip for="tipfechaInicio" value="#{fundamentoLegal.fechaInicioStr}"  ></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{fundamentoLegal.fechaFin}" filterBy="#{fundamentoLegal.fechaFinStr}" headerText="#{mensajes['etFechaFin']}" style = "width:160px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains" >
+                    <h:outputText id="tipfechaFin" value="#{fundamentoLegal.fechaFinStr}"></h:outputText>
+                    <p:tooltip for="tipfechaFin" value="#{fundamentoLegal.fechaFinStr}"  ></p:tooltip> 
+                </p:column>
+                
+                <p:column headerText="#{mensajes['etEditar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this" update=":formGral:pnlTbl, :messages :formGral:pnlEdita" action="#{catalogoFundamentoLegalMB.abrirEditar}"
+                                     icon="ui-icon-pencil" onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                     rendered="#{fundamentoLegal.fechaFin!=null}">
+                        <f:setPropertyActionListener value="#{fundamentoLegal}" 
+                                                     target="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEdit}" /> 
+                    </p:commandButton>
+                </p:column>
+                <p:column headerText="#{mensajes['etEliminar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this"  update=":formGral:pnlTbl, :messages  :formGral:pnlElimina" action="#{catalogoFundamentoLegalMB.abrirEliminar}"
+                                     icon="ui-icon-close" onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                     rendered="#{fundamentoLegal.fechaFin!=null}">
+                        <f:setPropertyActionListener value="#{fundamentoLegal}" 
+                                                     target="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEli}" /> 
+                    </p:commandButton>
+                </p:column>
+
+
+            </p:dataTable>
+            <div>
+                <br/>
+                <p:commandButton process="@this" update=":formGral:pnlTbl, :messages, :formGral:pnlAgrega" style="left:74%"
+                                 onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                 action="#{catalogoFundamentoLegalMB.abrirNuevo}" value="#{mensajes['btnNuevo']}" />
+                <p:commandButton process="@this" update=":formGral:pnlTbl, :messages, :pnlAgregaPorArchivo " style="left:75%"
+                                 onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                 action="#{catalogoFundamentoLegalMB.agregarPorArchivo}" value="Carga por archivo" />
+
+            </div>
+
+        </p:panel>
+
+
+        <!-- ############################################################################################################## --> 
+        <!-- ############################################################################################################## -->            
+
+
+        <p:panel id="pnlAgrega" header="#{mensajes['fundamentoLegal.tituloAgrega']}" style="width:600px"  visible="#{catalogoFundamentoLegalMB.fundamentoLegalModel.nvoVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridNvo" columns="2" cellspacing="3" cellpadding="3">
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdObligacion']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="Obligacion" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.idObligacionFun}" 
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:400px" panelStyle="width:396px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listaComboObligacion}" var="val"
+                                   itemLabel="#{val.descripcion}" itemValue="#{val.idCombo}" /> 
+
+                </p:selectOneMenu>  
+
+                <h:outputText />
+                <p:message  id="cmbObligacion" for="Obligacion" display="text" /> 
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdRegimen']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="Regimen" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.idRegimenFun}" 
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:400px" panelStyle="width:396px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listaComboRegimen}" var="valReg"
+                                   itemLabel="#{valReg.descripcion}" itemValue="#{valReg.idCombo}" /> 
+
+                </p:selectOneMenu>  
+
+                <h:outputText />
+                <p:message  id="cmbRegimen" for="Regimen" display="text" />
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdEjercicioFiscal']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="EjercicioFiscal" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.idEjercicioFiscalFun}"
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:400px" panelStyle="width:396px"> 
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />
+                    <f:selectItems value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listaComboEjercicioFiscal}" var="valEjer"
+                                   itemLabel="#{valEjer.descripcion}" itemValue="#{valEjer.idCombo}" /> 
+
+                </p:selectOneMenu> 
+
+                <h:outputText />
+                <p:message id="mensajesEjercicioFiscal" for="EjercicioFiscal" display="text"  />
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdPeriodo']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="Periodo" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.idPeriodoFun}"
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:400px" panelStyle="width:396px"> 
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />
+                    <f:selectItems value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listaComboPeriodicidad}" var="valPer"
+                                   itemLabel="#{valPer.descripcion}" itemValue="#{valPer.idCombo}" />  
+                </p:selectOneMenu>                  
+
+                <h:outputText />
+                <p:message id="mensajePeriodo" for="Periodo" display="text"  />
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etFechaVencimiento']}"/>
+                    </p:column>
+                </p:row>
+                <p:calendar id="FechaVencimiento" showOn="button"  pattern="dd/MM/yyyy" locale="es"
+                            style="width:390px" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fechaVencimiento}">
+                </p:calendar>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etFundamentoLegal']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="FundamentoLegal"
+                                 value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegal}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:390px"
+                                 rows="1" cols="30"
+                                 maxlength="500"  
+                                 counter="counter3"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesFundamentoLegal" for="FundamentoLegal" display="text"  /> 
+                <h:outputText />
+                <h:outputText id="counter3"/>
+                <h:outputText />                  
+
+                <h:panelGrid columns="3">
+                    <p:commandButton id="cmbGuardarNvo" value="#{mensajes['btnGuardar']}" action="#{catalogoFundamentoLegalMB.agrega}" style="left:90%"
+                                     process="@this, Obligacion, Regimen, EjercicioFiscal, Periodo, FechaVencimiento, FundamentoLegal" update="pnlAgrega, pnlTbl, :messages"
+                                     onclick="statusDialog.show();
+                                                 $('#formGral\\:pnlAgrega').hide();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarNvo" value="#{mensajes['btnCancelar']}" action="#{catalogoFundamentoLegalMB.cerrar}" style="left:90%"
+                                     process="@this" update="pnlAgrega, pnlTbl, :messages" 
+                                     onclick="statusDialog.show();
+                                                 $('#formGral\\:pnlAgrega').hide();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlAgrega" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <!-- ############################################################################################################## --> 
+        <!-- ############################################################################################################## -->
+
+
+        <p:panel id="pnlEdita" header="#{mensajes['fundamentoLegal.tituloEditar']}"  style="width:600px" visible="#{catalogoFundamentoLegalMB.fundamentoLegalModel.edtVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridEdt" columns="2" cellspacing="3" cellpadding="3">
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdObligacion']}" />
+
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="ObligacionEdit" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.idObligacionFun}" 
+                                 effect="fade" style="width:400px" disabled="true">
+
+                    <f:selectItems value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listaComboObligacion}" var="val"
+                                   itemLabel="#{val.descripcion}" itemValue="#{val.idCombo}" /> 
+
+                </p:selectOneMenu>  
+
+                <h:outputText />
+                <p:message  id="cmbObligacionEdit" for="ObligacionEdit" display="text" /> 
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdRegimen']}" />
+
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="RegimenEdit" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.idRegimenFun}" 
+                                 effect="fade" style="width:400px" disabled="true">
+
+                    <f:selectItems value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listaComboRegimen}" var="valReg"
+                                   itemLabel="#{valReg.descripcion}" itemValue="#{valReg.idCombo}" />  
+
+                </p:selectOneMenu>  
+
+                <h:outputText />
+                <p:message  id="cmbRegimenEdit" for="RegimenEdit" display="text" />
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdEjercicioFiscal']}"/>
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="EjercicioFiscalEdit" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.idEjercicioFiscalFun}"
+                                 effect="fade" style="width:400px" disabled="true">
+
+                    <f:selectItems value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listaComboEjercicioFiscal}" var="valEjer"
+                                   itemLabel="#{valEjer.descripcion}" itemValue="#{valEjer.idCombo}" />
+
+                </p:selectOneMenu>
+
+                <h:outputText />
+                <p:message id="mensajesEjercicioFiscalEdit" for="EjercicioFiscalEdit" display="text"  />
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdPeriodo']}"/>
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="PeriodoEdit" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEdit.idPeriodoDescr}"
+                                 effect="fade" style="width:400px" disabled="true">
+
+                    <f:selectItems value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listaComboPeriodicidad}" var="valPer"
+                                   itemLabel="#{valPer.descripcion}" itemValue="#{valPer.idCombo}" />
+
+                </p:selectOneMenu>
+                <h:outputText />
+                <p:message id="mensajesPeriodo" for="PeriodoEdit" display="text"  />
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etFechaVencimiento']}"/>
+                    </p:column>
+                </p:row>
+                <p:calendar id="FechaVencimientoEdt" showOn="button"  pattern="dd/MM/yyyy" locale="es"
+                            style="width:390px" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEdit.fechaVencimiento}">
+                </p:calendar>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etFundamentoLegal']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="FundamentoLegalEdt"
+                                 value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEdit.fundamentoLegal}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:390px"
+                                 rows="1" cols="30"
+                                 maxlength="500"  
+                                 counter="counter6"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesFundamentoLegalEdit" for="FundamentoLegalEdt" display="text"  /> 
+                
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etFechaInicio']}"/>
+                    </p:column>
+                </p:row>
+                <h:outputText  value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEdit.fechaInicioStr}"/>
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etFechaFin']}"/>
+                    </p:column>
+                </p:row>
+                <h:outputText  value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEdit.fechaFinStr}"/>
+                
+                <h:outputText />
+                <h:outputText id="counter6"/>
+
+                <h:outputText />
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEdt" value="#{mensajes['btnGuardar']}" action="#{catalogoFundamentoLegalMB.edita}" style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#formGral\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     process="@this, PeriodoEdit, ObligacionEdit, RegimenEdit, EjercicioFiscalEdit, FundamentoLegalEdt, FechaVencimientoEdt" 
+                                     update=":formGral:pnlEdita, :formGral:pnlTbl, :messages"/>
+                    <p:commandButton id="cmbCancelarEdt" value="#{mensajes['btnCancelar']}" action="#{catalogoFundamentoLegalMB.cerrar}"  style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#formGral\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     update=":formGral:pnlEdita, :formGral:pnlTbl, :messages" process="@this" immediate="true">
+                        <p:resetInput target=":formGral:pnlEdita" />
+                    </p:commandButton>
+
+                </h:panelGrid>
+            </h:panelGrid>
+
+        </p:panel>
+
+        <!-- ############################################################################################################## --> 
+        <!-- ############################################################################################################## -->
+
+
+        <p:panel id="pnlElimina" header="#{mensajes['fundamentoLegal.tituloElimina']}" style="width:600px" visible="#{catalogoFundamentoLegalMB.fundamentoLegalModel.elmVisible}">
+
+            <h:panelGrid id="gridEli" columns="2" cellspacing="3" cellpadding="3">
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdObligacion']}" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="ObligacionEli" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.idObligacionFun}" 
+                                 disabled="true" effect="fade" style="width:400px">
+
+                    <f:selectItems value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listaComboObligacion}" var="val"
+                                   itemLabel="#{val.descripcion}" itemValue="#{val.idCombo}" /> 
+                </p:selectOneMenu>  
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdRegimen']}" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="RegimenEli" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.idRegimenFun}" 
+                                 disabled="true" effect="fade" style="width:400px">
+
+                    <f:selectItems value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.listaComboRegimen}" var="valReg"
+                                   itemLabel="#{valReg.descripcion}" itemValue="#{valReg.idCombo}" /> 
+                </p:selectOneMenu>
+
+                <h:outputText  value="#{mensajes['etIdEjercicioFiscal']}"/>
+                <p:inputText id="txtSancionEli" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEli.idEjercicioFiscalDescr}" disabled="true" style="width:390px"/>
+
+                <h:outputText  value="#{mensajes['etIdPeriodo']}"/>
+                <p:inputText id="txtRegimenEli" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEli.idPeriodoDescr}" disabled="true" style="width:390px"/>
+
+                <h:outputText  value="#{mensajes['etFechaVencimiento']}"/>                  
+                <p:inputTextarea id="txtFechaVencimietnoEli" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEli.fechaVencimientoStr}" disabled="true" style="width:390px"/>
+
+                <h:outputText  value="#{mensajes['etFundamentoLegal']}"/>
+                <p:inputTextarea id="txtOrdenEli" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEli.fundamentoLegal}" disabled="true" style="width:390px"/>
+
+                <h:outputText  value="#{mensajes['etFechaInicio']}"/>                  
+                <p:inputTextarea id="txtFechaInicioEli" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEli.fechaInicioStr}" disabled="true" style="width:390px"/>
+                <h:outputText  value="#{mensajes['etFechaFin']}"/>                  
+                <p:inputTextarea id="txtFechaFinEli" value="#{catalogoFundamentoLegalMB.fundamentoLegalModel.fundamentoLegalEli.fechaFinStr}" disabled="true" style="width:390px"/>
+                
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEli" value="#{mensajes['btnEliminar']}" action="#{catalogoFundamentoLegalMB.elimina}" style="left:90%"
+                                     process="@this" update=":formGral:pnlElimina, :formGral:pnlTbl, :messages" 
+                                     onclick="statusDialog.show();
+                                             $('#formGral\\:pnlElimina').hide();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarEli" value="#{mensajes['btnCancelar']}" action="#{catalogoFundamentoLegalMB.cerrar}" style="left:90%"
+                                     process="@this" update=":formGral:pnlElimina, :formGral:pnlTbl, :messages," 
+                                     onclick="statusDialog.show();
+                                             $('#formGral\\:pnlElimina').hide();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target=":formGral:pnlElimina" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+    </h:form>  
+    <!-- ############################################################################################################## --> 
+
+
+    <p:panel id="pnlAgregaPorArchivo" header="#{mensajes['fundamentoLegal.tituloAgrega']}" style="width:800px"  visible="#{catalogoFundamentoLegalMB.fundamentoLegalModel.cargaPorArchivoVisible}">
+        <h:form id="formaUploader" enctype="multipart/form-data">
+            <p:messages globalOnly="true" id="messages"/>
+            <p:panel id="pnluploader" header="#{mensajes['ui.uploader.panel.header']}"
+                     style="border:none;resize:none" visible="true">
+                <p:fileUpload fileUploadListener="#{catalogoFundamentoLegalMB.handleFileUpload}" mode="advanced"
+                              dragDropSupport="false"
+                              sizeLimit="1000000000" multiple="false"
+                              oncomplete="remoteCommandUpdateDataTable();poll.stop();"
+                              onstart="poll.start()"
+                              allowTypes="/(\.|\/)(txt|TXT)$/"
+                              invalidFileMessage="#{mensajes['ui.componente.fileupload.invalidLabel']}"
+                              label="#{mensajes['ui.componente.fileupload.examineLabel']}"
+                              uploadLabel="#{mensajes['ui.componente.fileupload.uploadLabel']}"
+                              cancelLabel="#{mensajes['ui.componente.fileupload.cancelLabel']}"/>
+                <p:remoteCommand name="remoteCommandUpdateDataTable" update=":formaGeneral:panelArchivosOmisos"/>
+
+            </p:panel>
+            <p:poll interval="20" listener="#{catalogoFundamentoLegalMB.increment}"
+                    widgetVar="poll" autoStart="false"/>
+        </h:form> 
+        <br/>
+        
+        <h:form id="formaGeneral">
+            <p:panel id="panelArchivosOmisos" header="#{mensajes['ui.cifrascontrol.panel.header']}"
+                     visible="true" style="border:none;resize:none">
+                <p:scrollPanel style="width:732px;height:115px" mode="native"> 
+                    <p:dataTable var="detalle" value="#{catalogoFundamentoLegalMB.listadoCargaOmisos}"
+                                 emptyMessage="No hay archivos cargados a&uacute;n" id="cifrasControl">
+                        <p:column style="text-align:center;height:30px;">
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['ui.componente.omisos.col1']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.nombreOriginalArchivo}"/>
+                        </p:column>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['ui.componente.omisos.col2']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.numeroRegistros}"/>
+                        </p:column>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText escape="false" value="#{mensajes['ui.componente.omisos.col3']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.totalRegistrosCorrectos}"/>
+                        </p:column>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText escape="false"
+                                              value="#{mensajes['ui.componente.bitacora.detalle.col3']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.totalRegistrosConError}"/>
+                        </p:column>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['ui.componente.bitacora.detalle.col4']}"/>
+                            </f:facet>
+                            <p:commandButton rendered="#{detalle.cargaInvalida}" ajax="false"
+                                             icon="ui-icon-circle-arrow-s">
+                                <p:fileDownload value="#{detalle.archivoBitacora}" id="downloader"/>
+                            </p:commandButton>
+                        </p:column>
+
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['ui.componente.bitacora.detalle.col5']}"/>
+                            </f:facet>
+                            <p:commandButton  id= "botonElimina" icon="ui-icon-circle-close" ajax="true"
+                                              action="#{catalogoFundamentoLegalMB.eliminarArchivoSeleccionado}"
+                                              oncomplete="remoteCommandUpdateDataTable();" >
+                                <f:param name="archivo" value="#{detalle.nombreOriginalArchivo}" />
+                                <f:ajax render="@form"/>
+                                <p:remoteCommand name="remoteCommandUpdateDataTable" update=":formaGeneral:panelArchivosOmisos"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:scrollPanel>
+                <br/>
+                    <div align="center">
+                    <p:outputLabel value="#{mensajes['msgCargaConErrores']}" style="color:blue;right: 100%" 
+                                   rendered="#{catalogoFundamentoLegalMB.archivosConErrores}" >
+                    </p:outputLabel>
+                    <h:panelGrid columns="2">
+                        <p:commandButton id="cmbCargaPorArchivoEnBase" value="Carga en base" action="#{catalogoFundamentoLegalMB.cargaEnBase}" style="left:260%" 
+                                         rendered="#{catalogoFundamentoLegalMB.mostrarBotonCargaArchivo}"
+                                         process="@this" update=":formGral, :formGral:pnlTbl, :messages"
+                                         onclick="statusDialog.show();
+                                                     $('#pnlAgregaPorArchivo').hide();" onsuccess="statusDialog.hide();"/>
+                        <p:commandButton id="cmbCancelarCargaNvo" value="#{mensajes['btnCancelar']}" action="#{catalogoFundamentoLegalMB.cerrar}" style="left:380%"
+                                         process="@this" update=":formGral:pnlTbl, :messages" 
+                                         onclick="statusDialog.show();
+                                                     $('#pnlAgregaPorArchivo').hide();" onsuccess="statusDialog.hide();">
+                            <p:resetInput target="panelArchivosOmisos" />
+                        </p:commandButton>
+                    </h:panelGrid>
+                    </div>
+            </p:panel>
+
+
+        </h:form>   
+
+    </p:panel>
+
+
+    <!-- ############################################################################################################## --> 
+</html>

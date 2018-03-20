@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head></h:head> 
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:outputStylesheet library="css/" name="estilos.css"/>
+    <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+    <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+              resizable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+    </p:dialog>
+
+    <h:form id="Campo" >
+        <p:messages id="messages"  showDetail="true" globalOnly="true" autoUpdate="true" closable="true" />
+        <p:panel id="pnlTbl" style="width:800px" visible="#{multaDescuentoManagedBean.multaMontoModel.tblVisible}">
+
+            <p:dataTable id="tbl" var="multa" value="#{multaDescuentoManagedBean.multaMontoModel.listMultaMonto}" emptyMessage="#{mensajes['msg.dataTable.vacio']}"
+                         filteredValue="#{multaDescuentoManagedBean.multaMontoModel.listMultaMontoTmp}" paginator="true" paginatorPosition="bottom" rows="10" scrollable="true" scrollWidth= "778">
+                <f:facet name= "header">
+                    <h:outputText value="#{mensajes['multa.monto.titulo']}"/>
+                    <h:commandLink action="#{multaDescuentoManagedBean.generaExcel}" immediate="true" style="margin-left:90%;">
+                        <h:graphicImage value="/resources/images/excel1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                    <p:spacer width="15" height="10"/>
+                    <h:commandLink  action="#{multaDescuentoManagedBean.generaPdf}" immediate="true" >
+                        <h:graphicImage value="/resources/images/pdf1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                </f:facet>
+                <p:column sortBy="#{multa.resolMotivoDescr}" filterBy="#{multa.resolMotivoDescr}" headerText="#{mensajes['tipoMulta']}" style = "width:400px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:80px;" filterMatchMode="contains">
+                    <h:outputText id="tipIdTipoMulta" value="#{multa.resolMotivoDescr}"></h:outputText>
+                    <p:tooltip for="tipIdTipoMulta" value="#{multa.resolMotivoDescr}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{multa.multaDescuentoDescr}"  filterBy="#{multa.multaDescuentoDescr}" headerText="#{mensajes['etMultaDescuento']}" style = "width:400px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:80px;" filterMatchMode="contains">
+                    <h:outputText id="tipmultaDescuentoDesc" value="#{multa.multaDescuentoDescr}"></h:outputText>
+                    <p:tooltip for="tipmultaDescuentoDesc" value="#{multa.multaDescuentoDescr}"></p:tooltip> 
+                </p:column>
+
+
+            </p:dataTable>
+            <div align="right">
+                <br />
+                <p:commandButton process="@this" update=":Campo:pnlAgrega, :Campo:pnlTbl" 
+                                 onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                 action="#{multaDescuentoManagedBean.abrirNuevo}" value="#{mensajes['btnNuevo']}" />
+            </div>
+
+        </p:panel>
+
+        <p:panel id="pnlAgrega" header="#{mensajes['multa.monto.tituloAgrega']}" style="width:600px"  visible="#{multaDescuentoManagedBean.multaMontoModel.nvoVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridNvo" columns="2" cellspacing="3" cellpadding="3">
+
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['tipoMulta']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="Motivo" value="#{multaDescuentoManagedBean.multaMontoModel.idTipoMultaSel}" 
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:400px" panelStyle="width:396px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{multaDescuentoManagedBean.multaMontoModel.listaComboTipoMulta}" var="valMulta"
+                                   itemLabel="#{valMulta.descripcion}" itemValue="#{valMulta.idCombo}" /> 
+
+                </p:selectOneMenu>  
+                <h:outputText />
+                <p:message  id="cmbMotivo" for="Motivo" display="text" /> 
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etMultaDescuento']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="Multa" value="#{multaDescuentoManagedBean.multaMontoModel.idMultaDescuentoSel}" 
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:400px" panelStyle="width:396px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{multaDescuentoManagedBean.multaMontoModel.listaComboMultaDescuento}" var="valMulta"
+                                   itemLabel="#{valMulta.descripcion}" itemValue="#{valMulta.idCombo}" /> 
+
+                </p:selectOneMenu>  
+                <h:outputText />
+                <p:message  id="cmbMulta" for="Multa" display="text" /> 
+
+
+                <h:panelGrid columns="3">
+                    <p:commandButton id="cmbGuardarNvo" value="#{mensajes['btnGuardar']}" style="left:90%"
+                                     process="@this, Motivo, Multa  " update="pnlAgrega, pnlTbl, messages" action="#{multaDescuentoManagedBean.verificaRegistro}"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();
+                                             cd.show();" onsuccess="statusDialog.hide();"/>
+                    <p:confirmDialog message="#{mensajes['msgComfirMonto']}"
+                                     header="Confirmar" severity="alert"  widgetVar="cd" visible="#{multaDescuentoManagedBean.muestraConfirmacion}">
+                        <p:commandButton value="Aceptar" onclick="$('#Campo\\:pnlAgrega').hide();" actionListener="#{multaDescuentoManagedBean.agrega}" update="pnlAgrega, pnlTbl, messages" id="ajax" oncomplete="cd.hide()"/>
+                        <p:commandButton value="Cancelar" onclick="cd.hide();" type="button" actionListener="#{multaDescuentoManagedBean.cerrar}"/>
+                    </p:confirmDialog>
+                    <p:commandButton id="cmbCancelarNvo" value="#{mensajes['btnCancelar']}" action="#{multaDescuentoManagedBean.cerrar}" style="left:90%"
+                                     process="@this" update="pnlAgrega, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlAgrega" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+    </h:form>
+</html>
+

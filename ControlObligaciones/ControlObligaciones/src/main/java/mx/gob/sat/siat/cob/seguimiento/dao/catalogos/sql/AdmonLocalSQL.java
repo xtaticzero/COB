@@ -1,0 +1,18 @@
+package mx.gob.sat.siat.cob.seguimiento.dao.catalogos.sql;
+
+public interface AdmonLocalSQL {
+    
+    String OBTEN_TODAS_ADMON = "SELECT IDADMONLOCAL, NOMBRE, DESCRIPCION, FECHAINICIO, FECHAFIN, ORDEN  " +
+                                                   " FROM SGTC_ADMONLOCALSC  order by FECHAINICIO desc " ;
+    
+    String AGREGA_ADMON ="INSERT INTO SGTC_ADMONLOCALSC (IDADMONLOCAL, NOMBRE, DESCRIPCION, FECHAINICIO, FECHAFIN, ORDEN) " +
+                                   "VALUES(?, ?, ?, ?, ?, ?)";
+    
+    String EDITA_ADMON = "UPDATE SGTC_ADMONLOCALSC SET NOMBRE = ?, DESCRIPCION =? WHERE IDADMONLOCAL = ?";
+    
+    String ELIMINA_ADMON = "UPDATE SGTC_ADMONLOCALSC SET FECHAFIN = ? WHERE IDADMONLOCAL = ?";
+    
+    String BUSCA_ADMON_POR_ID = "SELECT COUNT(*) REGISTROS FROM SGTC_ADMONLOCALSC WHERE IDADMONLOCAL= ? " ; 
+    
+    String REACTIVA_ADMON = "UPDATE SGTC_ADMONLOCALSC SET FECHAFIN = NULL WHERE IDADMONLOCAL = ?";
+}

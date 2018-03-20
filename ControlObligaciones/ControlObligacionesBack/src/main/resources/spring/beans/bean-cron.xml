@@ -1,0 +1,63 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" 
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+      
+      <bean id="jobCensar" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+          <property name="targetObject" ref="jobManager" />
+          <property name="targetMethod" value="censar" />
+          <property name="concurrent" value="true" />
+      </bean>
+      <bean id="cronCensar" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+            <property name="jobDetail" ref="jobCensar" />
+            <property name="cronExpression" value="0 0/1 * * * ?" />
+      </bean>
+      
+      <bean id="jobEjecutar" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+          <property name="targetObject" ref="jobManager" />
+          <property name="targetMethod" value="ejecutarProcesos" />
+          <property name="concurrent" value="true" />
+      </bean>
+      <bean id="cronEjecutar" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+            <property name="jobDetail" ref="jobEjecutar" />
+            <property name="cronExpression" value="0 0/1 * * * ?" />
+      </bean>
+      
+      <bean id="jobRespaldo" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+          <property name="targetObject" ref="respaldosRegistroJobServiceImpl" />
+          <property name="targetMethod" value="ejecutarRespaldo" />
+          <property name="concurrent" value="true" />
+      </bean>
+      <bean id="cronRespaldo" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+          <property name="jobDetail" ref="jobRespaldo" />
+          <property name="cronExpression" value="20 0/20 * * * ?" />
+      </bean>
+      
+      
+      <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+            <property name="triggers">
+                <list>
+                    <ref bean="cronCensar"/>
+                    <ref bean="cronEjecutar"/>
+                    <ref bean="cronRespaldo"/>
+                </list>
+            </property>
+
+            <property name="waitForJobsToCompleteOnShutdown" value="true"/>
+<!--            <property name="startupDelay" value="2"/>-->
+            <property name="quartzProperties">
+		<props>
+<!--                para que no revise actualizaciones de quartz-->
+                    <prop key="org.quartz.scheduler.skipUpdateCheck">true</prop>
+<!--                estos dos cuando se encole los procesos threadCount=1, en otro caso varios en ejecucion -->
+                    <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
+                    <prop key="org.quartz.threadPool.threadCount">15</prop>
+		</props>
+            </property>
+        </bean>
+        
+</beans>

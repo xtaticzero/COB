@@ -1,0 +1,248 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui">
+    <html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets">
+        <h:head>
+            <title>Par&aacute;metros Seguimiento</title>           
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:outputScript library="js" name="calendarioIdiomaEs.js"/>
+        <h:body>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <h:form id="forma1">             
+                <h:panelGrid styleClass="panel-principal" >
+                    <p:messages globalOnly="true"  id="messages" closable="true"/>
+                </h:panelGrid>
+                <p:panel id="panel1" styleClass="panel-principal" header="Cambiar Estado Seguimiento" visible="true"  >
+                    <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red"/>
+                    <h:panelGrid  cellpadding="5" cellspacing="5"  style="margin-left:auto;margin-right:auto;" columns="2"> 
+                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0">                                            
+                            <h:outputText value="Activo"/>
+                            <p:inputText    
+                                id="descripcionPlantilla"
+                                disabled="true"
+                                value="#{parametrosSeguimiento.estadoActual}">
+                            </p:inputText>    
+                        </h:panelGrid> 
+                        <h:panelGrid>  
+                            <p:commandButton value="Cambiar Estado" onclick="cd.show();" type="button" ajax="true" />
+                            <p:confirmDialog message="¿Confirma que desea cambiar el estado?"
+                                             header="Confirmar" severity="alert"  widgetVar="cd">
+                                <p:commandButton value="Aceptar" actionListener="#{parametrosSeguimiento.guardar}" update="forma1:panel1, messages" id="ajax" oncomplete="cd.hide()"/>
+                                <p:commandButton value="Cancelar" onclick="cd.hide();" type="button" />
+                            </p:confirmDialog>
+                        </h:panelGrid>  
+                    </h:panelGrid>     
+                </p:panel>
+            </h:form>      
+            <h:form id="formaParams">
+                <p:panel styleClass="panel-principal" id="panelParams" header="Par&aacute;metros Seguimiento" visible="true"  >
+                    <h:panelGrid >
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Tipo Par&aacute;metro"/>
+                                <h:outputText value="*" style="color:red" />
+                            </p:column>
+                        </p:row>
+                        <p:selectOneMenu value="#{parametrosSeguimiento.valorCombo}"
+                                         styleClass="combos" 
+                                         style="width:300px;"
+                                         required="true"
+                                         requiredMessage="#{mensajes['msgRequerido']}"
+                                         id="catParametrosSgt">
+                            <p:ajax update="panelParams" listener="#{parametrosSeguimiento.longitudListener}" event="change" />   
+                            <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "  
+                                          itemValue="#{null}" />
+                            <f:selectItems value="#{parametrosSeguimiento.parametrosSgt}" var="cat"
+                                           itemLabel="#{cat.nombre}"
+                                           itemValue="#{cat.idParametro}" />                                                       
+                        </p:selectOneMenu>
+                        <p:message for="catParametrosSgt" display="text"/> 
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Valor Par&aacute;metro"/>
+                                <h:outputText value="*" style="color:red" />
+                            </p:column>
+                        </p:row>        
+                        <p:selectOneMenu  id="B" style="width:300px;" 
+                                          styleClass="combos"
+                                          rendered="#{parametrosSeguimiento.booleanValue}"
+                                          value="#{parametrosSeguimiento.inputParameter}" 
+                                          required="true"
+                                          requiredMessage="#{mensajes['msgRequerido']}">
+                            <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']}"    
+                                          itemValue="#{null}"/>
+                            <f:selectItems value="#{parametrosSeguimiento.catalogoValorBoolean}" var="cat"
+                                           itemLabel="#{cat.nombre=='Sí'?'Verdadero':'Falso'}"
+                                           itemValue="#{cat.id}" />
+                        </p:selectOneMenu>
+                        <p:calendar  value="#{parametrosSeguimiento.paramFecha}"
+                                     rendered="#{parametrosSeguimiento.dateValue}"    
+                                     pattern="dd/MM/yyyy"
+                                     locale="es"
+                                     required="true"
+                                     requiredMessage="#{mensajes['msgRequerido']}" 
+                                     id="popupButtonCal2" 
+                                     showOn="button" />  
+                        <p:inputMask id="txtValue" 
+                                     rendered="#{parametrosSeguimiento.numericValue}"
+                                     disabled="#{parametrosSeguimiento.disableCampoNumber}"
+                                     required="true"
+                                     value="#{parametrosSeguimiento.inputParameter}" 
+                                     requiredMessage="#{mensajes['msgRequerido']}"
+                                     maxlength="#{parametrosSeguimiento.precision}"
+                                     mask="#{parametrosSeguimiento.numberMask}"/>
+                        <p:inputTextarea rows="10" cols="55"  
+                                         value="#{parametrosSeguimiento.inputParameter}"
+                                         rendered="#{parametrosSeguimiento.stringValue}"
+                                         counter="counter"
+                                         counterTemplate="{0} caracteres restantes."
+                                         id="valorParam"
+                                         required="true"
+                                         maxlength="#{parametrosSeguimiento.longitudMaxima}"
+                                         requiredMessage="#{mensajes['msgRequerido']}"/>
+                        <h:outputText id="counter" />  
+                        <p:message display="text" for="valorParam"/>
+                        <p:message display="text" for="txtValue"/>
+                        <p:message display="text" for="popupButtonCal2"/>
+                        <p:message display="text" for="B"/>
+                        <p:commandButton 
+                            value="Actualizar Par&aacute;metro" 
+                            type="submit" ajax="false" 
+                            action="#{parametrosSeguimiento.guardarParametrosEF}">
+                        </p:commandButton>
+                    </h:panelGrid>
+                    <p:panel id="parametrosSgt"
+                             styleClass="panel-principal">
+                        <p:dataTable   var="detalle" 
+                                       value="#{parametrosSeguimiento.parametrosVigentesSgt}"
+                                       paginator="true"
+                                       rows="10"
+                                       paginatorPosition="bottom"
+                                       emptyMessage="No hay par&aacute;metros cargados a&uacute;n" id="paramSgt">
+                            <f:facet name="header">
+                                <h:outputText value="Par&aacute;metros Vigentes"/>
+                            </f:facet>
+                            <p:column style="text-align:center;">
+                                <f:facet name="header">
+                                    <h:outputText value="Nombre" />
+                                </f:facet>
+                                <h:outputText value="#{detalle.nombre}" />
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <f:facet name="header">
+                                    <h:outputText value="Valor:" />
+                                </f:facet>
+                                <h:outputText value="#{detalle.valor==0?'Falso':'Verdadero'}" rendered="#{detalle.tipoDato=='B'?'true':'false'}"/>
+                                <h:outputText value="#{detalle.valor}" rendered="#{detalle.tipoDato!='B'?'true':'false'}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel> 
+                </p:panel>    
+            </h:form>
+            <h:form id="formaGeneral">
+                <p:panel id="panelCatalogos" styleClass="panel-principal" header="Actualizar Días Vencimiento" visible="true"  >
+                    <h:panelGrid columns="1" >
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Tipo Documento"/>
+                                <h:outputText value="*" style="color:red" />
+                            </p:column>
+                        </p:row>
+                        <p:selectOneMenu value="#{parametrosSeguimiento.tipoDocumento}"
+                                         styleClass="combos" 
+                                         style="width:300px;"
+                                         required="true"
+                                         requiredMessage="#{mensajes['msgRequerido']}"
+                                         id="catTipoDocumento">
+                            <p:ajax update="formaGeneral:panelCatalogos" listener="#{parametrosSeguimiento.handleTipoDocumento}" event="change" />   
+                            <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "   
+                                          itemValue="#{null}" />
+                            <f:selectItems value="#{parametrosSeguimiento.catalogoTipoDocumento}" var="cat"
+                                           itemLabel="#{cat.nombre}"
+                                           itemValue="#{cat.id}" />                                                       
+                        </p:selectOneMenu>
+                        <p:message for="catTipoDocumento" display="text"/> 
+                    </h:panelGrid> 
+                    <h:panelGrid columns="1" >
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Etapa Documento"/>
+                                <h:outputText value="*" style="color:red" />
+                            </p:column>
+                        </p:row>
+                        <p:selectOneMenu value="#{parametrosSeguimiento.etapaDocumento}"
+                                         styleClass="combos" 
+                                         style="width:300px;"
+                                         required="true"
+                                         requiredMessage="#{mensajes['msgRequerido']}"
+                                         id="catEtapaDocumento">
+                            <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "   
+                                          itemValue="#{null}" />
+                            <f:selectItems value="#{parametrosSeguimiento.catalogoEtapaDocumento}" var="o"
+                                           itemLabel="#{o.nombreDocumentoEtapa}"
+                                           itemValue="#{o.idEtapaVigilancia}" />                                                      
+                        </p:selectOneMenu>
+                        <p:message for="catEtapaDocumento" display="text" /> 
+                    </h:panelGrid> 
+                    <h:panelGrid>  
+
+                        <p:row>
+                            <p:column>
+                                <h:outputText value="Días Vencimiento"/>
+                                <h:outputText value="*" style="color:red" />
+                            </p:column>
+                        </p:row>
+                        <p:inputMask id="descripcionPlantilla" 
+                                     mask="9?99"
+                                     maxlength="3"
+                                     required="true" 
+                                     requiredMessage="#{mensajes['msgRequerido']}"
+                                     value="#{parametrosSeguimiento.diasVencimiento}"/>
+                        <p:message for="descripcionPlantilla" display="text"/>                                                       
+                    </h:panelGrid> 
+                    <br></br>                  
+                    <h:panelGrid>  
+                        <p:commandButton action="#{parametrosSeguimiento.actualizarDiasVencimiento}" value="Guardar" type="submit" ajax="false" />
+                    </h:panelGrid> 
+                </p:panel>  
+                <p:panel id="panelParametrosVigentes"
+                         styleClass="panel-principal"
+                         visible="true" >
+                    <p:dataTable var="detalle" 
+                                 value="#{parametrosSeguimiento.listaParametrosVigentes}"
+                                 paginator="true"
+                                 rows="10"
+                                 paginatorPosition="bottom"
+                                 emptyMessage="No hay parametros cargados aún" id="parametrosVig">
+                        <f:facet name="header">
+                            <h:outputText value="Par&aacute;metros Vigentes"/>
+                        </f:facet>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText value="Tipo Documento" />
+                            </f:facet>
+                            <h:outputText value="#{detalle.tipoDocumento}" />
+                        </p:column>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText value="Etapa Documento" />
+                            </f:facet>
+                            <h:outputText value="#{detalle.etapa}" />
+                        </p:column>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText value="Días Vencimiento" />
+                            </f:facet>
+                            <h:outputText value="#{detalle.diasVencimiento}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:panel> 
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

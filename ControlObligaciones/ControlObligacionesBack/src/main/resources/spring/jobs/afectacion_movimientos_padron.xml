@@ -1,0 +1,28 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:batch="http://www.springframework.org/schema/batch" 
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+    
+  
+
+    <batch:job id="afectacionMovimientosPadronJob">
+        <batch:step id="cargaPadronStep">
+            <batch:tasklet>
+                <batch:chunk reader="bajaEnPadronReader" writer="bajaIcepWriter"
+                             commit-interval="50000" skip-limit="10000">
+                    <batch:skippable-exception-classes>
+                        <batch:include class=" org.springframework.dao.DuplicateKeyException"/>
+                    </batch:skippable-exception-classes>
+                </batch:chunk>
+                <batch:no-rollback-exception-classes>
+                    <batch:include class=" org.springframework.dao.DuplicateKeyException"/>
+                </batch:no-rollback-exception-classes>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
+</beans>

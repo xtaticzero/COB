@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="X-UA-Compatible" content="IE=8"/>
+<title>SAT</title>
+<h:outputStylesheet library="css" name="estilos_estandar_45.css" />
+<h:outputStylesheet library="css" name="dcverticalmegamenu.css" />
+
+</h:head>
+
+<h:body>
+<div id="cuerpo_principal">
+<div id="header">
+       
+        <ui:insert name="header">
+    <ui:include src="/WEB-INF/templates/header.xhtml" />
+  </ui:insert>  
+
+</div>
+<div id="section">
+    <div class="demo-container clear">
+      <ui:insert name="sidebar">
+    <ui:include src="/WEB-INF/templates/sidebar.xhtml" />
+  </ui:insert>  
+    </div>
+    
+    <div width="30px">
+    </div>
+    
+    <div id="divOne">
+    <ui:insert name="content"/>
+    </div>
+    
+<div id="footer">
+  <p>
+            &nbsp;
+          </p>
+  <div id="pie_b">&nbsp;</div>
+  <p>
+            &nbsp;
+          </p>
+  <p>
+            &nbsp;
+          </p>
+  <div id="pie_d">&nbsp;</div>
+</div>
+</div></div></h:body>
+</html>    

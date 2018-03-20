@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>Aprobar Multas</title>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:outputScript library="js" name="visualizaDocsFirmaJs.js"/>
+        <ui:include src="/WEB-INF/templates/loader.xhtml"/>
+        <f:event listener="#{aprobarMultaGruposMB.mensajeEmision}" type="preRenderView" />
+        <h:body>            
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <ui:include src="/WEB-INF/templates/loader.xhtml"/>
+            <h:form id="mostrarMultasGrupo" prependId="false">
+                <p:messages id="mensajes" showDetail="true" showSummary="true"/>
+                <p:panel styleClass="panel-princial" style="width:800px;margin-left:auto;margin-right:auto;" visible="true">                   
+                    <p:dataTable value="#{aprobarMultaGruposMB.aprobarMultaGruposManagedBeanHelper.listaMultasGrupo}"
+                                 var="multaGrupo"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 rows="12"
+                                 paginatorAlwaysVisible="false"
+                                 id="tblVigilancias"
+                                 emptyMessage="#{mensajes['msg.dataTable.vacio']}">                        
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.fechaEmision']}"/>
+                            </f:facet>
+                            <p:commandLink value="#{multaGrupo.fechaEmision}" style="color: blue" onclick="pbAjax.start();
+                                             dlgBarraEstado.show();">
+                                <f:setPropertyActionListener value="#{multaGrupo}"
+                                                             target="#{aprobarMultaGruposMB.multaAprobarGrupo}"/>
+                            </p:commandLink>
+                        </p:column>                            
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.medioEnvio']}"/>
+                            </f:facet>
+                            <h:outputText value="#{multaGrupo.medioEnvio}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.tipoFirma']}"/>
+                            </f:facet>
+                            <h:outputText value="#{multaGrupo.tipoFirma}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarMultas.tipoMulta']}"/>
+                            </f:facet>
+                            <h:outputText value="#{multaGrupo.tipoMulta}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarMultas.numeroMultas']}"/>
+                            </f:facet>
+                            <h:outputText value="#{multaGrupo.cantidadMultas}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <p:dialog header="Procesando..." 
+                              widgetVar="dlgBarraEstado"
+                              draggable="false"
+                              closable="false"
+                              resizable="false"
+                              modal="true"
+                              onShow="poll.start();"
+                              onHide="poll.stop();"
+                              id="dialogoBarra">
+                        <h:outputText value="Consultando, por favor espere..."/>
+                        <p:progressBar widgetVar="pbAjax" 
+                                       ajax="true" 
+                                       value="#{aprobarMultaGruposMB.aprobarMultaGruposManagedBeanHelper.progress.valor}" 
+                                       labelTemplate="{value}%" 
+                                       styleClass="animated"
+                                       interval="1000">  
+                            <p:ajax event="complete" 
+                                    oncomplete="dlgBarraEstado.hide();pbAjax.setValue(0);dlg2.show();redirigir();" update="@form"/>  
+                        </p:progressBar>  
+                    </p:dialog>
+                </p:panel>
+                <p:commandButton value="descarga" styleClass="botonDescargaInicio"  ajax="false"
+                                 rendered="#{aprobarMultaGruposMB.botonDescargaVisible}">
+                    <p:fileDownload value="#{aprobarMultaGruposMB.descargaEmision}"/>
+                </p:commandButton>
+                <p:dialog header="Redirigiendo..." widgetVar="dlg2" modal="true" draggable="false" closable="false">
+                    <h:outputText value="Redirigiendo pagina solicitada..." />
+                </p:dialog>   
+                <p:remoteCommand name="redirigir" actionListener="#{aprobarMultaGruposMB.irMultasIndividuales}"/>
+                <p:poll interval="10" listener="#{aprobarMultaGruposMB.increment}"
+                        widgetVar="poll" autoStart="false"/>
+            </h:form>            
+        </h:body>
+    </html>
+</f:view>

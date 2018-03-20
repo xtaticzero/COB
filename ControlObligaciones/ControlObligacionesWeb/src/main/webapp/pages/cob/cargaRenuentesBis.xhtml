@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui"
+        >
+    <html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets">
+        <h:head>
+            <title>cargaRenuentesBis</title>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:outputStylesheet library="css/" name="estilos.css"/>
+        <h:body>
+            <script type="text/javascript">
+                function showStatus() {
+                    statusDialog.show();
+                }
+                function hideStatus() {
+                    statusDialog.hide();
+                }
+            </script>            
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+
+            <p:dialog modal="true" widgetVar="statusDialog" header="Procesando" draggable="false" closable="false" resizable="false">
+                <table width="100%">
+                    <tr align="center">
+                        <td align="center">
+                            <p:outputLabel value="Cargando informacion. Espere por favor." />
+                        </td>
+                    </tr>
+                    <tr><td></td></tr>
+                    <tr align="center">
+                        <td align="center">
+                            <p:graphicImage value="/resources/images/ajaxloading.gif" />  
+                        </td>
+                    </tr>
+                </table>            
+            </p:dialog>
+
+            <h:form id="formaUploader" prependId="false" enctype="multipart/form-data">
+                <p:panel header="Seleccion de archivo" style="width:650px;margin-left:auto;margin-right:auto;">
+                    <p:fileUpload value="#{cargaRenuentesBis.file}" mode="simple"
+                                  dragDropSupport="false" update="panelArchivosRenuentes" sizeLimit="100000" multiple="false"
+                                  allowTypes="/(\.|\/)(txt)$/"/>
+                    <br/>
+                    <br/>
+                    <p:commandButton value="Validar" ajax="false" actionListener="#{cargaRenuentesBis.procesarArchivo}" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)"/>&nbsp;
+                    <h:outputText value="Nota: Al validar el archivo, se cambiar&aacute; el estado de los documentos a renuentes." style="color: red"/>
+
+                </p:panel>
+
+                <p:panel id="panelArchivosRenuentes" header="#{mensajes['ui.cifrascontrol.panel.header']}"
+                         visible="true" style="width:650px;margin-left:auto;margin-right:auto;">
+                    <p:dataTable var="detalle" value="#{cargaRenuentesBis.listaDatosCarga}"
+                                 emptyMessage="No hay archivos cargados aún" id="cifrasControl">
+                        <p:column style="text-align:center;height:30px;">
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['ui.componente.omisos.col1']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.nombreArchivo}"/>
+                        </p:column>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['ui.componente.omisos.col2']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.totRegistros}"/>
+                        </p:column>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText escape="false" value="#{mensajes['ui.componente.omisos.col3']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.goodRegistros}"/>
+                        </p:column>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText escape="false"
+                                              value="#{mensajes['ui.componente.bitacora.detalle.col3']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.wrongRegistros}"/>
+                        </p:column>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['ui.componente.bitacora.detalle.col4']}"/>
+                            </f:facet>
+                            <p:commandButton rendered="#{cargaRenuentesBis.showButtonBitacora}" ajax="false"
+                                             icon="ui-icon-circle-arrow-s">
+                                <p:fileDownload value="#{cargaRenuentesBis.bitacoraFile}" id="downloader"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+
+
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

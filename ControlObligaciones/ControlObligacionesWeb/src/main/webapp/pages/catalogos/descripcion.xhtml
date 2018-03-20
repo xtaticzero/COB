@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:head></h:head>
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:outputStylesheet library="css/" name="estilos.css"/>
+    <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+    <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+              resizable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+    </p:dialog>
+
+    <h:form id="Campo" >
+        <p:messages id="messages"  showDetail="true" globalOnly="true" autoUpdate="true" closable="true" />
+        <p:panel id="pnlTbl" style="width:800px" visible="#{descripcionMB.descripcionModel.tblVisible}">
+
+            <p:dataTable id="tbl" var="descripcion" value="#{descripcionMB.descripcionModel.listDescripcion}" emptyMessage="#{mensajes['msg.dataTable.vacio']}"
+                         filteredValue="#{descripcionMB.descripcionModel.listDescripcionTmp}" paginator="true" paginatorPosition="bottom" rows="10" resizableColumns="true">
+                <f:facet name= "header">
+                    <h:outputText value="#{mensajes['descripcion.titulo']}"/>
+                    <h:commandLink action="#{descripcionMB.generaExcel}" immediate="true" style="margin-left:90%;">
+                        <h:graphicImage value="/resources/images/excel1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                    <p:spacer width="15" height="10"/>
+                    <h:commandLink  action="#{descripcionMB.generaPdf}" immediate="true" >
+                        <h:graphicImage value="/resources/images/pdf1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                </f:facet>
+                <p:column sortBy="#{descripcion.descripcion}" filterBy="#{descripcion.descripcion}" headerText="#{mensajes['etDescripcionVig']}" width="22px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipDescripcion" value="#{descripcion.descripcion}"></h:outputText>
+                    <p:tooltip for="tipDescripcion" value="#{descripcion.descripcion}"></p:tooltip> 
+                </p:column>
+                <p:column headerText="#{mensajes['etEditar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this" update=":Campo:pnlEdita, :Campo:pnlTbl" action="#{descripcionMB.abrirEditar}"
+                                     icon="ui-icon-pencil" onclick="statusDialog.show();" onsuccess="statusDialog.hide();">
+                        <f:setPropertyActionListener value="#{descripcion}" 
+                                                     target="#{descripcionMB.descripcionModel.descripcionEdit}" /> 
+                    </p:commandButton>
+                </p:column>
+                <p:column headerText="#{mensajes['etEliminar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this"  update=":Campo:pnlElimina, :Campo:pnlTbl" action="#{descripcionMB.abrirEliminar}"
+                                     icon="ui-icon-close" onclick="statusDialog.show();" onsuccess="statusDialog.hide();">
+                        <f:setPropertyActionListener value="#{descripcion}" 
+                                                     target="#{descripcionMB.descripcionModel.descripcionEli}" /> 
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <div align="right">
+                <br />
+                <p:commandButton process="@this" update=":Campo:pnlAgrega, :Campo:pnlTbl" 
+                                 onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                 action="#{descripcionMB.abrirNuevo}" value="#{mensajes['btnNuevo']}" />
+            </div>
+
+        </p:panel>
+
+        <p:panel id="pnlAgrega" header="#{mensajes['descripcion.tituloAgrega']}" style="width:600px"  visible="#{descripcionMB.descripcionModel.nvoVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridNvo" columns="2" cellspacing="3" cellpadding="3">
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etDescripcionVig']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="Descripcion" value="#{descripcionMB.descripcionModel.descripcion}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="5" cols="30"
+                                 maxlength="300"  
+                                 counter="counter1"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesDescripcion" for="Descripcion" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter1"/>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarNvo" value="#{mensajes['btnGuardar']}" action="#{descripcionMB.agrega}" style="left:90%"
+                                     process="@this, Descripcion" update="pnlAgrega, pnlTbl, messages"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarNvo" value="#{mensajes['btnCancelar']}" action="#{descripcionMB.cerrar}" style="left:90%"
+                                     process="@this" update="pnlAgrega, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlAgrega" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <p:panel id="pnlEdita" header="#{mensajes['descripcion.tituloEditar']}"  style="width:600px" visible="#{descripcionMB.descripcionModel.edtVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridEdt" columns="2" cellspacing="3" cellpadding="3">
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etDescripcionVig']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="DescripcionEdt"
+                                 value="#{descripcionMB.descripcionModel.descripcionEdit.descripcion}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="5" cols="30"
+                                 maxlength="300"  
+                                 counter="counter3"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesDescEdit" for="DescripcionEdt" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter3"/>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEdt" value="#{mensajes['btnGuardar']}" action="#{descripcionMB.edita}" style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     process="@this, DescripcionEdt" update="pnlEdita, pnlTbl, messages"/>
+                    <p:commandButton id="cmbCancelarEdt" value="#{mensajes['btnCancelar']}" action="#{descripcionMB.cerrar}"  style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     update="pnlEdita, pnlTbl, messages" process="@this" immediate="true">
+                        <p:resetInput target="pnlEdita" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <p:panel id="pnlElimina" header="#{mensajes['descripcion.tituloElimina']}" style="width:600px" visible="#{descripcionMB.descripcionModel.elmVisible}">
+
+            <h:panelGrid id="gridEli" columns="2" cellspacing="3" cellpadding="3">
+                <h:outputText  value="#{mensajes['etDescripcionVig']}"/>
+                <p:inputTextarea id="txtDescripcionEli" value="#{descripcionMB.descripcionModel.descripcionEli.descripcion}" disabled="true" style="width:200px"/>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEli" value="#{mensajes['btnEliminar']}" action="#{descripcionMB.elimina}" style="left:90%"
+                                     process="@this" update="pnlElimina, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlElimina').hide();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarEli" value="#{mensajes['btnCancelar']}" action="#{descripcionMB.cerrar}" style="left:90%"
+                                     process="@this" update="pnlElimina, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlElimina').hide();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlElimina" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+    </h:form>
+</html>

@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>#{mensajes['desbloqueoConcurrentes.tituloPantalla']}</title> 
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+       
+        <h:body>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <h:form  id="desbloqueo" prependId="false">
+                <ui:include src="/WEB-INF/templates/loader.xhtml"/>    
+
+
+                <p:panel styleClass="panel-princial" style="width:800px;margin-left:auto;margin-right:auto;">
+                    <p:messages id="mensajes" showDetail="true" showSummary="true"/>
+                    <h:panelGrid>
+                        <p:panel header="#{mensajes['desbloqueoConcurrentes.tituloTabla']}">
+                            <p:dataTable value="#{desbloqueoServiciosConcurrentesMB.listaElementosConcurrentes}"
+                                         var="elementoConcurrente" id="elementosBloqueados"
+                                         emptyMessage="#{mensajes['msg.dataTable.vacio']}">                            
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['desbloqueoConcurrentes.nombreServicio']}" />
+                                    </f:facet>
+                                    <h:outputText value="#{elementoConcurrente.idServicio}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['desbloqueoConcurrentes.firma']}" />
+                                    </f:facet>
+                                    <h:outputText value="#{elementoConcurrente.firmaProceso}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="#{mensajes['desbloqueoConcurrentes.seleccionar']}" />
+                                    </f:facet>
+                                    <h:selectBooleanCheckbox value="#{elementoConcurrente.checado}"/>
+                                </p:column>
+                            </p:dataTable>                            
+                        </p:panel>                        
+                    </h:panelGrid>
+                     <p:commandButton value="#{mensajes['desbloqueoConcurrentes.desbloquear']}"
+                                      actionListener="#{desbloqueoServiciosConcurrentesMB.desbloqueo}" 
+                                      update="mensajes elementosBloqueados"/>
+                </p:panel>               
+            </h:form>                                    
+        </h:body>
+    </html>
+</f:view>

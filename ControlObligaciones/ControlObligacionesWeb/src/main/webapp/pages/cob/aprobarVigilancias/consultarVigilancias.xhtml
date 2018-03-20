@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>Cifras de Vigilancia</title>           
+            <h:outputStylesheet library="css" name="estilos.css"/>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:outputScript library="js" name="calendarioIdiomaEs.js"/>
+        <h:body>
+            <ui:include src="/WEB-INF/templates/loader.xhtml"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+                      resizable="false">
+                <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+            </p:dialog>
+            <h:form id="consultarVigilanciasForm" prependId="false">             
+                <p:messages id="mensajes" showDetail="true" showSummary="false"/>
+                <p:panel id="panelBuscar" header="Filtro de Busqueda" style="width:820px;margin-left:auto;margin-right:auto;"  >
+
+                    <h:panelGrid  columns="3">
+                        <h:outputText value="Opciones: " />  
+                        <p:selectOneRadio id="opcionesBusqueda" 
+                                          value="#{consultaVigilanciasAlManagedBean.selected}"
+                                          required="true"
+                                          requiredMessage="#{mensajes['ui.validacion.required']}">  
+                            <f:selectItem itemLabel="Vigilancia" itemValue="1" />  
+                            <f:selectItem itemLabel="Fecha de carga" itemValue="2" />  
+                            <p:ajax update=":consultarVigilanciasForm:panelBuscar" process="@this" listener="#{consultaVigilanciasAlManagedBean.handleOpcionesBusqueda}" event="change" />   
+                        </p:selectOneRadio>
+                        <p:message display="text" for="opcionesBusqueda"/>
+                    </h:panelGrid> 
+
+                    <h:panelGrid  columns="4" rendered="#{consultaVigilanciasAlManagedBean.mostrarOpcionIdVig}" >
+                        <h:outputText value="Vigilancia"/>
+                        <p:inputText  id="paramIdVigilancia"
+                                      required="true"
+                                      requiredMessage="#{mensajes['ui.validacion.required']}"
+                                      value="#{consultaVigilanciasAlManagedBean.consultaVigilanciasAlHelper.vigilancia.numeroCarga}">
+                        </p:inputText>    
+                        <p:message display="text" for="paramIdVigilancia"/>
+                    </h:panelGrid> 
+
+                    <h:panelGrid  columns="6" rendered="#{consultaVigilanciasAlManagedBean.mostrarOpcionFechas}">
+                        <h:outputText value="Desde"/>
+                        <p:calendar id="popupButtonCal" 
+                                    value="#{consultaVigilanciasAlManagedBean.paramFechaInicio}"
+                                    pattern="dd/MM/yyyy"
+                                    required="true"
+                                    requiredMessage="#{mensajes['ui.validacion.required']}"
+                                    showOn="button"
+                                    locale="es"
+                                    readonlyInput="true">
+                            <p:ajax event="dateSelect" listener="#{consultaVigilanciasAlManagedBean.habilitaFechaFin}" update=":consultarVigilanciasForm:panelBuscar"/>
+                        </p:calendar>
+                        <p:message display="text" for="popupButtonCal"/>
+
+                        <h:outputText value="Hasta"/>
+                        <p:calendar  value="#{consultaVigilanciasAlManagedBean.paramFechaFin}" 
+                                     pattern="dd/MM/yyyy" 
+                                     mindate="#{consultaVigilanciasAlManagedBean.paramFechaFinMin}"
+                                     maxdate="#{consultaVigilanciasAlManagedBean.paramFechaFinMax}"
+                                     required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}" 
+                                     id="popupButtonCal2" 
+                                     showOn="button" 
+                                     locale="es"
+                                     readonlyInput="true"/>  
+                        <p:message display="text" for="popupButtonCal2"/>
+
+                    </h:panelGrid>
+
+                    <p:commandButton action="#{consultaVigilanciasAlManagedBean.busquedaBitacoraErrores}" value="Buscar" type="submit" ajax="false" onclick="statusDialog.show();" onsuccess="statusDialog.hide();"/>  
+                </p:panel>
+                <br></br>
+            </h:form>
+            <h:form id="formaGeneral2"> 
+                <p:panel id="resultados" header="Resultados" style="width:820px;margin-left:auto;margin-right:auto;" visible="#{consultaVigilanciasAlManagedBean.mostrarPanelResultados}"
+                         rendered="#{consultaVigilanciasAlManagedBean.consultaVigilanciasAlHelper.vigilancia.detalle != null}">
+                    <h:panelGrid columns="2">
+                        <h:outputText value="#{mensajes['etNumeroVigilancia']}"/>
+                        <h:outputText value="#{consultaVigilanciasAlManagedBean.consultaVigilanciasAlHelper.vigilancia.numeroCarga}"/>
+                        <h:outputText value="Fecha de generación de vigilancia:"/>
+                        <h:outputText value="#{consultaVigilanciasAlManagedBean.consultaVigilanciasAlHelper.vigilancia.fechaCarga}"/>
+                        <h:outputText value="Descripción de la vigilancia:"/>
+                        <h:outputText value="#{consultaVigilanciasAlManagedBean.consultaVigilanciasAlHelper.vigilancia.descripcionVigilancia}"/>
+                        <h:outputText value="Tipo de documento:"/>
+                        <h:outputText value="#{consultaVigilanciasAlManagedBean.consultaVigilanciasAlHelper.vigilancia.tipoDocumento}"/>
+                        <h:outputText value="Medio de envío:"/>
+                        <h:outputText value="#{consultaVigilanciasAlManagedBean.consultaVigilanciasAlHelper.vigilancia.tipoMedio}"/>
+                        <h:outputText value="Tipo de firma:"
+                                      rendered="#{consultaVigilanciasAlManagedBean.
+                                                  consultaVigilanciasAlHelper.
+                                                  vigilancia.tipoFirma!=null}"/>
+                        <h:outputText value="#{consultaVigilanciasAlManagedBean.
+                                               consultaVigilanciasAlHelper.
+                                               vigilancia.tipoFirma}"
+                                      rendered="#{consultaVigilanciasAlManagedBean.
+                                                  consultaVigilanciasAlHelper.
+                                                  vigilancia.tipoFirma!=null}"/>
+                        <h:outputText value="Nivel de emisión:"
+                                      rendered="#{consultaVigilanciasAlManagedBean.
+                                                  consultaVigilanciasAlHelper.
+                                                  vigilancia.
+                                                  nivelEmision!=null}"/>
+                        <h:outputText value="#{consultaVigilanciasAlManagedBean.
+                                               consultaVigilanciasAlHelper.
+                                               vigilancia.
+                                               nivelEmision.nivelEmision}"
+                                      rendered="#{consultaVigilanciasAlManagedBean.
+                                                  consultaVigilanciasAlHelper.
+                                                  vigilancia.
+                                                  nivelEmision!=null}"/>
+                        <h:outputText value="Cargo administrativo:" 
+                                      rendered="#{consultaVigilanciasAlManagedBean.
+                                                  consultaVigilanciasAlHelper.
+                                                  vigilancia.cargoAdministrativo!=null}"/>
+                        <h:outputText value="#{consultaVigilanciasAlManagedBean.
+                                               consultaVigilanciasAlHelper.
+                                               vigilancia.cargoAdministrativo}"
+                                      rendered="#{consultaVigilanciasAlManagedBean.
+                                                  consultaVigilanciasAlHelper.
+                                                  vigilancia.cargoAdministrativo!=null}"/>
+                        <h:outputText value="Fecha de corte:"/>
+                        <h:outputText value="#{consultaVigilanciasAlManagedBean.consultaVigilanciasAlHelper.vigilancia.fechaCorte}"/>
+                    </h:panelGrid>
+                    <p:dataTable value="#{consultaVigilanciasAlManagedBean.consultaVigilanciasAlHelper.vigilancia.detalle}"
+                                 var="detalle"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 paginatorAlwaysVisible="false"
+                                 rows="15"
+                                 emptyMessage="No se encontraron resultados para esta vigilancia">
+                        <p:column headerText="Número de ALSC">
+                            <h:outputText value="#{detalle.idAdministracionLocal}"/>
+                        </p:column>
+                        <p:column headerText="Descripción de ALSC">
+                            <h:outputText value="#{detalle.administracionLocal}"/>
+                        </p:column>
+                        <p:column headerText="Número de Documentos generados">
+                            <h:outputText value="#{detalle.cantidadDocumentos}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <br/>
+                    <p:dataTable value="#{consultaVigilanciasAlManagedBean.consultaVigilanciasAlHelper.vigilancia.detalleEF}"
+                                 var="detalleEF"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 paginatorAlwaysVisible="false"
+                                 rows="15"
+                                 rendered="#{consultaVigilanciasAlManagedBean.
+                                             consultaVigilanciasAlHelper.vigilancia.detalleEF!=null}"
+                                 emptyMessage="No se encontraron resultados para esta vigilancia">
+                        <p:column headerText="Número de EF">
+                            <h:outputText value="#{detalleEF.idEntidadFederativa}"/>
+                        </p:column>
+                        <p:column headerText="Entidad Federativa">
+                            <h:outputText value="#{detalleEF.nombreEntidadFederativa}"/>
+                        </p:column>
+                        <p:column headerText="Número de Documentos generados">
+                            <h:outputText value="#{detalleEF.cantidadDocumentos}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel> 
+                <br></br>
+            </h:form>
+
+            <h:form id="formaGeneral3"> 
+                <p:panel id="panelBitacoraErrores" header="Vigilancias" style="width:820px;margin-left:auto;margin-right:auto;" visible="#{consultaVigilanciasAlManagedBean.mostrarPanelTabla}">
+                    <p:dataTable id="tbl" var="i" value="#{consultaVigilanciasAlManagedBean.bitacoraErrores}" emptyMessage="#{mensajes['msg.dataTable.vacio']}" style="overflow:auto">
+
+                        <p:column headerText="Vigilancia" >
+                            <p:commandLink actionListener="#{consultaVigilanciasAlManagedBean.busquedaBitacoraErrores}" process="@this" type="submit" ajax="false" onclick="statusDialog.show();" onsuccess="statusDialog.hide();">
+                                <h:outputText id="idVigilancia" value="#{i.idVigilancia} " style="color:blue"/>
+                                <f:param name="idVigilanciaParam" value="#{i.idVigilancia}"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Descripcion">
+                            <h:inputTextarea id="descripcionTipoDoc" style="border:none;resize:none" cols="90" rows="1" value="#{i.descripcionVigilancia}" readonly="true" />
+                        </p:column>
+                        <p:column headerText="Fecha de Carga">
+                            <h:outputText id="fechaCarga" value="#{i.fechaCargaArchivoStr}"></h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

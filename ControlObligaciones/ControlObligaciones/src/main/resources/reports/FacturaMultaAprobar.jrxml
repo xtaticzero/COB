@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="FacturaMultaAprobar" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="038cb74e-a207-48a4-99e6-b36a064935fe">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="891"/>
+	<parameter name="descripcionVigilancia" class="java.lang.String"/>
+	<parameter name="fechaEmision" class="java.lang.String"/>
+	<parameter name="firmadas" class="java.lang.Long"/>
+	<parameter name="noGeneradas" class="java.lang.Long"/>
+	<parameter name="trasladadas" class="java.lang.Long"/>
+	<parameter name="total" class="java.lang.Long"/>
+	<parameter name="totalDocumentosProcesados" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/home/emmanuel/NetBeansProjects/4925/ControlObligaciones/ControlObligaciones/src/main/resources/reports/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="medioEnvio" class="java.lang.String"/>
+	<parameter name="tipoFirma" class="java.lang.String"/>
+	<parameter name="tipoMulta" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="dsFirmadas" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<field name="dsNoGeneradas" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<field name="dsTrasladadas" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<background>
+		<band height="802">
+			<image>
+				<reportElement uuid="5bc94333-5572-4816-960a-09405f77528c" x="17" y="186" width="520" height="430"/>
+				<imageExpression><![CDATA["/siat/imagenes/fondo.png"]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="335" splitType="Stretch">
+			<image>
+				<reportElement uuid="4d6c760a-9a88-472f-8b95-b6d00b76ecd9" x="10" y="0" width="78" height="80"/>
+				<imageExpression><![CDATA["reports/images/logoSHCP.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement uuid="7168da4e-4ca3-4fcc-a9f8-92963c7be02e" x="462" y="0" width="78" height="80"/>
+				<imageExpression><![CDATA["reports/images/logoSAT.jpg"]]></imageExpression>
+			</image>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement uuid="7373eee2-321e-4e35-a1ff-0585314587c8" x="99" y="231" width="232" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fechaEmision}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="da4554ee-7a93-4812-9950-cfddb7de5f66" x="10" y="231" width="89" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de Emisión:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3442769b-6e5b-47d8-a92e-9c0a31b67cdd" x="322" y="86" width="233" height="20"/>
+				<textElement textAlignment="Right">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Administración General de Servicios al Contribuyente]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="c701f6c1-c50c-4448-9b65-ff0fbc995cfe" x="145" y="106" width="410" height="14"/>
+				<textElement textAlignment="Right">
+					<font fontName="Constantia" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{descripcionVigilancia}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1014805d-02ae-493d-9e4d-c1dd34037b8a" x="232" y="302" width="99" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{trasladadas}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="dce5b654-c639-45d9-9de7-2e64b1cb9e32" x="132" y="302" width="100" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{noGeneradas}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="8c73d2e9-0d1b-4143-a342-cb8e2413c10a" x="10" y="302" width="122" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{firmadas}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="5aaf6880-1782-4b6f-9946-5a446a928979" x="10" y="282" width="122" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Firmadas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3be55051-3b25-4654-a506-41238ddd5f0e" x="132" y="282" width="100" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[No Generadas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1ac18961-489b-493a-87f7-cfc87435e7a4" x="232" y="282" width="99" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Trasladadas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f5b00df7-ea97-4dad-9332-f02e221b7671" x="10" y="262" width="151" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total de Multas]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="f369701f-a341-4b81-a6b3-1fb3a2f8d483" x="99" y="171" width="232" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{medioEnvio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="a8f16a67-09b6-4a61-a6ee-1a85df7d0f1d" x="10" y="171" width="89" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Medio de Envio :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0c216286-8fa1-4a34-b832-2e43bff83df7" x="10" y="191" width="89" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de Firma :]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="4480ba8e-f8aa-4ef1-b185-4ecab6a6f475" x="99" y="191" width="232" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tipoFirma}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="cf31f6d9-61a7-4677-8694-545569533878" x="10" y="211" width="89" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de Multa :]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="380a2ef0-6d74-4694-bfb8-591ce942ab5e" x="99" y="211" width="232" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tipoMulta}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="623a02d6-0634-4408-a261-ed65e477cf3a" x="331" y="282" width="99" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="5d0eb590-6996-4d7f-bfad-7fc0d77800de" x="331" y="302" width="99" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="20">
+			<subreport>
+				<reportElement uuid="8e03b965-eb38-4be7-9919-bbbe17436ccb" x="10" y="0" width="544" height="15" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="firmadas">
+					<subreportParameterExpression><![CDATA[$P{firmadas}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[$F{dsFirmadas}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/facturaMultaAprobarSR_firmadas.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="20">
+			<subreport>
+				<reportElement uuid="adfc4ddb-b164-4d64-a1ab-cac79f77ef8a" x="10" y="0" width="545" height="15" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="noGeneradas">
+					<subreportParameterExpression><![CDATA[$P{noGeneradas}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[$F{dsNoGeneradas}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/facturaMultaAprobarSR_noGeneradas.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="20">
+			<subreport>
+				<reportElement uuid="da9aa470-1756-42c5-ad5a-b379c2f04f7f" x="10" y="0" width="544" height="15" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="trasladadas">
+					<subreportParameterExpression><![CDATA[$P{trasladadas}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[$F{dsTrasladadas}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/facturaMultaAprobarSR_trasladadas.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="14" splitType="Stretch">
+			<textField>
+				<reportElement uuid="a0157b84-f963-46bd-ab8f-bddf33ecee88" x="451" y="0" width="67" height="14"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pagina "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="51d5a199-7936-4ecc-bbc1-54fa67bc2f36" x="518" y="0" width="33" height="14"/>
+				<textElement textAlignment="Left">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

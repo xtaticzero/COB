@@ -1,0 +1,345 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head></h:head> 
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:outputStylesheet library="css/" name="estilos.css"/>
+    <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+    <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+              resizable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+    </p:dialog>
+
+    <h:form id="Campo" >
+        <p:messages id="messages"  showDetail="true" globalOnly="true" autoUpdate="true" closable="true" />
+        <p:panel id="pnlTbl" style="width:800px" visible="#{catalogoObligacionMB.obligacionModel.tblVisible}">
+
+            <p:dataTable id="tbl" var="obligacion" value="#{catalogoObligacionMB.obligacionModel.listObligacion}" emptyMessage="#{mensajes['msg.dataTable.vacio']}"
+                         filteredValue="#{catalogoObligacionMB.obligacionModel.listObligacionTmp}" paginator="true" paginatorPosition="bottom" rows="10" scrollable="true" scrollWidth= "778">
+                <f:facet name= "header">
+                    <h:outputText value="#{mensajes['oblig.titulo']}"/>
+                    <h:commandLink action="#{catalogoObligacionMB.generaExcel}" immediate="true" style="margin-left:90%;">
+                        <h:graphicImage value="/resources/images/excel1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                    <p:spacer width="15" height="10"/>
+                    <h:commandLink  action="#{catalogoObligacionMB.generaPdf}" immediate="true" >
+                        <h:graphicImage value="/resources/images/pdf1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                </f:facet>
+                <p:column sortBy="#{obligacion.idObligacion}" filterBy="#{obligacion.idObligacion}" headerText="#{mensajes['documentos.obligacion']}" style = "width:100px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipIdObli" value="#{obligacion.idObligacion}"/>
+                    <p:tooltip for="tipIdObli" value="#{obligacion.idObligacion}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{obligacion.descrObliCompleta}" filterBy="#{obligacion.descrObliCompleta}" headerText="#{mensajes['etIdObligacion']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipObli" style="border:none;resize:none" cols="30" rows="2" value="#{obligacion.descrObliCompleta}" readonly="true"/>
+                    <p:tooltip for="tipObli" value="#{obligacion.descrObliCompleta}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{obligacion.concepto}"  filterBy="#{obligacion.concepto}" headerText="#{mensajes['etConcepto']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipConcepto" value="#{obligacion.concepto}"></h:outputText>
+                    <p:tooltip for="tipConcepto" value="#{obligacion.concepto}"></p:tooltip> 
+                </p:column> 
+
+                <p:column sortBy="#{obligacion.descripcion}" filterBy="#{obligacion.descripcion}" headerText="#{mensajes['etDescripcion']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipDescripcion" style="border:none;resize:none" cols="30" rows="2" value="#{obligacion.descripcion}" readonly="true"/>
+                    <p:tooltip for="tipDescripcion" value="#{obligacion.descripcion}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{obligacion.valorBooleano.nombre}" filterBy="#{obligacion.valorBooleano.nombre}" headerText="#{mensajes['etAplicaRenuentes']}" style = "width:210px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipRenuente" value="#{obligacion.valorBooleano.nombre}"></h:outputText>
+                    <p:tooltip for="tipRenuente" value="#{obligacion.valorBooleano.nombre}"></p:tooltip> 
+                </p:column>
+                <p:column headerText="#{mensajes['etEditar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this" update=":Campo:pnlEdita, :Campo:pnlTbl" action="#{catalogoObligacionMB.abrirEditar}"
+                                     icon="ui-icon-pencil" onclick="statusDialog.show();" onsuccess="statusDialog.hide();">
+                        <f:setPropertyActionListener value="#{obligacion}" 
+                                                     target="#{catalogoObligacionMB.obligacionModel.obligacionEdit}" /> 
+                    </p:commandButton>
+                </p:column>
+                <p:column headerText="#{mensajes['etEliminar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this"  update=":Campo:pnlElimina, :Campo:pnlTbl" action="#{catalogoObligacionMB.abrirEliminar}"
+                                     icon="ui-icon-close" onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                     rendered="#{obligacion.fechaFinStr==1}">
+                        <f:setPropertyActionListener value="#{obligacion}" 
+                                                     target="#{catalogoObligacionMB.obligacionModel.obligacionEli}" /> 
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <div align="right">
+                <br />
+                <p:commandButton process="@this" update=":Campo:pnlAgrega, :Campo:pnlTbl" 
+                                 onclick="statusDialog.show();" onsuccess="statusDialog.hide();"
+                                 action="#{catalogoObligacionMB.abrirNuevo}" value="#{mensajes['btnNuevo']}" />
+            </div>
+
+        </p:panel>
+
+        <p:panel id="pnlAgrega" header="#{mensajes['oblig.tituloAgrega']}" style="width:650px"  visible="#{catalogoObligacionMB.obligacionModel.nvoVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridNvo" columns="2" cellspacing="3" cellpadding="3">
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdObligacion']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="Obligacion" value="#{catalogoObligacionMB.obligacionModel.idObligacionSan}" 
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:500px" panelStyle="width:496px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{catalogoObligacionMB.obligacionModel.listaComboObligacion}" var="val"
+                                   itemLabel="#{val.idAux}" itemValue="#{val.idCombo}" /> 
+
+
+                    <p:ajax update="Concepto"
+                            listener="#{catalogoObligacionMB.cargaConcepto}" /> 
+                </p:selectOneMenu>  
+
+                <h:outputText />
+                <p:message  id="cmbObligacion" for="Obligacion" display="text" /> 
+
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etConcepto']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="Concepto" value="#{catalogoObligacionMB.obligacionModel.concepto}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:490px"
+                                 rows="5" cols="30"
+                                 maxlength="300"
+                                 counter="counter16"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesConcEdit" for="Concepto" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter16"/>
+
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etDescripcion']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="Descripcion" value="#{catalogoObligacionMB.obligacionModel.descripcion}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:490px"
+                                 rows="5" cols="30"
+                                 maxlength="300"  
+                                 counter="counter1"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesDescripcion" for="Descripcion" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter1"/>
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etAplicaRenuentes']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="AplicaRenuentes" value="#{catalogoObligacionMB.obligacionModel.idValorBooleano}" 
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:500px" panelStyle="width:496px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{catalogoObligacionMB.obligacionModel.listValorBooleano}" var="val"
+                                   itemLabel="#{val.nombre}" itemValue="#{val.idValorBooleano}" />
+
+                </p:selectOneMenu>  
+
+                <h:outputText />
+                <p:message  id="cmbRenuente" for="AplicaRenuentes" display="text" /> 
+
+                <h:outputText />
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarNvo" value="#{mensajes['btnGuardar']}" action="#{catalogoObligacionMB.agrega}" style="left:90%"
+                                     process="@this, Obligacion, Concepto, Descripcion, AplicaRenuentes" update="pnlAgrega, pnlTbl, messages"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarNvo" value="#{mensajes['btnCancelar']}" action="#{catalogoObligacionMB.cerrar}" style="left:90%"
+                                     process="@this" update="pnlAgrega, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlAgrega" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <p:panel id="pnlEdita" header="#{mensajes['oblig.tituloEditar']}"  style="width:600px" visible="#{catalogoObligacionMB.obligacionModel.edtVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridEdt" columns="2" cellspacing="3" cellpadding="3">
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdObligacion']}" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="ObligacionEdit" value="#{catalogoObligacionMB.obligacionModel.idObligacionSan}" 
+                                 effect="fade" disabled="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:480px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{catalogoObligacionMB.obligacionModel.listaComboObligacion}" var="val"
+                                   itemLabel="#{val.idAux}" itemValue="#{val.idCombo}" /> 
+                </p:selectOneMenu>  
+                <h:outputText />
+                <p:message  id="cmbObligacionEdit" for="ObligacionEdit" display="text" />
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etConcepto']}"/>
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="ConceptoEdit" value="#{catalogoObligacionMB.obligacionModel.obligacionEdit.concepto}"
+                                 required="true"
+                                 disabled="#{catalogoObligacionMB.obligacionModel.fechaFinStr==0}"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:470px"
+                                 rows="5" cols="30"
+                                 maxlength="300"
+                                 counter="counter15"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesConceptoDescEdit" for="ConceptoEdit" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter15"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etDescripcion']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="DescripcionEdt"
+                                 value="#{catalogoObligacionMB.obligacionModel.obligacionEdit.descripcion}"
+                                 required="true"
+                                 disabled="#{catalogoObligacionMB.obligacionModel.fechaFinStr==0}"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:470px"
+                                 rows="5" cols="30"
+                                 maxlength="300"  
+                                 counter="counter5"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesDescEdit" for="DescripcionEdt" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter5"/>
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etAplicaRenuentes']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="AplicaRenuentesEdit" value="#{catalogoObligacionMB.obligacionModel.idValorBooleano}" 
+                                 effect="fade" required="true" disabled="#{catalogoObligacionMB.obligacionModel.fechaFinStr==0}" requiredMessage="#{mensajes['msgRequerido']}" style="width:480px" panelStyle="width:476px" >
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{catalogoObligacionMB.obligacionModel.listValorBooleano}" var="val"
+                                   itemLabel="#{val.nombre}" itemValue="#{val.idValorBooleano}" />
+
+                </p:selectOneMenu>  
+
+                <h:outputText />
+                <p:message  id="cmbRenuenteEdit" for="AplicaRenuentesEdit" display="text" /> 
+
+                <h:outputText />
+                <h:panelGrid columns="2">
+
+                    <p:commandButton id="cmbHabilitarEdt" value="#{mensajes['btnHabilitar']}" action="#{catalogoObligacionMB.reactiva}" style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     update="pnlEdita, pnlTbl, messages" process="@this" immediate="true"
+                                     rendered="#{catalogoObligacionMB.obligacionModel.fechaFinStr==0}">
+                        <p:resetInput target="pnlEdita" />
+                    </p:commandButton>
+                    <p:commandButton id="cmbGuardarEdt" value="#{mensajes['btnGuardar']}" action="#{catalogoObligacionMB.edita}" style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     process="@this, ObligacionEdit, ConceptoEdit, DescripcionEdt, AplicaRenuentesEdit" update="pnlEdita, pnlTbl, messages"
+                                     rendered="#{catalogoObligacionMB.obligacionModel.fechaFinStr==1}"/>
+                    <p:commandButton id="cmbCancelarEdt" value="#{mensajes['btnCancelar']}" action="#{catalogoObligacionMB.cerrar}"  style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();" onsuccess="statusDialog.hide();"
+                                     update="pnlEdita, pnlTbl, messages" process="@this" immediate="true">
+                        <p:resetInput target="pnlEdita" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <p:panel id="pnlElimina" header="#{mensajes['oblig.tituloElimina']}" style="width:600px" visible="#{catalogoObligacionMB.obligacionModel.elmVisible}">
+
+            <h:panelGrid id="gridEli" columns="2" cellspacing="3" cellpadding="3">
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etIdObligacion']}" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="ObligacionEli" value="#{catalogoObligacionMB.obligacionModel.idObligacionSan}" 
+                                 disabled="true" effect="fade" style="width:350px">
+
+                    <f:selectItems value="#{catalogoObligacionMB.obligacionModel.listaComboObligacion}" var="val"
+                                   itemLabel="#{val.idAux}" itemValue="#{val.idCombo}" /> 
+                </p:selectOneMenu>  
+
+
+                <h:outputText  value="#{mensajes['etConcepto']}"/>
+                <p:inputTextarea id="txtConEli" value="#{catalogoObligacionMB.obligacionModel.obligacionEli.concepto}" disabled="true" style="width:340px"/>
+
+                <h:outputText  value="#{mensajes['etDescripcion']}"/>
+                <p:inputTextarea id="txtDescripcionEli" value="#{catalogoObligacionMB.obligacionModel.obligacionEli.descripcion}" disabled="true" style="width:340px"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etAplicaRenuentes']}" />
+
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="AplicaRenuentesEli" value="#{catalogoObligacionMB.obligacionModel.idValorBooleano}" 
+                                 disabled="true" effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:350px">
+
+                    <f:selectItems value="#{catalogoObligacionMB.obligacionModel.listValorBooleano}" var="val"
+                                   itemLabel="#{val.nombre}" itemValue="#{val.idValorBooleano}" />
+
+                </p:selectOneMenu>  
+
+                <h:outputText />
+                <p:message  id="cmbRenuenteEli" for="AplicaRenuentesEli" display="text" /> 
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEli" value="#{mensajes['btnEliminar']}" action="#{catalogoObligacionMB.elimina}" style="left:90%"
+                                     process="@this" update="pnlElimina, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlElimina').hide();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarEli" value="#{mensajes['btnCancelar']}" action="#{catalogoObligacionMB.cerrar}" style="left:90%"
+                                     process="@this" update="pnlElimina, pnlTbl, messages" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlElimina').hide();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlElimina" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+    </h:form>
+</html>
+

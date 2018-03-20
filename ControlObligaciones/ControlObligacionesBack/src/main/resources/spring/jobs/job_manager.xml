@@ -1,0 +1,42 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:batch="http://www.springframework.org/schema/batch" 
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+        
+        <bean id="jobSensadoCron" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+              <property name="targetObject" ref="jobManager" />
+              <property name="targetMethod" value="iterar" />
+              <property name="concurrent" value="false" />
+        </bean>
+        
+        <bean id="cronSensadoCron" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+            <property name="jobDetail" ref="jobSensadoCron" />
+            <property name="cronExpression" value="0/30 * * * * ?" />
+        </bean>
+        
+        <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+            <property name="triggers">
+                <list>
+                    <ref bean="cronSensadoCron"/>
+                   <!-- <ref bean="cronProcesosService"/>
+                    <ref bean="cronCargaOmisos" />-->
+<!--                    <ref bean="cronSensadoCron" />-->
+                </list>
+                </property>
+                <property name="waitForJobsToCompleteOnShutdown" value="true"/>
+                <property name="quartzProperties">
+                <props>
+    <!--                para que no revise actualizaciones de quartz-->
+                        <prop key="org.quartz.scheduler.skipUpdateCheck">true</prop>
+    <!--                estos dos es para cuando se encole los procesos-->
+    <!--                    <prop key="org.quartz.threadPool.class">org.quartz.simpl.SimpleThreadPool</prop>
+                        <prop key="org.quartz.threadPool.threadCount">1</prop>-->
+                </props>
+            </property>
+        </bean>
+
+</beans>

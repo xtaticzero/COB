@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <h:head>
+
+    </h:head>
+    <h:body>
+        <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+        <p:panel id="panelDowload" header="Dowload FILE FTP" style="width:820px;margin-left:auto;margin-right:auto;">
+            <h1>SIAT COB</h1>
+            <h3>Faces download resource from FTP, and returno from in memory byte array</h3>
+            <h:form>
+                <p:messages globalOnly="true" id="messages"/>
+                <!--
+                <p:commandLink id="downloadLink" value="Archivo FTP" ajax="false">
+                    <p:fileDownload value="{fileDownloadBean.file}"/>
+                </p:commandLink>
+                -->
+                <p:selectOneMenu value="#{fileDownloadBean.fileSelected}"
+                                                       styleClass="combos" 
+                                                       style="width:300px;"
+                                                       required="true"
+                                                       requiredMessage="#{mensajes['ui.validacion.required']}"
+                                                       id="catTipoDocumento">
+                                        <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "   
+                                                          itemValue="#{null}" />
+                                            <f:selectItems value="#{fileDownloadBean.filesLst}" var="cat"
+                                                           itemLabel="#{cat.nombre}"
+                                                           itemValue="#{cat.idString}" />                                                       
+                                      </p:selectOneMenu>
+                
+                
+             
+                <p:message for="catTipoDocumento"/>
+                <h:outputText value="#{pprBean.fileSelected}"/>
+                <p:commandButton onclick="PrimeFaces.monitorDownload(start, stop)"
+                                 actionListener="#{fileDownloadBean.startDowload}" icon="ui-icon-arrowthichk-s"
+                                 value="Dowload File">
+                    <p:fileDownload value="#{fileDownloadBean.file}"/>
+                </p:commandButton>
+                <p:commandButton onclick="PrimeFaces.monitorDownload(start, stop)"
+                                 actionListener="#{fileDownloadBean.reportPDFDowload}" icon="ui-icon-arrowthichk-s"
+                                 value="Dowload File PDF">
+                    <p:fileDownload value="#{fileDownloadBean.fileReport}"/>
+                </p:commandButton>
+            </h:form>
+        </p:panel>
+    </h:body>
+</html>

@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>Reporte de Vigilancia</title>           
+            <h:outputStylesheet library="css" name="estilos.css"/>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:outputScript library="js" name="calendarioIdiomaEs.js"/>
+        <h:body>
+            <ui:include src="/WEB-INF/templates/loader.xhtml"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+                      resizable="false">
+                <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+            </p:dialog>
+            <h:form id="reporteVigilanciasForm" prependId="false">             
+                <p:messages id="mensajes" showDetail="true" showSummary="false"/>
+                <p:panel id="panelBuscar" header="Filtro de Busqueda" style="width:820px;margin-left:auto;margin-right:auto;"  >
+
+                    <h:panelGrid  columns="3">
+                        <h:outputText value="Opciones: " />  
+                        <p:selectOneRadio id="opcionesBusqueda" 
+                                          value="#{reporteVigilancias.selected}"
+                                          required="true"
+                                          requiredMessage="#{mensajes['ui.validacion.required']}">  
+                            <f:selectItem itemLabel="Vigilancia" itemValue="1" />  
+                            <f:selectItem itemLabel="Fecha de carga" itemValue="2" />  
+                            <p:ajax update=":reporteVigilanciasForm:panelBuscar" process="@this" listener="#{reporteVigilancias.handleOpcionesBusqueda}" event="change" />   
+                        </p:selectOneRadio>
+                        <p:message display="text" for="opcionesBusqueda"/>
+                    </h:panelGrid>
+
+                    <h:panelGrid  columns="4" rendered="#{reporteVigilancias.mostrarOpcionIdVig}" >
+                        <h:outputText value="Vigilancia"/>
+                        <p:inputText  id="paramIdVigilancia"
+                                      required="true"
+                                      requiredMessage="#{mensajes['ui.validacion.required']}"
+                                      value="#{reporteVigilancias.idVigilancia}">
+                        </p:inputText>    
+                        <p:message display="text" for="paramIdVigilancia"/>
+                    </h:panelGrid> 
+
+                    <h:panelGrid  columns="6" rendered="#{reporteVigilancias.mostrarOpcionFechas}">
+                        <h:outputText value="Desde"/>
+                        <p:calendar  value="#{reporteVigilancias.paramFechaInicio}" 
+                                     pattern="dd/MM/yyyy"
+                                     required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                     id="popupButtonCal" 
+                                     showOn="button" 
+                                     locale="es"
+                                     readonlyInput="true">  
+                            <p:ajax event="dateSelect" listener="#{reporteVigilancias.habilitaFechaFin}" update=":reporteVigilanciasForm:panelBuscar"/>
+                        </p:calendar>
+                        <p:message display="text" for="popupButtonCal"/>
+
+                        <h:outputText value="Hasta"/>
+                        <p:calendar  value="#{reporteVigilancias.paramFechaFin}" 
+                                     pattern="dd/MM/yyyy"
+                                     mindate="#{reporteVigilancias.paramFechaFinMin}"
+                                     maxdate="#{reporteVigilancias.paramFechaFinMax}"
+                                     required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}" 
+                                     id="popupButtonCal2" 
+                                     showOn="button" 
+                                     locale="es"
+                                     readonlyInput="true"/>  
+                        <p:message display="text" for="popupButtonCal2"/>
+                    </h:panelGrid>
+
+                    <p:commandButton action="#{reporteVigilancias.busquedaBitacoraErrores}" value="Buscar" type="submit" ajax="false" onclick="statusDialog.show();" onsuccess="statusDialog.hide();"/>  
+                </p:panel>
+                <br></br>
+            </h:form>
+            <h:form id="formaGeneral2">                     
+
+                <p:panel id="resultados" header="Resultados" style="width:820px;margin-left:auto;margin-right:auto;" visible="#{reporteVigilancias.mostrarPanelResultados}"
+                         rendered="#{reporteVigilancias.reporte != null}">
+                    <f:facet name="header">
+                        <p:outputLabel value="Reporte de Vigilancia" >
+                        </p:outputLabel>
+                        <h:commandLink  action="#{reporteVigilancias.btnGenerarReporte}" immediate="true" >
+                            <h:graphicImage value="/resources/images/pdf1.png" height="20px" width="20px" style="margin-left:90%; border:none;"/>
+                        </h:commandLink>
+                    </f:facet>
+                    <h:panelGrid columns="2">
+                        <h:outputText value="#{mensajes['etIdVigilancia']}"/>
+                        <h:outputText value="#{reporteVigilancias.reporte.idVigilancia}"/>
+                        <h:outputText value="#{mensajes['etTipoDocReporte']}"/>
+                        <h:outputText value="#{reporteVigilancias.reporte.tipoDocumento}"/>
+                        <h:outputText value="#{mensajes['etTipoVigilancia']}"/>
+                        <h:outputText value="#{reporteVigilancias.reporte.tipoVigilancia}"/>
+                        <h:outputText value="#{mensajes['documentos.medio.envio']}"/>
+                        <h:outputText value="#{reporteVigilancias.reporte.tipoMedio}"/>
+                        <h:outputText value="#{mensajes['etPeriodoRequerido']}"/>
+                        <h:outputText value="#{reporteVigilancias.reporte.periodoRequerido}"/>
+                        <h:outputText value="#{mensajes['etEjercicioRequerido']}"/>
+                        <h:outputText value="#{reporteVigilancias.reporte.ejercicioRequerido}"/>
+                        <h:outputText value="#{mensajes['etFechaLiberacion']}"/>
+                        <h:outputText value="#{reporteVigilancias.reporte.fechaLiberacion}"/>
+
+                    </h:panelGrid>
+                </p:panel> 
+                <br></br>
+            </h:form>
+
+            <h:form id="formaGeneral3"> 
+                <p:panel id="panelBitacoraErrores" header="Vigilancias" style="width:820px;margin-left:auto;margin-right:auto;" visible="#{reporteVigilancias.mostrarPanelTabla}">
+                    <p:dataTable id="tbl" var="i" value="#{reporteVigilancias.bitacoraErrores}" emptyMessage="#{mensajes['msg.dataTable.vacio']}" style="overflow:auto" >
+
+                        <p:column headerText="Vigilancia" >
+                            <p:commandLink actionListener="#{reporteVigilancias.busquedaBitacoraErrores}" process="@this" type="submit" ajax="false" onclick="statusDialog.show();" onsuccess="statusDialog.hide();" >
+                                <h:outputText id="idVigilancia" value="#{i.idVigilancia} " style="color:blue"/>
+                                <f:param name="idVigilanciaParam" value="#{i.idVigilancia}"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Descripcion">
+                            <h:inputTextarea id="descripcionTipoDoc" style="border:none;resize:none" cols="90" rows="1" value="#{i.descripcionVigilancia}" readonly="true" />
+                        </p:column>
+                        <p:column headerText="Fecha de Carga">
+                            <h:outputText id="fechaCarga" value="#{i.fechaCargaArchivoStr}"></h:outputText>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

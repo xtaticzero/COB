@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReporteDeVigilanciasV2_subreport2" language="groovy" pageWidth="568" pageHeight="752" columnWidth="568" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="c29d67e4-1e5f-44b3-8729-61d693a77a24">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="totalNumDocEF" class="java.lang.String"/>
+	<parameter name="pTituloReporte2" class="java.lang.String"/>
+	<field name="cantidadDocumentosStr" class="java.lang.String"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<field name="fechaDescarga" class="java.util.Date"/>
+	<field name="indentidadFederativa" class="java.lang.Integer"/>
+	<title>
+		<band height="19">
+			<textField>
+				<reportElement uuid="29952082-8512-4d57-847e-047c75c1493e" x="2" y="2" width="494" height="16"/>
+				<textElement>
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{pTituloReporte2}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="44" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="776f4071-a604-4ac1-b01a-7b60fd41cc20" mode="Opaque" x="0" y="0" width="568" height="44" backcolor="#B0B4BC"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b1d54878-c16b-4c1f-ab4c-4e4de408e85c" x="66" y="0" width="148" height="44"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descripción de E. Federativa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="43217f82-6b76-48ef-a110-b37a12676493" x="0" y="0" width="66" height="44"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Número de E. Federativa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="5d713d36-ca94-4bb2-908c-e666ca4b485b" x="409" y="0" width="159" height="44"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de proceso de vigilancia]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0136ca29-b22c-4a23-bde8-74a7385d542a" x="215" y="-1" width="195" height="44"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font fontName="Constantia" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<text><![CDATA[Documentos enviados a la E. Federativa]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="19" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="0d07450f-8d4f-4869-b080-4055777eeb05" positionType="Float" x="66" y="0" width="148" height="18" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia"/>
+					<paragraph leftIndent="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement uuid="5eaca9c0-63b6-4fbb-bb73-7937cefffe9a" positionType="Float" x="410" y="0" width="158" height="18" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial"/>
+					<paragraph rightIndent="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechaDescarga}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="19103832-5660-40d6-9070-105dbc19e5a0" positionType="Float" x="0" y="0" width="66" height="18" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Constantia"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{indentidadFederativa}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="954004a8-f890-4deb-9097-3c87361a4845" positionType="Float" x="214" y="0" width="195" height="18" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial"/>
+					<paragraph rightIndent="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidadDocumentosStr}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="23" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="f3d8cb56-0b11-4444-8218-fe185d780292" mode="Opaque" x="66" y="2" width="148" height="18" backcolor="#B0B4BC"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
+				</box>
+				<textElement>
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="aab69e70-1d24-49f0-a76c-1794a7cba2c3" positionType="Float" x="295" y="2" width="114" height="18" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial"/>
+					<paragraph rightIndent="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{totalNumDocEF}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="8ced5936-8372-4ae9-9682-1d52cb95ddc5" x="2" y="1" width="566" height="1"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

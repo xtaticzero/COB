@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Multas_subreport1" language="groovy" pageWidth="452" pageHeight="1500" orientation="Landscape" columnWidth="452" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="6efcbb54-7b1e-47e5-8b93-5244d7f056f4">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="tipoMulta" class="java.lang.String"/>
+	<field name="numResolucion" class="java.lang.String"/>
+	<field name="montoTotal" class="java.lang.String"/>
+	<field name="dsMultasDetalle" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<field name="nombreEstado" class="java.lang.String"/>
+	<title>
+		<band height="16">
+			<staticText>
+				<reportElement uuid="eaafbf46-2de3-45e1-b4af-ffb12c60f6bb" x="9" y="0" width="431" height="14"/>
+				<textElement textAlignment="Center">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INFORMACIÓN DE SANCIONES ASOCIADAS AL REQUERIMIENTO]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="140">
+			<subreport isUsingCache="false">
+				<reportElement uuid="2cfe519d-ca08-47e6-a551-eead4fe39829" positionType="Float" isPrintRepeatedValues="false" x="4" y="91" width="444" height="30" isRemoveLineWhenBlank="true"/>
+				<dataSourceExpression><![CDATA[$F{dsMultasDetalle}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/Multas_subreporte2.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement uuid="a55f5a4b-3c57-4563-a00d-d417b8144a0d" positionType="Float" mode="Opaque" x="292" y="123" width="73" height="14" backcolor="#B0B4BC"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="de661e99-5d8a-45f1-aec4-6dd38e804113" positionType="Float" x="292" y="123" width="73" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Monto total:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="1d9dac96-a551-40ab-84b4-5d67d600d6db" positionType="Float" x="367" y="123" width="77" height="14" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montoTotal}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement uuid="0e9e3350-0433-4c93-9003-299f97751b11" x="292" y="123" width="152" height="14"/>
+			</frame>
+			<staticText>
+				<reportElement uuid="6cd785a9-bc9b-410f-910a-a18d565651a7" mode="Opaque" x="4" y="64" width="444" height="25" backcolor="#B0B4BC"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0a7d42e2-19a9-409d-98b0-850bd8e362db" x="9" y="64" width="55" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Clave de la obligación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="757953fa-55c5-48c9-ab22-154ac570219b" x="64" y="64" width="161" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descripcion de la obligación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="0791e670-f8d8-43c7-afe5-38d273b41b20" x="378" y="64" width="70" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Monto por obligación]]></text>
+			</staticText>
+			<elementGroup>
+				<frame>
+					<reportElement uuid="30b74ff6-0d0b-4376-9cdf-b8fc0036d894" x="4" y="2" width="444" height="14"/>
+				</frame>
+				<staticText>
+					<reportElement uuid="7513c3ac-9c2f-4ccf-a77b-42f52c391e81" positionType="Float" mode="Opaque" x="4" y="1" width="116" height="14" backcolor="#B0B4BC"/>
+					<box>
+						<bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
+					</box>
+					<textElement/>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="338ceae7-5d24-4d36-b651-96ffac631a62" positionType="Float" x="4" y="0" width="116" height="14"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Constantia" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Tipo multa :]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="8a5ccc8e-c2a0-40d9-940b-d554d9101ca2" positionType="Float" x="124" y="1" width="324" height="14"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Constantia" size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{tipoMulta}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="f1d9687d-912f-4fab-a592-d3088bbb9645" positionType="Float" mode="Opaque" x="4" y="16" width="116" height="14" backcolor="#B0B4BC"/>
+					<box>
+						<bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
+					</box>
+					<textElement/>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="e6534a43-1647-4cbd-8c51-9377588cf69f" positionType="Float" x="4" y="16" width="116" height="14"/>
+					<textElement textAlignment="Left" verticalAlignment="Top">
+						<font fontName="Constantia" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Número de resolución :]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="355cdc5e-e208-4b2f-81e9-894ed5e804ad" positionType="Float" x="124" y="16" width="324" height="14"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{numResolucion}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement uuid="00ca3efe-c401-4dfb-9869-28cda1815acb" positionType="Float" mode="Opaque" x="4" y="31" width="116" height="30" backcolor="#B0B4BC"/>
+					<box>
+						<bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
+					</box>
+					<textElement/>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="d150200e-0025-4840-b593-201542e884b1" positionType="Float" x="4" y="31" width="116" height="30"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Constantia" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Estado de la multa en seguimiento :]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+					<reportElement uuid="df956ebd-e815-4050-80f0-14b783cc6c4e" positionType="Float" x="124" y="31" width="324" height="30"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Constantia" size="9"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nombreEstado}]]></textFieldExpression>
+				</textField>
+				<frame>
+					<reportElement uuid="7cfc8b07-5baa-464e-ae2e-f4c179c2e411" x="4" y="16" width="444" height="14"/>
+				</frame>
+				<frame>
+					<reportElement uuid="3bf3769f-9121-4896-af73-0f79aa28848b" x="4" y="31" width="444" height="30"/>
+				</frame>
+			</elementGroup>
+			<staticText>
+				<reportElement uuid="54406905-ffe8-4aeb-84cc-d37bb66e4f9d" x="302" y="64" width="76" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Periodo de la obligación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="181d3847-0535-404d-a485-3a43acc9e5c8" x="225" y="64" width="77" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ejercicio de la obligación]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>

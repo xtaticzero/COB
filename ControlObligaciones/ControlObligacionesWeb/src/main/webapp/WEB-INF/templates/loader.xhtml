@@ -1,0 +1,15 @@
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <p:dialog modal="true" 
+              widgetVar="dlgLoader" 
+              closable="false" 
+              resizable="false" 
+              draggable="false">
+        <h:panelGrid columns="2">
+            <p:graphicImage library="images" name="ajaxloading.gif"/>
+            Procesando...
+        </h:panelGrid>
+    </p:dialog>
+    <p:ajaxStatus onstart="dlgLoader.show();" onsuccess="dlgLoader.hide();"/>  
+</html>

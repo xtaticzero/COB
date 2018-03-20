@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jasperTemplate PUBLIC "-//JasperReports//DTD Template//EN" "http://jasperreports.sourceforge.net/dtds/jaspertemplate.dtd">
+<jasperTemplate>
+	<style name="Arial8" fontName="Arial" fontSize="8"/>
+	<style name="Arial8Bold" fontName="Arial" fontSize="8" isBold="true"/>
+	<style name="Arial10" fontName="Arial" fontSize="10"/>
+	<style name="Arial10Bold" fontName="Arial" fontSize="10" isBold="true"/>
+	<style name="Arial12" fontName="Arial"/>
+	<style name="Arial12Bold" fontName="Arial" fontSize="12" isBold="true"/>
+</jasperTemplate>

@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:p="http://primefaces.org/ui"   
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head></h:head>
+        <h:body>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <h:form>
+                <p:panel styleClass="version"/>
+                <title>Listas de Catalogos</title>
+                <h2>Listas de Catalogos</h2>
+                <br/>
+                <table border="3">
+                    <tr>
+                        <td>Nombre del Catalogo</td>
+                        <td align="center">URL</td>
+                        <td>Estado...</td>
+                    </tr>
+                    <tr>
+                        <td>Obligaciones</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/obligacion.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Sancion</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/oblisancion.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Ejercicio Fiscal</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/ejercicioFiscal.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Multa Monto</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/multaObligacion.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Motivo Cancelacion de Documento</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/mtvoCancelDoc.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Regimen</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/regimen.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Descripcion</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/descripcion.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Fundamento Legal</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/fundamentoLegal.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Multa Descuento</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/multaMonto.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Admon local</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/admonLocal.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Area Adscripcion</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/areaAdscripcion.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Mot Rechazo Vig</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/motRechazoVig.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+                    <tr>
+                        <td>Usuarios</td>
+                        <td align="center">
+                            <h:commandLink action="/pages/catalogos/usuarioEF.jsf" value="link" />
+                        </td>
+                        <td>Pruebas</td>
+                    </tr>
+
+                </table>
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

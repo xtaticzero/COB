@@ -1,0 +1,184 @@
+/* ================================================================ 
+This copyright notice must be kept untouched in the stylesheet at 
+all times.
+=================================================================== */
+
+/* Page */
+ul {
+	list-style: none;
+}
+/* Demo Page Styles */
+h2 {
+	font: normal 26px Arial, sans-serif;
+	padding: 20px 0;
+	margin: 0 0 30px 0;
+}
+.wrap {
+	width: 960px;
+	margin: 0 auto;
+}
+.demo-container {
+	padding: 0px 0;
+	width: 148px;
+	float: left;
+}
+*.demo-container {
+	position:relative;
+	z-index:100000;
+}
+.demo-container.right {
+	float: right;
+}
+.demo-container h4 {
+	font-size: 14px;
+	margin: 0 0 5px 0;
+}
+.clear {
+	clear: both;
+}
+/* Vertical Mega Menu Styles */
+.mega-menu {
+	font: bold 13px Arial, sans-serif;
+	line-height: 16px;
+	background: #DBDBDB;
+	border-left: 1px solid #FFFFFF;
+	position: relative; /* Required */
+}
+
+*.mega-menu {
+	width:148px;
+}
+.mega-menu li a {
+	display: block;
+	color: #363636;
+	padding: 12px 38px 12px 25px;
+	text-shadow: 1px 1px 1px #FFFFFF;
+	text-decoration: none;
+	border-top: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	border-right: 1px solid #FFFFFF;
+	border-collapse:collapse;
+}
+.mega-menu li a:hover, .mega-menu li.mega-hover a {
+	background: #7d7d7d;
+	color: #fff;
+	border-right: 1px solid #4b4b4b;
+}
+
+/*activo*/
+
+.mega-menu li.activo {
+	background-color:#666;
+	color:#FFF !important;
+}
+
+.mega-menu li.activo a {
+	color:#FFFFFF !important;
+}
+
+.mega-menu li.activo a:hover {
+	color:red !important;
+}
+
+
+/*activo fin*/
+
+.mega-menu li a.activo, .mega-menu li.mega-activo a {
+	background:#939393 !important;
+	color: #fff !important;
+	border-right: 1px solid #4b4b4b !important;
+}
+
+.mega-menu li a.dc-mega {
+	position: relative;
+}
+/* Add arrow icon to parent links */
+.mega-menu li a .dc-mega-icon {
+	display: block;
+	position: absolute;
+	top: 18px;
+	right: 15px;
+	width: 6px;
+	height: 8px;
+	background: url(images/arrow_right.png) no-repeat 0 0;
+}
+/* Mega menu container */
+.mega-menu li .sub-container {
+	position: absolute; /* Required */
+	background: #F0F0F0;
+	padding: 10px 10px 0 10px;
+	border: 1px solid #7d7d7d;
+	border-left: none;
+	width:720px;
+}
+.mega-menu li .sub-container .sub {
+}
+.mega-menu li .sub .row {
+	width: 100% !important;
+	overflow: hidden; /* Clear floats */
+	line-height:10px;
+	margin-bottom:5px;
+}
+.mega-menu li .sub li {
+	float: none;
+	width: 150px;
+	font-size: 1em;
+	font-weight: normal;
+}
+.mega-menu li .sub li.mega-hdr {
+	float: left; /* Required */
+	margin: 0 5px 10px 5px;
+}
+.mega-menu li .sub a, .mega-menu.left li .sub a {
+	background: none;
+	border: none;
+	text-shadow: none;
+	float: none;
+	color: #7d7d7d;
+	padding: 7px 10px;
+	display: block;
+	text-decoration: none;
+	font-size: 11px;
+}
+.mega-menu li .sub li.mega-hdr a.mega-hdr-a {
+	padding: 5px 5px 5px 15px;
+	margin-bottom: 5px;
+	background: #7d7d7d;
+	text-transform: uppercase;
+	font-weight: bold;
+	color: #fff;
+	text-shadow: 1px 1px 1px #333;
+}
+.mega-menu li .sub li.mega-hdr a.mega-hdr-a:hover {
+	color: #000;
+	text-shadow: none;
+}
+.mega-menu .sub li.mega-hdr li a {
+	padding: 4px 5px 4px 20px;
+	background: url(images/arrow_white.png) no-repeat 5px 8px;
+	font-weight: normal;
+}
+.mega-menu .sub li.mega-hdr li a:hover {
+	color: #FFFFFF;
+	background: #7d7d7d url(images/arrow_on.png) no-repeat 5px 8px;
+}
+.mega-menu .sub ul li {
+	padding-right: 0;
+}
+/* Styling for menu items with only 2 levels */
+.mega-menu li .sub-container.non-mega .sub {
+	padding: 10px;
+}
+.mega-menu li .sub-container.non-mega li {
+	padding: 0;
+	margin: 0;
+	width: 150px;
+}
+.mega-menu li .sub-container.non-mega li a {
+	padding: 7px 5px 7px 22px;
+	background: url(images/arrow_white.png) no-repeat 7px 10px;
+}
+.mega-menu li .sub-container.non-mega li a:hover {
+	color: #a32403;
+	background: #efefef url(images/arrow_on.png) no-repeat 7px 10px;
+}

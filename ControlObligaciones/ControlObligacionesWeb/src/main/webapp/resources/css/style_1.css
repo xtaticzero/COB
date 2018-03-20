@@ -1,0 +1,74 @@
+div.encabezado  {
+	font: Arial, Helvetica, sans-serif;
+	font-size: 20px !important;
+	background-image: url(../images/shcpSIP2010.jpg);
+	width: 1022px;
+	height:80px;
+}
+div.encabezadoFoot {
+	background-image: url(../images/fondo_menu_gris.jpg);
+	width: 976px;
+	height: 35px;
+}
+
+.contrasena{
+	font: Arial, Helvetica, sans-serif;
+	font-size: 13px !important;
+	color: #BDBDBD;
+}
+.contrasena a{font:Arial, Helvetica, sans-serif;
+font-size:13px !important;
+color:#2F2F2F;
+text-decoration:none;
+font-weight:bold;
+}
+body{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	color: #2f2f2f;
+}
+
+h1{font-size:22px;}
+input[type=button] {
+     background-color: #7d7d7d;
+    font-weight: bold;
+    color: #FFFFFF;
+    width:80px;
+}
+
+input[type=submit] {
+    background-color: #7d7d7d;
+    font-weight: bold;
+    color: #FFFFFF;
+    width:80px;
+}
+.cajatexto{font-family:Arial, Helvetica, sans-serif;
+font-size:13px;
+color:#2f2f2f;
+padding:2px 2px 2px 2px;
+margin:2px 2px 2px 2px;
+}
+button{
+                background-color: #7d7d7d;
+    font-weight: bold;
+    color: #FFFFFF;
+    width:80px;
+}
+.button {
+    background-color: #7d7d7d;
+    font-weight: bold;
+    color: #FFFFFF;
+    width:80px;
+}
+
+.unico{
+border: 2px solid #848484;	
+
+}
+.deshabilitado{ background-color:#fff;
+font-family:Arial, Helvetica, sans-serif;
+font-size:13px;
+color:#2f2f2f;
+padding:2px 2px 2px 2px;
+margin:2px 2px 2px 2px;
+}

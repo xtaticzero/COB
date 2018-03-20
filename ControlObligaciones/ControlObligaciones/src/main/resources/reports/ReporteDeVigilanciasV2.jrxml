@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReporteDeVigilanciasV2" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="daa414ba-6133-4f97-98c7-305316fa98c2">
+	<property name="com.jasperassistant.designer.Grid" value="false"/>
+	<property name="com.jasperassistant.designer.SnapToGrid" value="false"/>
+	<property name="com.jasperassistant.designer.GridWidth" value="12"/>
+	<property name="com.jasperassistant.designer.GridHeight" value="12"/>
+	<property name="ireport.zoom" value="1.2722928551174544"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="783"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#FFBFBF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="Table Dataset 1" uuid="01c10563-f1f3-45d1-9d0b-927ab186a9d8"/>
+	<subDataset name="DatosReport" uuid="85c93165-a3b1-45b6-8c35-e4dc241c34d6"/>
+	<subDataset name="dataset1" uuid="43ee0207-6c2e-4a90-bc00-8f813ab101a1"/>
+	<subDataset name="Table Dataset 2" uuid="044d8000-7f41-418d-b7df-abbac674a71e"/>
+	<subDataset name="Table Dataset 3" uuid="745416ec-36c7-4a0f-a276-bf0fc9c75f77"/>
+	<parameter name="fechaLiberacion" class="java.util.Date"/>
+	<parameter name="ejercicio" class="java.lang.String"/>
+	<parameter name="periodo" class="java.lang.String"/>
+	<parameter name="tipoVigilancia" class="java.lang.String"/>
+	<parameter name="tipoDoc" class="java.lang.String"/>
+	<parameter name="idVigilancia" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/root/NetBeansProjects/Desarrollo/ControlObligaciones/ControlObligaciones/src/main/resources/reports/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="totalNumDoc" class="java.lang.String"/>
+	<parameter name="totalNumImp" class="java.lang.String"/>
+	<parameter name="totalNumDocEF" class="java.lang.String"/>
+	<parameter name="totalNumImpEF" class="java.lang.String"/>
+	<parameter name="tipoEnvio" class="java.lang.String"/>
+	<parameter name="pTituloReporte2" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="dsALSC" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<field name="dsEF" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<background>
+		<band height="752">
+			<image>
+				<reportElement uuid="ee809e54-7e4f-469e-8dd7-687d6fa00cc6" x="26" y="161" width="520" height="430"/>
+				<imageExpression><![CDATA["/siat/imagenes/fondo.png"]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="337">
+			<frame>
+				<reportElement uuid="81b87ab4-fb0e-4940-9579-8bddd35e9578" positionType="Float" stretchType="RelativeToBandHeight" x="2" y="169" width="568" height="120" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<frame>
+				<reportElement uuid="8ccf8dd5-2d36-4ac9-99f5-fc89d6606db8" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="169" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<frame>
+				<reportElement uuid="2aa4f7bc-907b-4928-adf6-89db0627c7da" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="189" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<frame>
+				<reportElement uuid="c2d15c87-3113-4945-a050-885f0b03a8a8" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="209" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<frame>
+				<reportElement uuid="7cfc2767-404d-4e87-b9d2-cc4ef933525b" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="249" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<frame>
+				<reportElement uuid="c7890ab5-23c0-4406-a006-f72c633eaf52" positionType="Float" stretchType="RelativeToTallestObject" x="2" y="269" width="568" height="20" isPrintWhenDetailOverflows="true"/>
+			</frame>
+			<image>
+				<reportElement uuid="e198a94a-cec0-4f97-bea4-439bed834b83" x="492" y="17" width="78" height="80"/>
+				<imageExpression><![CDATA["reports/images/logoSAT.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="408242f3-8b38-4ada-a9a5-fbf73ae26531" x="18" y="106" width="535" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="Constantia" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reporte de vigilancias de Control de Obligaciones]]></text>
+			</staticText>
+			<image>
+				<reportElement uuid="a02d1da9-fee0-4ce6-b40a-da9983a8d112" x="2" y="0" width="78" height="80"/>
+				<imageExpression><![CDATA["reports/images/logoSHCP.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="6a6f581d-f838-454c-845d-6c275ff1de40" x="283" y="137" width="209" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Constantia" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha y hora de generación del reporte de vigilancia :]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy h:mm a">
+				<reportElement uuid="d833f3aa-8b28-42f0-8329-1a49c0359d98" x="492" y="137" width="78" height="18"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="69f2e044-2631-45b3-885b-d723b399a285" x="163" y="189" width="407" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tipoDoc}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement uuid="806b6cc3-7e41-4057-84cd-0cc1c759df15" x="163" y="293" width="407" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fechaLiberacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="d3344e0d-ee22-4d3d-98c5-ce36db50e30e" x="163" y="273" width="407" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{ejercicio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="da622993-a5ac-4696-9d55-8af651625b5e" x="163" y="209" width="407" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tipoVigilancia}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="937b7033-b717-4b32-8840-e6e05f01a10e" x="2" y="189" width="161" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de Documento :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e059fc80-a990-4a7e-bed3-20011e39be31" x="2" y="209" width="161" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descripción de Vigilancia :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="0c9b4eaf-52c3-40ca-b52f-91be5075efe8" x="163" y="169" width="407" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{idVigilancia}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="f76f02c8-fd48-4b3f-8400-4e262535d099" x="2" y="293" width="161" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de carga :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="c3555807-a9ec-45b3-96bb-83a5d738eaf7" x="163" y="253" width="407" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{periodo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="21fff4a5-484d-45d7-b7a9-d7a25135f526" x="2" y="169" width="161" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Número de vigilancia :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6120dc79-99eb-489d-a8b7-4bf8606a9e58" x="2" y="253" width="161" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Periodo :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2798b1cd-bce2-4f0d-a859-7a2781e78096" x="2" y="273" width="161" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ejercicio :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="10ec8aea-6bf2-4816-90fb-cfc803808204" x="163" y="233" width="407" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tipoEnvio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="e916754d-f5d5-42b6-8280-4ff9162a050c" x="2" y="233" width="161" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Constantia" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de Envio :]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="55">
+			<subreport>
+				<reportElement uuid="f69f37ea-58a8-4380-94c3-d6c7b5024275" x="2" y="0" width="568" height="50"/>
+				<subreportParameter name="totalNumDoc">
+					<subreportParameterExpression><![CDATA[$P{totalNumDoc}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="totalNumImp">
+					<subreportParameterExpression><![CDATA[$P{totalNumImp}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[$F{dsALSC}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/ReporteDeVigilanciasV2_subreport1.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="58">
+			<subreport>
+				<reportElement uuid="b009cbc5-1df1-4ac5-b0a5-b16b1a8ab2eb" x="2" y="0" width="568" height="50"/>
+				<subreportParameter name="pTituloReporte2">
+					<subreportParameterExpression><![CDATA[$P{pTituloReporte2}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="totalNumDocEF">
+					<subreportParameterExpression><![CDATA[$P{totalNumDocEF}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[$F{dsEF}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/ReporteDeVigilanciasV2_subreport2.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="15">
+			<textField>
+				<reportElement uuid="f79999dd-2957-4e2a-96dd-a8f347eff460" x="450" y="2" width="80" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pagina "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="3ad61b41-2c9b-454e-af72-36a28b0c208d" x="530" y="2" width="40" height="12"/>
+				<textElement>
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

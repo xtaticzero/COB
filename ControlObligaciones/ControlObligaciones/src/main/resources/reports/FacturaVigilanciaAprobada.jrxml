@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="FacturaVigilanciaAprobada" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="038cb74e-a207-48a4-99e6-b36a064935fe">
+	<property name="ireport.zoom" value="1.464100000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="tipoAdministracion" class="java.lang.String"/>
+	<parameter name="descripcionVigilancia" class="java.lang.String"/>
+	<parameter name="fechaEmision" class="java.lang.String"/>
+	<parameter name="excluidosPorResponsable" class="java.lang.Long"/>
+	<parameter name="cancelados" class="java.lang.Long"/>
+	<parameter name="cumplimiento" class="java.lang.Long"/>
+	<parameter name="total" class="java.lang.Long"/>
+	<parameter name="totalDocumentosProcesados" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/home/emmanuel/NetBeansProjects/4925/ControlObligaciones/ControlObligaciones/src/main/resources/reports/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="dsProcesados" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<field name="dsExcluidos" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<field name="dsCancelados" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<field name="dsCumplidos" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<background>
+		<band height="802">
+			<image>
+				<reportElement uuid="5bc94333-5572-4816-960a-09405f77528c" x="17" y="186" width="520" height="430"/>
+				<imageExpression><![CDATA["/siat/imagenes/fondo.png"]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="258" splitType="Stretch">
+			<image>
+				<reportElement uuid="4d6c760a-9a88-472f-8b95-b6d00b76ecd9" x="10" y="0" width="78" height="80"/>
+				<imageExpression><![CDATA["reports/images/logoSHCP.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement uuid="7168da4e-4ca3-4fcc-a9f8-92963c7be02e" x="462" y="0" width="78" height="80"/>
+				<imageExpression><![CDATA["reports/images/logoSAT.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement uuid="7373eee2-321e-4e35-a1ff-0585314587c8" x="90" y="159" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{fechaEmision}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="da4554ee-7a93-4812-9950-cfddb7de5f66" x="10" y="159" width="80" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de emisión:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement uuid="d333b3c3-1167-4d76-90d4-dbfc85078736" x="10" y="132" width="530" height="20"/>
+				<textElement>
+					<font fontName="Constantia" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{descripcionVigilancia}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="3442769b-6e5b-47d8-a92e-9c0a31b67cdd" x="322" y="86" width="233" height="20"/>
+				<textElement textAlignment="Right">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Administración General de Servicios al Contribuyente]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="c701f6c1-c50c-4448-9b65-ff0fbc995cfe" x="186" y="106" width="369" height="14"/>
+				<textElement textAlignment="Right">
+					<font fontName="Constantia" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{tipoAdministracion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1b56336a-0011-4e6c-a31f-969400fa9107" x="331" y="222" width="100" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{total}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1014805d-02ae-493d-9e4d-c1dd34037b8a" x="232" y="222" width="99" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{cumplimiento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="dce5b654-c639-45d9-9de7-2e64b1cb9e32" x="132" y="222" width="100" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{cancelados}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="8c73d2e9-0d1b-4143-a342-cb8e2413c10a" x="10" y="222" width="122" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{excluidosPorResponsable}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="5aaf6880-1782-4b6f-9946-5a446a928979" x="10" y="202" width="122" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Excluidos por responsable]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="3be55051-3b25-4654-a506-41238ddd5f0e" x="132" y="202" width="100" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cancelados]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1ac18961-489b-493a-87f7-cfc87435e7a4" x="232" y="202" width="99" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cumplimiento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f92d6e47-8a62-47d8-bc7c-60d7a4392876" x="331" y="202" width="100" height="20"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="f5b00df7-ea97-4dad-9332-f02e221b7671" x="10" y="182" width="151" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Constantia" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Documentos no procesados]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="66">
+			<subreport>
+				<reportElement uuid="8e03b965-eb38-4be7-9919-bbbe17436ccb" x="10" y="0" width="544" height="56"/>
+				<subreportParameter name="totalDocumentosProcesados">
+					<subreportParameterExpression><![CDATA[$P{totalDocumentosProcesados}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[$F{dsProcesados}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/facturaVigilanciaSR_Procesados.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="66">
+			<subreport>
+				<reportElement uuid="adfc4ddb-b164-4d64-a1ab-cac79f77ef8a" x="10" y="0" width="545" height="56" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="excluidosPorResponsable">
+					<subreportParameterExpression><![CDATA[$P{excluidosPorResponsable}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[$F{dsExcluidos}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/facturaVigilanciaSR_Excluidos.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="66">
+			<subreport>
+				<reportElement uuid="da9aa470-1756-42c5-ad5a-b379c2f04f7f" x="10" y="0" width="544" height="56" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="cancelados">
+					<subreportParameterExpression><![CDATA[$P{cancelados}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[$F{dsCancelados}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/facturaVigilanciaSR_Cancelados.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="66">
+			<subreport>
+				<reportElement uuid="7a19b873-8131-48c2-99a9-57a6b86de032" x="10" y="0" width="545" height="56" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="cumplimiento">
+					<subreportParameterExpression><![CDATA[$P{cumplimiento}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[$F{dsCumplidos}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["reports/facturaVigilanciaSR_Cumplidos.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="14" splitType="Stretch">
+			<textField>
+				<reportElement uuid="a0157b84-f963-46bd-ab8f-bddf33ecee88" x="451" y="0" width="67" height="14"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pagina "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="51d5a199-7936-4ecc-bbc1-54fa67bc2f36" x="518" y="0" width="33" height="14"/>
+				<textElement textAlignment="Left">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

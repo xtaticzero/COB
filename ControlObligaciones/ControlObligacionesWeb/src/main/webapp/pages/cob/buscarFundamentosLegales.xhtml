@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui">
+    <html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets">
+        <h:head>
+            <title>Buscar Fundamentos Legales</title>           
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:body>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+            <h:form id="formaBusquedaFundamentos" prependId="false">
+                <p:panel id="panelCatalogos" header="Buscar Fundamentos Legales" visible="true" style="width:820px;margin-left:auto;margin-right:auto;" >
+                    <p:messages globalOnly="true" showDetail="true" id="messages" closable="true"/>    
+                    <!--<h:panelGrid  columns="1">
+                        <h:outputText value="Obligacion"/>
+                                      <p:selectOneMenu value="#{buscarFundamentosLegales.fundamentoLegal.idObligacion}"
+                                                       styleClass="combos" 
+                                                       style="width:300px;"
+                                                       required="true"
+                                                       requiredMessage="#{mensajes['ui.validacion.required']}"
+                                                       id="catObligaciones">
+                                    <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "   
+                                                          itemValue="#{null}" />
+                                            <f:selectItems value="#{buscarFundamentosLegales.catalogoObligaciones}" var="cat"
+                                                           itemLabel="#{cat.nombre}"
+                                                           itemValue="#{cat.idAux}" />                                                       
+                                      </p:selectOneMenu>
+                                      <p:message for="catObligaciones" display="text"/> 
+                     </h:panelGrid> -->
+                    <h:panelGrid columns="6">
+                        <h:outputText value="Periodo"/>
+                        <p:selectOneMenu value="#{buscarFundamentosLegales.fundamentoLegal.idPeriodo}"
+                                         styleClass="combos" 
+                                         style="width:300px;"
+                                         required="true"
+                                         requiredMessage="#{mensajes['ui.validacion.required']}"
+                                         id="catPeriodo">
+                            <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "   
+                                          itemValue="#{null}" />
+                            <f:selectItems value="#{buscarFundamentosLegales.catalogoPeriodos}" var="cat"
+                                           itemLabel="#{cat.nombre}"
+                                           itemValue="#{cat.idAux}" />                                                       
+                        </p:selectOneMenu>
+                        <p:message for="catPeriodo" display="text"/> 
+
+                        <h:outputText value="Ejercicio Fiscal"/>
+                        <p:selectOneMenu value="#{buscarFundamentosLegales.fundamentoLegal.idEjercicioFiscalDescr}"
+                                         styleClass="combos" 
+                                         style="width:300px;"
+                                         required="true"
+                                         requiredMessage="#{mensajes['ui.validacion.required']}"
+                                         id="catEjFiscal">
+                            <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "   
+                                          itemValue="#{null}" />
+                            <f:selectItems value="#{buscarFundamentosLegales.catalogoEjercicioFiscal}" var="cat"
+                                           itemLabel="#{cat.nombre}"
+                                           itemValue="#{cat.idAux}" />                                                       
+                        </p:selectOneMenu>
+                        <p:message for="catEjFiscal" display="text"/> 
+
+                        <!-- <h:panelGrid  columns="1">
+                          <h:outputText value="Regimen"/>
+                                        <p:selectOneMenu value="#{buscarFundamentosLegales.fundamentoLegal.idRegimenDescr}"
+                                                         styleClass="combos" 
+                                                         style="width:300px;"
+                                                         required="true"
+                                                         requiredMessage="#{mensajes['ui.validacion.required']}"
+                                                         id="catRegimen">
+                                      <f:selectItem itemLabel="#{mensajes['ui.catalogos.label.item.def']} "   
+                                                            itemValue="#{null}" />
+                                              <f:selectItems value="#{buscarFundamentosLegales.lstregimen}" var="cat"
+                                                             itemLabel="#{cat.nombre}"
+                                                             itemValue="#{cat.idAux}" />                                                       
+                                        </p:selectOneMenu>
+                                        <p:message for="catRegimen" display="text"/> -->
+                    </h:panelGrid> 
+                    <br></br>
+                    <h:panelGrid  columns="2">
+                        <p:commandButton rendered="true" ajax="false"
+                                         value="Buscar">
+                            <p:fileDownload value="#{buscarFundamentosLegales.archivo}" id="downloader"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                </p:panel>  
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

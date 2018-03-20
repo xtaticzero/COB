@@ -1,0 +1,256 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:batch="http://www.springframework.org/schema/batch" 
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/batch
+	http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+    <bean id="cargaArchivosHolder" class="mx.gob.sat.siat.cob.background.holder.CargaArchivosHolder" />
+    <bean id="taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor"/>
+    
+    <!-- job para cargar multas ARCA sin cobranza-->
+    <batch:job id="generarCreditoJob" >
+        <!-- actualiza monto total-->
+        <batch:step id="actualizarMontosCreditoIcepsStep"
+                    parent="actualizarMontosCreditoIcepsParent">
+            <batch:next on="COMPLETED" to="generarMontoTotalMultaStep"/>
+        </batch:step>
+        <batch:step id="generarMontoTotalMultaStep" 
+                    parent="generarMontoTotalMultaParent">
+            <batch:next on="COMPLETED" to="decision"/>
+        </batch:step>
+        <!--Toma decision para consultar y mandar datos a cobranza o no--> 
+        <batch:decision  id="decision" decider="multasDecider" >
+            <batch:next on="OPERACION_MAT" to="generaResolucionCobranzaStep" />
+            <batch:next on="COMPLETED" to="datosMultaObligacionPeriodoCreditoStep" />
+        </batch:decision>
+        <!--Recupera datos para envio a CBZ-->
+        <batch:step id="generaResolucionCobranzaStep"
+                    parent="generaResolucionCobranzaParent">
+            <batch:next on="COMPLETED" to="datosMultaObligacionPeriodoCreditoStep"/>
+        </batch:step>
+        <!-- recupera informacion -->
+        <batch:step id="datosMultaObligacionPeriodoCreditoStep" 
+                    parent="datosMultaObligacionPeriodoParent">
+            <batch:next on="COMPLETED" to="datosMultaDocumentosCreditoStep"/>
+        </batch:step>
+        <batch:step id="datosMultaDocumentosCreditoStep" 
+                    parent="datosMultaArchivoCreditoParent">
+            <batch:next on="COMPLETED" to="datosMultaOrigenCreditoStep"/>
+        </batch:step>
+        <batch:step id="datosMultaOrigenCreditoStep" 
+                    parent="datosMultaOrigenCreditoParent">
+            <batch:next on="COMPLETED" to="cargaMultaDocumentosStep"/>
+        </batch:step>
+        <!-- inserta datos en ARCA -->
+        <batch:step id="cargaMultaDocumentosStep" 
+                    parent="cargaMultaArchivoParent.master">
+            <batch:next on="COMPLETED" to="cargaMultaObligacionPeriodoStep"/>
+        </batch:step>
+        <batch:step id="cargaMultaObligacionPeriodoStep" 
+                    parent="cargaArchivoObligacionPeriodoParent.master">
+            <batch:next on="COMPLETED" to="cargaMultaOrigenStep"/>
+        </batch:step>
+        <batch:step id="cargaMultaOrigenStep" 
+                    parent="cargaMultaOrigenParent.master">
+            <batch:next on="COMPLETED" to="datosMultaDocumentoResolucionStep"/>
+        </batch:step>
+        <!-- inserta informacion extra (DocumentoResolucion - CREDITO) -->
+        <batch:step id="datosMultaDocumentoResolucionStep" 
+                    parent="datosMultaDocumentoResolucionParent.master">
+        </batch:step>
+    </batch:job>   
+    
+    <!-- actualiza montos de cada icep-->
+    <batch:step id="actualizarMontosCreditoIcepsParent">
+        <batch:tasklet>
+            <batch:chunk reader="consultarMontoIcepCreditoReader"
+                         writer="actualizarMontoIcepWriter" 
+                         commit-interval="1000">
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+            
+    <!-- actualiza monto total multa-->
+    <batch:step id="generarMontoTotalMultaParent">
+        <batch:tasklet>
+            <batch:chunk reader="consultarMontoTotalMultaReader"
+                         writer="actualizaMontoMultaDocumentoCreditoWriter" 
+                         commit-interval="1000"
+                         skip-limit="100">
+                <batch:skippable-exception-classes>
+                    <batch:include class="java.lang.Exception"/>
+                </batch:skippable-exception-classes>
+                <batch:listeners>
+                    <batch:listener ref="montoTotalWriterCreditoSkipListener"/>
+                </batch:listeners>
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>     
+    <!--Recupera datos para envio a CBZ-->     
+    <batch:step id="generaResolucionCobranzaParent">
+        <batch:tasklet>
+            <batch:chunk reader="datosCobranzaReader"
+                         writer="registroMultaCobranzaWriter" 
+                         commit-interval="1000"
+                         skip-limit="100">
+                <batch:skippable-exception-classes>
+                    <batch:include class="java.lang.Exception"/>
+                </batch:skippable-exception-classes>
+                <batch:listeners>
+                    <batch:listener ref="idResolucionCobranzaWriterListener"/>
+                </batch:listeners>
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step> 
+    <!-- recupera informacion -->
+    <batch:step id="datosMultaObligacionPeriodoParent">
+        <batch:tasklet>
+            <batch:chunk reader ="datosObligacionPeriodoMultaReader" 
+                         processor ="datosObligacionPeriodoCreditoProcessor"
+                         writer="archivoObligacionPeriodoMultaWriter" 
+                         commit-interval="10000">
+            </batch:chunk>
+            <batch:listeners>
+                <batch:listener  ref="obligacionPeriodoReadListenerHolder" />
+            </batch:listeners>
+        </batch:tasklet>
+    </batch:step>
+    <batch:step id="datosMultaArchivoCreditoParent" >
+        <batch:tasklet>
+            <batch:chunk reader="multaMasivaCreditoReader" 
+                         writer="archivoMultaMasivaWriter" 
+                         commit-interval="10000">
+            </batch:chunk>
+            <batch:listeners>
+                <batch:listener  ref="documentoReadListenerHolder" />
+            </batch:listeners>
+        </batch:tasklet>
+    </batch:step>
+    <batch:step id="datosMultaOrigenCreditoParent" >
+        <batch:tasklet>
+            <batch:chunk reader="origenMultaCreditoReader" 
+                         writer="origenMultaWriter" 
+                         commit-interval="10000">
+            </batch:chunk>
+            <batch:listeners>
+                <batch:listener  ref="origenMultaReadListenerHolder" />
+            </batch:listeners>
+        </batch:tasklet>
+    </batch:step>
+    
+    <!-- inserta datos en ARCA -->
+    <batch:step id="cargaMultaArchivoParent.master" >
+        <partition step="cargaMultaArchivoParent.slave" 
+                   partitioner="cargaMultaArchivoPartitioner">
+            <handler grid-size="20" task-executor="taskExecutor" />
+        </partition>
+    </batch:step>
+    <batch:step id="cargaMultaArchivoParent.slave">
+        <batch:tasklet transaction-manager="transactionManagerSqlServer">
+            <batch:chunk reader="documentoSlaveItemReader" 
+                         writer="creditoArcaCompositeWriter" 
+                         commit-interval="100"
+                         skip-limit="100">
+                <batch:skippable-exception-classes>
+                    <batch:include class="java.lang.Exception"/>
+                </batch:skippable-exception-classes>
+                <batch:listeners>
+                    <batch:listener ref="regresaUltimoEstadoMultaCreditoSkipListener"/>
+                </batch:listeners>
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+    
+    <batch:step id="cargaArchivoObligacionPeriodoParent.master" >
+        <partition step="cargaArchivoObligacionPeriodoParent.slave" 
+                   partitioner="cargaObligacionPeriodoPartitioner">
+            <handler grid-size="20" task-executor="taskExecutor" />
+        </partition>
+    </batch:step>
+    <batch:step id="cargaArchivoObligacionPeriodoParent.slave">
+        <batch:tasklet transaction-manager="transactionManagerSqlServer">
+            <batch:chunk reader="obligacionPeriodoSlaveItemReader" 
+                         writer="datoObligacionPeriodoCreditoCompositeWriter" 
+                         commit-interval="100"
+                         skip-limit="100">
+                <batch:skippable-exception-classes>
+                    <batch:include class="java.lang.Exception"/>
+                </batch:skippable-exception-classes>
+                <batch:listeners>
+                    <batch:listener ref="obligacionPeriodoMultaCreditoWriterSkipListener"/>
+                </batch:listeners>
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+    
+    
+    <batch:step id="cargaMultaOrigenParent.master" >
+        <partition step="cargaMultaOrigenParent.slave" 
+                   partitioner="cargaMultaOrigenPartitioner">
+            <handler grid-size="20" task-executor="taskExecutor" />
+        </partition>
+    </batch:step>
+    
+    <batch:step id="cargaMultaOrigenParent.slave">
+        <batch:tasklet transaction-manager="transactionManagerSqlServer">
+            <batch:chunk reader="origenSlaveItemReader" 
+                         writer="insertaMultaOrigenWriter" 
+                         commit-interval="100"
+                         skip-limit="100">
+                <batch:skippable-exception-classes>
+                    <batch:include class="java.lang.Exception"/>
+                </batch:skippable-exception-classes>
+                <batch:listeners>
+                    <batch:listener ref="multaOrigenCreditoWriterSkipListener"/>
+                </batch:listeners>
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+    
+    <!-- inserta informacion extra (DocumentoResolucion - CREDITO) -->
+    <batch:step id="datosMultaDocumentoResolucionParent.master" >
+        <partition step="datosMultaDocumentoResolucionParent.slave" 
+                   partitioner="datosMultaDocumentoResolucionPartitioner">
+            <handler grid-size="20" task-executor="taskExecutor" />
+        </partition>
+    </batch:step>
+    <batch:step id="datosMultaDocumentoResolucionParent.slave">
+        <batch:tasklet transaction-manager="transactionManagerSqlServer">
+            <batch:chunk reader="documentoResolucionItemReader" 
+                         writer="insertadocumentoResolucionWriter" 
+                         commit-interval="1000"
+                         skip-limit="100">
+                <batch:skippable-exception-classes>
+                    <batch:include class="java.lang.Exception"/>
+                </batch:skippable-exception-classes>
+                <batch:listeners>
+                    <batch:listener ref="multaDocumentoResolucionCreditoWriterSkipListener"/>
+                </batch:listeners>
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+    
+    <bean id="creditoArcaCompositeWriter" 
+          class="org.springframework.batch.item.support.CompositeItemWriter">
+        <property name="delegates">
+            <list>                
+                <ref local="insertaMultaDocumentoWriter"/>
+                <ref local="actualizaUltimoEstadoMultaWriter"/>
+                <ref local="insertaBitacoraResolucionWriter"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="datoObligacionPeriodoCreditoCompositeWriter" 
+          class="org.springframework.batch.item.support.CompositeItemWriter">
+        <property name="delegates">
+            <list>
+                <ref local="insertaPeriodoMultaARCAWriter"/>
+                <ref local="insertaObligacionCreditoWriter"/>
+            </list>
+        </property>
+    </bean>
+</beans>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>mx.gob.sat.siat.cob</groupId>
+  <artifactId>Control_Obligaciones</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <description>Super POM for Control_Obligaciones</description>
+  <modules>
+    <module>ControlObligaciones</module>
+    <module>ControlObligacionesWeb</module>
+    <module>ControlObligacionesBack</module>
+    
+  </modules>
+  <packaging>pom</packaging>
+  <!--<repositories>
+          <repository>
+              <id>-118297581</id>
+              <name>InternalRepository</name>
+              <url>http://99.95.142.210:8080/archiva/repository/internal/</url>
+          </repository>
+  </repositories>	-->
+</project><!--Ok I-->

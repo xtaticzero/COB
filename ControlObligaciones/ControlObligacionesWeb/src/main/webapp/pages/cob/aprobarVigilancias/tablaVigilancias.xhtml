@@ -1,0 +1,141 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"> 
+    <p:dataTable value="#{aprobarVigilancias.aprobarVigilanciasHelper.vigilancias}"
+                 var="vigilancia"
+                 paginator="true"
+                 paginatorPosition="bottom"
+                 rows="12"
+                 paginatorAlwaysVisible="false"
+                 id="tblVigilancias"
+                 emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+        <f:facet name="header">
+            <h:outputText value="Vigilancias SEPOMEX y Unidad de Diligenciación"/>
+        </f:facet>
+        <p:column style="text-align:center" 
+                  width="35" >
+            <f:facet name="header">
+                <b><h:outputText value="Rechazar" rendered="#{rechazo}"/></b>
+                <b><h:outputText value="Procesar" rendered="#{!rechazo}"/></b>
+            </f:facet>                      
+            
+            <p:commandButton icon="ui-icon-check" 
+                             type="button" 
+                             onclick="msgValidacionPlantilla.show();"  
+                             rendered="#{!rechazo and vigilancia.nombrePlantilla==null}"/>
+            <p:commandButton icon="ui-icon-check"
+                             process="@this" onclick="setValorVigilancia(#{vigilancia.numeroCarga},#{vigilancia.idFirma})"
+                             oncomplete="msgConfirmarProceso.show()" 
+                             rendered="#{!rechazo and vigilancia.nombrePlantilla!=null}">
+                <f:setPropertyActionListener value="#{vigilancia.numeroCarga}"
+                                             target="#{aprobarVigilancias.aprobarVigilanciasHelper.vigilancia.numeroCarga}"/>
+                <f:setPropertyActionListener value="#{vigilancia.descripcionVigilancia}"
+                                             target="#{aprobarVigilancias.aprobarVigilanciasHelper.vigilancia.descripcionVigilancia}"/>
+                <f:setPropertyActionListener value="#{vigilancia.idAdministracionLocal}"
+                                             target="#{aprobarVigilancias.aprobarVigilanciasHelper.vigilancia.idAdministracionLocal}"/>
+            </p:commandButton>
+            <p:commandButton oncomplete="mensajeError.show()"
+                             process="@this"
+                             update="@form"
+                             icon="ui-icon-close" 
+                             rendered="#{rechazo}">
+                <f:setPropertyActionListener value="#{vigilancia.numeroCarga}"
+                                             target="#{aprobarVigilancias.aprobarVigilanciasHelper.vigilancia.numeroCarga}"/>
+                <f:setPropertyActionListener value="#{vigilancia.descripcionVigilancia}"
+                                             target="#{aprobarVigilancias.aprobarVigilanciasHelper.vigilancia.descripcionVigilancia}"/>
+                <f:setPropertyActionListener value="#{vigilancia.fechaCarga}"
+                                             target="#{aprobarVigilancias.aprobarVigilanciasHelper.vigilancia.fechaEnvioArca}"/>
+                <f:setPropertyActionListener value="#{vigilancia.tipoMedio}"
+                                             target="#{aprobarVigilancias.aprobarVigilanciasHelper.vigilancia.medioEnvio}"/>
+                <f:setPropertyActionListener value="#{vigilancia.idAdministracionLocal}"
+                                             target="#{aprobarVigilancias.aprobarVigilanciasHelper.vigilancia.idAdministracionLocal}"/>
+                <f:setPropertyActionListener value="#{vigilancia.administracionLocal}"
+                                             target="#{aprobarVigilancias.aprobarVigilanciasHelper.vigilancia.administracionLocal}"/>
+            </p:commandButton>
+        </p:column>
+        <p:column filterBy="#{vigilancia.numeroCarga}">
+            <f:facet name="header">
+                <h:outputText value="#{mensajes['aprobarVigilancias.numeroCarga']}" escape="false"/>
+            </f:facet>
+            <h:outputText value="#{vigilancia.numeroCarga}"/>
+        </p:column>
+        <p:column filterBy="#{vigilancia.descripcionVigilancia}">
+            <f:facet name="header">
+                <h:outputText value="#{mensajes['aprobarVigilancias.descripcionVigilancia']}" escape="false"/>
+            </f:facet>
+            <h:outputText value="#{vigilancia.descripcionVigilancia}"/>
+        </p:column>
+        <p:column rendered="#{rechazo}" filterBy="#{vigilancia.administracionLocal}">
+            <f:facet name="header">
+                <h:outputText value="ALSC" escape="false"/>
+            </f:facet>
+            <h:outputText value="#{vigilancia.administracionLocal}"/>
+        </p:column>
+        <p:column filterBy="#{vigilancia.tipoDocumento}">
+            <f:facet name="header">
+                <h:outputText value="#{mensajes['aprobarVigilancias.tipoDocumento']}" escape="false"/>
+            </f:facet>
+            <h:outputText value="#{vigilancia.tipoDocumento}"/>
+        </p:column>
+        <p:column filterBy="#{vigilancia.cantidadDocumentos}">
+            <f:facet name="header">
+                <h:outputText value="#{mensajes['aprobarVigilancias.cantidadDocumentos']}" escape="false"/>
+            </f:facet>
+            <h:commandLink value="#{vigilancia.cantidadDocumentos}" 
+                           action="aprobarDocumentos" 
+                           onclick="dlgLoader.show();"
+                           rendered="#{!rechazo}">
+                <f:setPropertyActionListener value="#{vigilancia}"
+                                             target="#{aprobarVigilancias.vigilanciaAprobar}"/>
+            </h:commandLink>
+            <h:outputText value="#{vigilancia.cantidadDocumentos}" rendered="#{rechazo}"/>
+        </p:column>
+        <p:column filterBy="#{vigilancia.tipoFirma}">
+            <f:facet name="header">
+                <h:outputText value="#{mensajes['aprobarVigilancias.tipoFirma']}" escape="false"/>
+            </f:facet>
+            <h:outputText value="#{vigilancia.tipoFirma}"/>
+        </p:column>
+        <p:column filterBy="#{vigilancia.fechaCorte}">
+            <f:facet name="header">
+                <h:outputText value="#{mensajes['aprobarVigilancias.fechaCorte']}" escape="false"/>
+            </f:facet>
+            <h:outputText value="#{vigilancia.fechaCorte}"/>
+        </p:column>
+        <p:column filterBy="#{vigilancia.fechaCarga}">
+            <f:facet name="header">
+                <h:outputText value="#{mensajes['aprobarVigilancias.fechaCarga']}" escape="false"/>
+            </f:facet>
+            <h:outputText value="#{vigilancia.fechaCarga}"/>
+        </p:column>
+        <p:column filterBy="#{vigilancia.tipoMedio}">
+            <f:facet name="header">
+                <h:outputText value="#{mensajes['aprobarVigilancias.tipoMedio']}" escape="false"/>
+            </f:facet>                        
+            <h:outputText value="#{vigilancia.tipoMedio}"/>
+        </p:column>
+        <p:column filterBy="#{vigilancia.nombrePlantilla}">
+            <f:facet name="header">
+                <h:outputText value="#{mensajes['aprobarVigilancias.nombrePlantilla']}" escape="false"/>
+            </f:facet>                        
+            <h:outputText value="#{vigilancia.nombrePlantilla}" rendered="#{rechazo}"/>
+
+            <p:commandLink value="#{vigilancia.nombrePlantilla}" 
+                           ajax="false"
+                           rendered="#{!rechazo}">
+                <f:setPropertyActionListener value="#{vigilancia.idPlantilla}"
+                                             target="#{aprobarVigilancias.aprobarVigilanciasHelper.vigilancia.idPlantilla}"/>
+                <p:fileDownload value="#{aprobarVigilancias.plantilla}"/>
+            </p:commandLink>
+        </p:column>
+        <p:column rendered="#{!rechazo}" filterBy="#{vigilancia.fechaValidacion}">
+            <f:facet name="header">
+                <h:outputText value="Ultima Validación de Cumplimiento"/>
+            </f:facet>                        
+            <h:outputText value="#{vigilancia.fechaValidacion}">
+                <f:convertDateTime pattern="yyyy-MM-dd"/>
+            </h:outputText>
+        </p:column>
+    </p:dataTable>
+</html>

@@ -1,0 +1,787 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:head></h:head>
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:outputStylesheet library="css/" name="estilos.css"/>
+    <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+    <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+              resizable="false">
+        <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+    </p:dialog>
+
+    <h:form id="Campo">
+        <p:messages id="messages"  showDetail="true" globalOnly="true" autoUpdate="true" closable="true" />
+        <p:panel id="pnlTbl" style="width:800px" visible="#{usuarioEFMB.usuarioEFModel.tblVisible}">
+
+            <p:dataTable id="tbl" var="usuarioEF" value="#{usuarioEFMB.usuarioEFModel.listUsuarioEF}" emptyMessage="#{mensajes['msg.dataTable.vacio']}"
+                         filteredValue="#{usuarioEFMB.usuarioEFModel.listUsuarioEFTmp}" paginator="true" rows="5" resizableColumns="true" paginatorPosition="bottom">
+                <f:facet name= "header">
+                    <h:outputText value="#{mensajes['usuarioEF.titulo']}"/>
+                    <h:commandLink action="#{usuarioEFMB.generaExcel}" immediate="true" style="margin-left:90%;">
+                        <h:graphicImage value="/resources/images/excel1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                    <p:spacer width="15" height="10"/>
+                    <h:commandLink  action="#{usuarioEFMB.generaPdf}" immediate="true" >
+                        <h:graphicImage value="/resources/images/pdf1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                </f:facet>
+                <p:column sortBy="#{usuarioEF.rfcCorto}"  filterBy="#{usuarioEF.rfcCorto}" headerText="#{mensajes['etUsuario']}" width="22px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipRfc" value="#{usuarioEF.rfcCorto}"></h:outputText>
+                    <p:tooltip for="tipRfc" value="#{usuarioEF.rfcCorto}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{usuarioEF.entidadDesc}" filterBy="#{usuarioEF.entidadDesc}" headerText="#{mensajes['etEntidad']}" width="22px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipEntidad" value="#{usuarioEF.entidadDesc}"></h:outputText>
+                    <p:tooltip for="tipEntidad" value="#{usuarioEF.entidadDesc}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{usuarioEF.nombreUsuario}" filterBy="#{usuarioEF.nombreUsuario}" headerText="#{mensajes['etNombreUsuario']}" width="22px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipNombreUsuario" value="#{usuarioEF.nombreUsuario}"></h:outputText>
+                    <p:tooltip for="tipNombreUsuario" value="#{usuarioEF.nombreUsuario}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{usuarioEF.correoElectronico}" filterBy="#{usuarioEF.correoElectronico}" headerText="#{mensajes['etCorreo']}" width="22px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipCorreo" value="#{usuarioEF.correoElectronico}"></h:outputText>
+                    <p:tooltip for="tipCorreo" value="#{usuarioEF.correoElectronico}"></p:tooltip> 
+                </p:column>
+                <p:column headerText="#{mensajes['etEditar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this" update=":Campo:pnlEdita, :Campo:pnlTbl, :Campo:pnlTblFuncionario" action="#{usuarioEFMB.abrirEditar}"
+                                     icon="ui-icon-pencil" onclick="statusDialog.show();
+                                             $('#Campo\\:pnlTbl').hide();
+                                             $('#Campo\\:pnlTblFuncionario').hide();
+                                     " onsuccess="statusDialog.hide();">
+                        <f:setPropertyActionListener value="#{usuarioEF}" 
+                                                     target="#{usuarioEFMB.usuarioEFModel.usuarioEFEdit}" /> 
+                    </p:commandButton>
+                </p:column>
+                <p:column headerText="#{mensajes['etEliminar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this"  update=":Campo:pnlElimina, :Campo:pnlTbl, :Campo:pnlTblFuncionario" action="#{usuarioEFMB.abrirEliminar}"
+                                     icon="ui-icon-close" onclick="statusDialog.show();
+                                             $('#Campo\\:pnlTbl').hide();
+                                             $('#Campo\\:pnlTblFuncionario').hide();" onsuccess="statusDialog.hide();"
+                                     rendered="#{usuarioEF.fechaFinStr==1}" >
+                        <f:setPropertyActionListener value="#{usuarioEF}" 
+                                                     target="#{usuarioEFMB.usuarioEFModel.usuarioEFEli}" /> 
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <div align="right">
+                <br />
+                <p:commandButton process="@this" update=":Campo:pnlAgrega, :Campo:pnlTbl, :Campo:pnlTblFuncionario" 
+                                 onclick="statusDialog.show();
+                                         $('#Campo\\:pnlTbl').hide();
+                                         $('#Campo\\:pnlTblFuncionario').hide();" onsuccess="statusDialog.hide();"
+                                 action="#{usuarioEFMB.abrirNuevo}" value="#{mensajes['btnNuevo']}" />
+            </div>
+
+        </p:panel>
+
+        <p:panel id="pnlAgrega" header="#{mensajes['usuarioEF.tituloAgrega']}" style="width:600px"  visible="#{usuarioEFMB.usuarioEFModel.nvoVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridNvo" columns="2" cellspacing="3" cellpadding="3">
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etUsuario']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="RfcCorto" value="#{usuarioEFMB.usuarioEFModel.rfcCorto}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="1" cols="30"
+                                 maxlength="13"
+                                 counter="counter0"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesRfcCorto" for="RfcCorto" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter0"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etEntidad']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="Entidad" value="#{usuarioEFMB.usuarioEFModel.idTipoEntidad}" 
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:210px" panelStyle="width:206px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{usuarioEFMB.usuarioEFModel.listaComboEntidad}" var="valEntidad"
+                                   itemLabel="#{valEntidad.descripcion}" itemValue="#{valEntidad.idCombo}" /> 
+
+                </p:selectOneMenu>  
+                <h:outputText />
+                <p:message  id="cmbEntidad" for="Entidad" display="text" /> 
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etNombreUsuario']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="NombreUsuario" value="#{usuarioEFMB.usuarioEFModel.nombreUsuario}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="3" cols="30"
+                                 maxlength="500"  
+                                 counter="counter1"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesNombreUsuario" for="NombreUsuario" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter1"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etCorreo']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+
+                <p:inputTextarea id="Correo" value="#{usuarioEFMB.usuarioEFModel.correoElectronico}" 
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}" 
+                                 style="width:200px"
+                                 rows="3" cols="30"
+                                 maxlength="250"  
+                                 counter="counter2"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false"
+                                 validatorMessage="#{usuarioEFMB.usuarioEFModel.correoElectronico} El correo no es valido">
+                    <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                </p:inputTextarea>                
+                <h:outputText />
+                <p:message id="mensajesCorreo" for="Correo" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter2"/>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarNvo" value="#{mensajes['btnGuardar']}" action="#{usuarioEFMB.agrega}" style="left:90%"
+                                     process="@this, RfcCorto, Entidad, NombreUsuario, Correo" update="pnlAgrega, pnlTbl, messages, :Campo:pnlTblFuncionario"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();
+                                             $('#Campo\\:pnlTbl').hide();
+                                             $('#Campo\\:pnlTblFuncionario').hide();
+                                     " onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarNvo" value="#{mensajes['btnCancelar']}" action="#{usuarioEFMB.cerrar}" style="left:90%"
+                                     process="@this" update="pnlAgrega, pnlTbl, messages, :Campo:pnlTblFuncionario" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgrega').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlAgrega" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <p:panel id="pnlEdita" header="#{mensajes['usuarioEF.tituloEditar']}"  style="width:600px" visible="#{usuarioEFMB.usuarioEFModel.edtVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridEdt" columns="2" cellspacing="3" cellpadding="3">
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etUsuario']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="RfcEdt" value="#{usuarioEFMB.usuarioEFModel.usuarioEFEdit.rfcCorto}"
+                                 required="true"
+                                 disabled="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="1" cols="30"
+                                 maxlength="13"
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesRfcEdt" for="RfcEdt" display="text"  />
+                <h:outputText />
+                <h:outputText />
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etEntidad']}" />
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="EntidadEdt" value="#{usuarioEFMB.usuarioEFModel.idTipoEntidad}" 
+                                 effect="fade" required="true" 
+                                 disabled="#{usuarioEFMB.usuarioEFModel.fechaFinStr==0}"
+                                 requiredMessage="#{mensajes['msgRequerido']}" style="width:210px" panelStyle="width:206px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{usuarioEFMB.usuarioEFModel.listaComboEntidad}" var="valEntidad"
+                                   itemLabel="#{valEntidad.descripcion}" itemValue="#{valEntidad.idCombo}" /> 
+
+                </p:selectOneMenu>  
+                <h:outputText />
+                <p:message  id="cmbEntidadEdt" for="EntidadEdt" display="text" /> 
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etNombreUsuario']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="NombreEdt"
+                                 value="#{usuarioEFMB.usuarioEFModel.usuarioEFEdit.nombreUsuario}"
+                                 required="true"
+                                 disabled="#{usuarioEFMB.usuarioEFModel.fechaFinStr==0}"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:200px"
+                                 rows="3" cols="30"
+                                 maxlength="500"  
+                                 counter="counter4"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesNombreEdt" for="NombreEdt" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter4"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etCorreo']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="CorreoEdt" value="#{usuarioEFMB.usuarioEFModel.usuarioEFEdit.correoElectronico}"
+                                 required="true"
+                                 disabled="#{usuarioEFMB.usuarioEFModel.fechaFinStr==0}"
+                                 requiredMessage="#{mensajes['msgRequerido']}" 
+                                 style="width:200px"
+                                 rows="3" cols="30"
+                                 maxlength="250"  
+                                 counter="counter5"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false"
+                                 validatorMessage="#{usuarioEFMB.usuarioEFModel.correoElectronico} El correo no es valido">
+                    <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesCorreoEdt" for="CorreoEdt" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter5"/>
+
+                <h:panelGrid columns="2">
+
+                    <p:commandButton id="cmbHabilitarEdt" value="#{mensajes['btnHabilitar']}" action="#{usuarioEFMB.reactiva}" style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();"
+                                     update="pnlEdita, pnlTbl, messages, :Campo:pnlTblFuncionario" process="@this" immediate="true"
+                                     rendered="#{usuarioEFMB.usuarioEFModel.fechaFinStr==0}">
+                        <p:resetInput target="pnlEdita" />
+                    </p:commandButton>
+                    <p:commandButton id="cmbGuardarEdt" value="#{mensajes['btnGuardar']}" action="#{usuarioEFMB.edita}" style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();"
+                                     process="@this, RfcEdt, EntidadEdt, NombreEdt, CorreoEdt " update="pnlEdita, pnlTbl, messages, :Campo:pnlTblFuncionario"
+                                     rendered="#{usuarioEFMB.usuarioEFModel.fechaFinStr==1}"/>
+                    <p:commandButton id="cmbCancelarEdt" value="#{mensajes['btnCancelar']}" action="#{usuarioEFMB.cerrar}"  style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEdita').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();"
+                                     update="pnlEdita, pnlTbl, messages, :Campo:pnlTblFuncionario" process="@this" immediate="true">
+                        <p:resetInput target="pnlEdita" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <p:panel id="pnlElimina" header="#{mensajes['usuarioEF.tituloElimina']}" style="width:600px" visible="#{usuarioEFMB.usuarioEFModel.elmVisible}">
+
+            <h:panelGrid id="gridEli" columns="2" cellspacing="3" cellpadding="3">
+                <h:outputText  value="#{mensajes['etUsuario']}"/>
+                <p:inputText id="txtRfcEli" value="#{usuarioEFMB.usuarioEFModel.usuarioEFEli.rfcCorto}" disabled="true" style="width:200px"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etEntidad']}" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="EntidadEli" value="#{usuarioEFMB.usuarioEFModel.idTipoEntidad}" 
+                                 disabled="true" effect="fade" style="width:210px">
+                    <f:selectItems value="#{usuarioEFMB.usuarioEFModel.listaComboEntidad}" var="valEntidad"
+                                   itemLabel="#{valEntidad.descripcion}" itemValue="#{valEntidad.idCombo}" /> 
+
+                </p:selectOneMenu>  
+
+                <h:outputText  value="#{mensajes['etNombreUsuario']}"/>
+                <p:inputTextarea id="txtNombreEli" value="#{usuarioEFMB.usuarioEFModel.usuarioEFEli.nombreUsuario}" disabled="true" style="width:200px"/>
+
+                <h:outputText  value="#{mensajes['etCorreo']}"/>
+                <p:inputTextarea id="txtCorreoEli" value="#{usuarioEFMB.usuarioEFModel.usuarioEFEli.correoElectronico}" disabled="true" style="width:200px"/>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEli" value="#{mensajes['btnEliminar']}" action="#{usuarioEFMB.elimina}" style="left:90%"
+                                     process="@this" update="pnlElimina, pnlTbl, messages, :Campo:pnlTblFuncionario" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlElimina').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarEli" value="#{mensajes['btnCancelar']}" action="#{usuarioEFMB.cerrar}" style="left:90%"
+                                     process="@this" update="pnlElimina, pnlTbl, messages, :Campo:pnlTblFuncionario" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlElimina').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlElimina" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+
+
+        <p:panel id="pnlTblFuncionario" style="width:800px" visible="#{usuarioEFMB.funcionarioModel.tblVisibleFuncionario}">
+
+            <p:dataTable id="tblFuncionario" var="funcionario" value="#{usuarioEFMB.funcionarioModel.listFuncionario}" emptyMessage="#{mensajes['msg.dataTable.vacio']}"
+                         filteredValue="#{usuarioEFMB.funcionarioModel.listFuncionarioTmp}" paginator="true" rows="5" paginatorPosition="bottom" scrollable="true" scrollWidth= "778">
+                <f:facet name= "header">
+                    <h:outputText value="#{mensajes['funcionario.titulo']}"/>
+                    <h:commandLink action="#{usuarioEFMB.generaExcelFuncionario}" immediate="true" style="margin-left:90%;">
+                        <h:graphicImage value="/resources/images/excel1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                    <p:spacer width="15" height="10"/>
+                    <h:commandLink  action="#{usuarioEFMB.generaPdfFuncionario}" immediate="true" >
+                        <h:graphicImage value="/resources/images/pdf1.png" height="20px" width="20px" style="border:none"/>
+                    </h:commandLink>
+                </f:facet>
+                <p:column sortBy="#{funcionario.numeroEmpleado}"  filterBy="#{funcionario.numeroEmpleado}" headerText="#{mensajes['etNumEmpleado']}" style = "width:150px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipNum" value="#{funcionario.numeroEmpleado}"></h:outputText>
+                    <p:tooltip for="tipNum" value="#{funcionario.numeroEmpleado}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{funcionario.nombreFuncionario}" filterBy="#{funcionario.nombreFuncionario}" headerText="#{mensajes['etNombreFuncionario']}" style = "width:150px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipNombre" value="#{funcionario.nombreFuncionario}"></h:outputText>
+                    <p:tooltip for="tipNombre" value="#{funcionario.nombreFuncionario}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{funcionario.descripcionCargo}" filterBy="#{funcionario.descripcionCargo}" headerText="#{mensajes['etCargo']}" style = "width:150px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipCargo" style="border:none;resize:none" cols="20" rows="2" value="#{funcionario.descripcionCargo}" readonly="true"/>
+                    <p:tooltip for="tipCargo" value="#{funcionario.descripcionCargo}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{funcionario.descAreaAdscripcion}" filterBy="#{funcionario.descAreaAdscripcion}" headerText="#{mensajes['etArea']}" style = "width:150px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:inputTextarea id="tipArea" style="border:none;resize:none" cols="20" rows="2" value="#{funcionario.descAreaAdscripcion}" readonly="true"/>
+                    <p:tooltip for="tipArea" value="#{funcionario.descAreaAdscripcion}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{funcionario.correoElectronicoFuncionario}" filterBy="#{funcionario.correoElectronicoFuncionario}" headerText="#{mensajes['etCorreo']}" style = "width:150px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipCorreoFuncionario" value="#{funcionario.correoElectronicoFuncionario}"></h:outputText>
+                    <p:tooltip for="tipCorreoFuncionario" value="#{funcionario.correoElectronicoFuncionario}"></p:tooltip> 
+                </p:column>
+                <p:column sortBy="#{funcionario.correoElectronicoAlterno}" filterBy="#{funcionario.correoElectronicoAlterno}" headerText="#{mensajes['etCorreoAlterno']}" style = "width:150px" filterMaxLength="18"
+                          filterStyle="margin:auto; width:60px;" filterMatchMode="contains">
+                    <h:outputText id="tipCorreoAlterno" value="#{funcionario.correoElectronicoAlterno}"></h:outputText>
+                    <p:tooltip for="tipCorreoAlterno" value="#{funcionario.correoElectronicoAlterno}"></p:tooltip> 
+                </p:column>
+                <p:column headerText="#{mensajes['etEditar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this" update=":Campo:pnlEditaFuncionario, :Campo:pnlTblFuncionario, :Campo:pnlTbl" action="#{usuarioEFMB.abrirEditarFuncionario}"
+                                     icon="ui-icon-pencil" onclick="statusDialog.show();
+                                             $('#Campo\\:pnlTbl').hide();
+                                             $('#Campo\\:pnlTblFuncionario').hide();" onsuccess="statusDialog.hide();">
+                        <f:setPropertyActionListener value="#{funcionario}" 
+                                                     target="#{usuarioEFMB.funcionarioModel.funcionarioEdit}" /> 
+                    </p:commandButton>
+                </p:column>
+                <p:column headerText="#{mensajes['etEliminar']}" style="text-align:center" width="35">
+                    <p:commandButton process="@this"  update=":Campo:pnlEliminaFuncionario, :Campo:pnlTblFuncionario, :Campo:pnlTbl" action="#{usuarioEFMB.abrirEliminarFuncionario}"
+                                     icon="ui-icon-close" onclick="statusDialog.show();
+                                             $('#Campo\\:pnlTbl').hide();
+                                             $('#Campo\\:pnlTblFuncionario').hide();" onsuccess="statusDialog.hide();"
+                                     rendered="#{funcionario.fechaFinStr==1}">
+                        <f:setPropertyActionListener value="#{funcionario}" 
+                                                     target="#{usuarioEFMB.funcionarioModel.funcionarioEli}" /> 
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <div align="right">
+                <br />
+                <p:commandButton process="@this" update=":Campo:pnlAgregaFuncionario, :Campo:pnlTblFuncionario, :Campo:pnlTbl" 
+                                 onclick="statusDialog.show();
+                                         $('#Campo\\:pnlTbl').hide();
+                                         $('#Campo\\:pnlTblFuncionario').hide();" onsuccess="statusDialog.hide();"
+                                 action="#{usuarioEFMB.abrirNuevoFuncionario}" value="#{mensajes['btnNuevo']}" />
+            </div>
+
+        </p:panel>
+
+
+        <p:panel id="pnlAgregaFuncionario" header="#{mensajes['funcionario.tituloAgrega']}" style="width:600px"  visible="#{usuarioEFMB.funcionarioModel.nvoVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridNvoFuncionario" columns="2" cellspacing="3" cellpadding="3">
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etNumEmpleado']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="NumEmpleado" value="#{usuarioEFMB.funcionarioModel.numeroEmpleado}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:350px"
+                                 rows="1" cols="30"
+                                 maxlength="11"
+                                 counter="counter6"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesNumEmpleado" for="NumEmpleado" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter6"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etNombreFuncionario']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="NombreFuncionario" value="#{usuarioEFMB.funcionarioModel.nombreFuncionario}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:350px"
+                                 rows="1" cols="30"
+                                 maxlength="200"
+                                 counter="counter7"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesNombreFuncionario" for="NombreFuncionario" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter7"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etCargo']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="Cargo" value="#{usuarioEFMB.funcionarioModel.descripcionCargo}"
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:350px"
+                                 rows="1" cols="30"
+                                 maxlength="300"
+                                 counter="counter10"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesCargo" for="Cargo" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter10"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etArea']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>                
+                <p:selectOneMenu id="Area" value="#{usuarioEFMB.funcionarioModel.idTipoArea}" 
+                                 effect="fade" required="true" requiredMessage="#{mensajes['msgRequerido']}" style="width:360px" panelStyle="width:356px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{usuarioEFMB.funcionarioModel.listaComboArea}" var="valArea"
+                                   itemLabel="#{valArea.descripcion}" itemValue="#{valArea.idCombo}" /> 
+
+                </p:selectOneMenu>  
+                <h:outputText />
+                <p:message  id="cmbArea" for="Area" display="text" />
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etCorreo']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+
+                <p:inputTextarea id="CorreoFuncionario" value="#{usuarioEFMB.funcionarioModel.correoElectronicoFuncionario}" 
+                                 required="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}" 
+                                 style="width:350px"
+                                 rows="1" cols="30"
+                                 maxlength="150"  
+                                 counter="counter8"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false"
+                                 validatorMessage="#{usuarioEFMB.funcionarioModel.correoElectronicoFuncionario} El correo no es valido">
+                    <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                </p:inputTextarea>                
+                <h:outputText />
+                <p:message id="mensajesCorreoFuncionario" for="CorreoFuncionario" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter8"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etCorreoAlterno']}"/>
+                    </p:column>
+                </p:row>
+
+                <p:inputTextarea id="CorreoAlterno" value="#{usuarioEFMB.funcionarioModel.correoElectronicoAlterno}" 
+                                 style="width:350px"
+                                 rows="1" cols="30"
+                                 maxlength="150"  
+                                 counter="counter9"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>                
+                <h:outputText />
+                <p:message id="mensajesCorreoAlterno" for="CorreoAlterno" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter9"/>
+
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarNvoFuncionario" value="#{mensajes['btnGuardar']}" action="#{usuarioEFMB.agregaFuncionario}" style="left:90%"
+                                     process="@this, NumEmpleado, NombreFuncionario, CorreoFuncionario, CorreoAlterno, Area, Cargo" update="pnlAgregaFuncionario, pnlTblFuncionario, messages, :Campo:pnlTbl"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgregaFuncionario').hide();
+                                             $('#Campo\\:pnlTbl').hide();
+                                             $('#Campo\\:pnlTblFuncionario').hide();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarNvoFuncionario" value="#{mensajes['btnCancelar']}" action="#{usuarioEFMB.cerrarFuncionario}" style="left:90%"
+                                     process="@this" update="pnlAgregaFuncionario, pnlTblFuncionario, messages, :Campo:pnlTbl" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlAgregaFuncionario').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlAgregaFuncionario" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <p:panel id="pnlEditaFuncionario" header="#{mensajes['funcionario.tituloEditar']}"  style="width:600px" visible="#{usuarioEFMB.funcionarioModel.edtVisible}">
+            <p:outputLabel value="#{mensajes['msgCampoObligatorio']}" style="color:red">
+            </p:outputLabel>
+            <h:panelGrid id="gridEdtFuncionario" columns="2" cellspacing="3" cellpadding="3">
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etNumEmpleado']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="NumEmpleadoEdt" value="#{usuarioEFMB.funcionarioModel.funcionarioEdit.numeroEmpleado}"
+                                 required="true"
+                                 disabled="true"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:350px"
+                                 rows="1" cols="30"
+                                 maxlength="11"
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesNumEmpleadoEdt" for="NumEmpleadoEdt" display="text"  />
+                <h:outputText />
+                <h:outputText />
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etNombreFuncionario']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="NombreFuncionarioEdt"
+                                 value="#{usuarioEFMB.funcionarioModel.funcionarioEdit.nombreFuncionario}"
+                                 required="true"
+                                 disabled="#{usuarioEFMB.funcionarioModel.fechaFinStr==0}"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:350px"
+                                 rows="1" cols="30"
+                                 maxlength="200"  
+                                 counter="counter12"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesNombreFuncionarioEdt" for="NombreFuncionarioEdt" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter12"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etCargo']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="CargoEdt" value="#{usuarioEFMB.funcionarioModel.funcionarioEdit.descripcionCargo}"
+                                 required="true"
+                                 disabled="#{usuarioEFMB.funcionarioModel.fechaFinStr==0}"
+                                 requiredMessage="#{mensajes['msgRequerido']}"
+                                 style="width:350px"
+                                 rows="1" cols="30"
+                                 maxlength="300"
+                                 counter="counter11"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesCargoEdt" for="CargoEdt" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter11"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etArea']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="AreaEdt" value="#{usuarioEFMB.funcionarioModel.idTipoArea}" 
+                                 effect="fade" required="true" 
+                                 disabled="#{usuarioEFMB.funcionarioModel.fechaFinStr==0}"
+                                 requiredMessage="#{mensajes['msgRequerido']}" style="width:360px" panelStyle="width:356px">
+                    <f:selectItem itemLabel="Selecciona valor" itemValue="" />        
+                    <f:selectItems value="#{usuarioEFMB.funcionarioModel.listaComboArea}" var="valArea"
+                                   itemLabel="#{valArea.descripcion}" itemValue="#{valArea.idCombo}" /> 
+
+                </p:selectOneMenu>  
+                <h:outputText />
+                <p:message  id="cmbAreaEdt" for="AreaEdt" display="text" /> 
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etCorreo']}"/>
+                        <h:outputText value="*" style="color:red" />
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="CorreoEdtFuncionario" value="#{usuarioEFMB.funcionarioModel.funcionarioEdit.correoElectronicoFuncionario}"
+                                 required="true"
+                                 disabled="#{usuarioEFMB.funcionarioModel.fechaFinStr==0}"
+                                 requiredMessage="#{mensajes['msgRequerido']}" 
+                                 style="width:350px"
+                                 rows="1" cols="30"
+                                 maxlength="150"  
+                                 counter="counter13"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false"
+                                 validatorMessage="#{usuarioEFMB.funcionarioModel.correoElectronicoFuncionario} El correo no es valido">
+                    <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesCorreoEdtFuncionario" for="CorreoEdtFuncionario" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter13"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText  value="#{mensajes['etCorreoAlterno']}"/>
+                    </p:column>
+                </p:row>
+                <p:inputTextarea id="CorreoAlternoEdt" value="#{usuarioEFMB.funcionarioModel.funcionarioEdit.correoElectronicoAlterno}"
+                                 disabled="#{usuarioEFMB.funcionarioModel.fechaFinStr==0}"
+                                 style="width:350px"
+                                 rows="1" cols="30"
+                                 maxlength="150"  
+                                 counter="counter14"
+                                 counterTemplate="{0} caracteres restantes."
+                                 autoResize="false">
+                </p:inputTextarea>
+                <h:outputText />
+                <p:message id="mensajesCorreoAlternoEdt" for="CorreoAlternoEdt" display="text"  />
+                <h:outputText />
+                <h:outputText id="counter14"/>
+
+
+                <h:panelGrid columns="2">
+
+                    <p:commandButton id="cmbHabilitarEdtFuncionario" value="#{mensajes['btnHabilitar']}" action="#{usuarioEFMB.reactivaFuncionario}" style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEditaFuncionario').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();"
+                                     update="pnlEditaFuncionario, pnlTblFuncionario, messages, :Campo:pnlTbl" process="@this" immediate="true"
+                                     rendered="#{usuarioEFMB.funcionarioModel.fechaFinStr==0}">
+                        <p:resetInput target="pnlEditaFuncionario" />
+                    </p:commandButton>
+                    <p:commandButton id="cmbGuardarEdtFuncionario" value="#{mensajes['btnGuardar']}" action="#{usuarioEFMB.editaFuncionario}" style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEditaFuncionario').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();"
+                                     process="@this, NumEmpleadoEdt, NombreFuncionarioEdt, CorreoEdtFuncionario, CorreoAlternoEdt, AreaEdt, CargoEdt " update="pnlEditaFuncionario, pnlTblFuncionario, messages, :Campo:pnlTbl"
+                                     rendered="#{usuarioEFMB.funcionarioModel.fechaFinStr==1}"/>
+                    <p:commandButton id="cmbCancelarEdtFuncionario" value="#{mensajes['btnCancelar']}" action="#{usuarioEFMB.cerrarFuncionario}"  style="left:90%"
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEditaFuncionario').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();"
+                                     update="pnlEditaFuncionario, pnlTblFuncionario, messages, :Campo:pnlTbl" process="@this" immediate="true">
+                        <p:resetInput target="pnlEditaFuncionario" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+
+        <p:panel id="pnlEliminaFuncionario" header="#{mensajes['funcionario.tituloElimina']}" style="width:600px" visible="#{usuarioEFMB.funcionarioModel.elmVisible}">
+
+            <h:panelGrid id="gridEliFuncionario" columns="2" cellspacing="3" cellpadding="3">
+                <h:outputText  value="#{mensajes['etNumEmpleado']}"/>
+                <p:inputText id="txtNumEmpleadoEli" value="#{usuarioEFMB.funcionarioModel.funcionarioEli.numeroEmpleado}" disabled="true" style="width:350px"/>
+
+                <h:outputText  value="#{mensajes['etNombreFuncionario']}"/>
+                <p:inputTextarea id="txtNombreFuncionarioEli" value="#{usuarioEFMB.funcionarioModel.funcionarioEli.nombreFuncionario}" disabled="true" style="width:350px"/>
+
+                <h:outputText  value="#{mensajes['etCargo']}"/>
+                <p:inputTextarea id="txtCargoEli" value="#{usuarioEFMB.funcionarioModel.funcionarioEli.descripcionCargo}" disabled="true" style="width:350px"/>
+
+                <p:row>
+                    <p:column>
+                        <h:outputText value="#{mensajes['etArea']}" />
+                    </p:column>
+                </p:row>
+                <p:selectOneMenu id="AreaEli" value="#{usuarioEFMB.funcionarioModel.idTipoArea}" 
+                                 disabled="true" effect="fade" style="width:360px">
+                    <f:selectItems value="#{usuarioEFMB.funcionarioModel.listaComboArea}" var="valArea"
+                                   itemLabel="#{valArea.descripcion}" itemValue="#{valArea.idCombo}" /> 
+                </p:selectOneMenu> 
+
+                <h:outputText  value="#{mensajes['etCorreo']}"/>
+                <p:inputTextarea id="txtCorreoFuncionarioEli" value="#{usuarioEFMB.funcionarioModel.funcionarioEli.correoElectronicoFuncionario}" disabled="true" style="width:350px"/>
+
+                <h:outputText  value="#{mensajes['etCorreoAlterno']}"/>
+                <p:inputTextarea id="txtCorreoAlternoEli" value="#{usuarioEFMB.funcionarioModel.funcionarioEli.correoElectronicoAlterno}" disabled="true" style="width:350px"/>
+
+                <h:panelGrid columns="2">
+                    <p:commandButton id="cmbGuardarEliFuncionario" value="#{mensajes['btnEliminar']}" action="#{usuarioEFMB.eliminaFuncionario}" style="left:90%"
+                                     process="@this" update="pnlEliminaFuncionario, pnlTblFuncionario, messages, :Campo:pnlTbl" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEliminaFuncionario').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();"/>
+                    <p:commandButton id="cmbCancelarEliFuncionario" value="#{mensajes['btnCancelar']}" action="#{usuarioEFMB.cerrarFuncionario}" style="left:90%"
+                                     process="@this" update="pnlEliminaFuncionario, pnlTblFuncionario, messages, :Campo:pnlTbl" 
+                                     onclick="statusDialog.show();
+                                             $('#Campo\\:pnlEliminaFuncionario').hide();
+                                             $('#Campo\\:pnlTbl').show();
+                                             $('#Campo\\:pnlTblFuncionario').show();" onsuccess="statusDialog.hide();">
+                        <p:resetInput target="pnlEliminaFuncionario" />
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:panelGrid>
+        </p:panel>
+    </h:form>
+</html>

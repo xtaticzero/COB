@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>Carga Renuentes</title>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:outputStylesheet library="css/" name="estilos.css"/>
+        <script type="text/javascript">
+            function msgErrorConcurrencia() {
+                $('#msgErrorRenuenteVal').html('No se puede cargar el archivo, se esta procesando uno anterior');
+                msgErrorRenuente.show();
+            }
+            function tiempoEspera() {
+                setTimeout("enviaMensaje()", 200000);
+            }
+            function enviaMensaje() {
+                msgSesionCaducada.show();
+            }
+        </script>
+        <h:body>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/> 
+            <p:dialog modal="true" widgetVar="msgSesionCaducada" 
+                      header="El proceso de carga de resultados se está ejecutando."
+                      draggable="false" 
+                      closable="false" resizable="false">
+                <h:panelGrid columns="1" style="text-align: center;">
+                    <p:outputLabel value="Al finalizar exitosamente recibirá un correo electrónico de notificación"/>
+
+                    <p:commandButton value="Cerrar" action="#{cargaRenuentes.reloadPage}"/>
+                </h:panelGrid>
+            </p:dialog>
+            <p:dialog modal="true" widgetVar="statusDialog" 
+                      header="#{mensajes['msgEspere']}" draggable="false" 
+                      closable="false" resizable="false">
+                <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+            </p:dialog>
+
+
+            <h:form id="formaArchivo">
+                <p:panel style="width:700px;margin-left:auto;margin-right:auto;border:none">
+                    <p:messages id="messages" globalOnly="true" closable="true"/>
+                </p:panel>
+                <p:panel id="panelArchivo" header="Carga archivo previo" 
+                         style="width:650px;margin-left:auto;margin-right:auto;" 
+                         visible="#{cargaRenuentes.mostrarPanelArchivo}">
+                    <h:panelGrid id="gridArchivo" columns="3" cellspacing="3" cellpadding="3">
+
+                        <h:outputText  value="#{mensajes['etNombreArchivo']}"/>
+                        <p:outputLabel value="#{cargaRenuentes.archivoRenuente.nombreArchivoCarga}" />
+                        <h:outputText />
+                        <h:outputText  value="#{mensajes['etFechaCarga']}"/>
+                        <p:outputLabel value="#{cargaRenuentes.archivoRenuente.fechaCargaStr}" />
+                        <h:outputText />
+                        <h:outputText  value="#{mensajes['renuentes.numRegistros']}"/>
+                        <p:outputLabel value="#{cargaRenuentes.archivoRenuente.totalRegistrosArchivoCarga}" />
+                        <h:outputText />
+                        <h:outputText  value="#{mensajes['renuentes.registrosErrores']}"/>
+                        <p:outputLabel value="#{cargaRenuentes.archivoRenuente.totalRegistrosErrores}" />
+                        <h:outputText />
+                        <h:outputText  value="#{mensajes['etBitacoraCarga']}" 
+                                       rendered="#{cargaRenuentes.mostrarMensajeArchivo||cargaRenuentes.mostrarBotonDescargaArchivo}"/>
+                        <p:commandButton ajax="false" value="Descargar" rendered="#{cargaRenuentes.mostrarBotonDescargaArchivo}">
+                            <p:fileDownload value="#{cargaRenuentes.bitacoraFile}" id="downloaderArchivo"/>
+                        </p:commandButton>
+                        <p:outputLabel value="#{cargaRenuentes.muestraMensaje}" rendered="#{cargaRenuentes.mostrarMensajeArchivo}"/>
+
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+
+            <br/>
+
+            <h:form id="formaUploader" enctype="multipart/form-data">
+                <p:panel id="pnluploader" header="Seleccion de archivo" style="width:650px;margin-left:auto;margin-right:auto;">
+                    <p:fileUpload fileUploadListener="#{cargaRenuentes.handleFileUpload}" mode="advanced"
+                                  auto="true"
+                                  dragDropSupport="false" 
+                                  sizeLimit="1000000000" multiple="false"
+                                  update=":formaArchivo:panelArchivo, :formaArchivo:messages" 
+                                  onstart="tiempoEspera(); statusDialog.show();remoteCommandUpdateDataTable();"
+                                  oncomplete="statusDialog.hide();"
+                                  allowTypes="/(\.|\/)(txt|TXT)$/"
+                                  invalidFileMessage="#{mensajes['ui.componente.fileupload.invalidLabel']}"
+                                  label="#{mensajes['ui.componente.fileupload.examineLabel']}"
+                                  uploadLabel="#{mensajes['ui.componente.fileupload.uploadLabel']}"
+                                  cancelLabel="#{mensajes['ui.componente.fileupload.cancelLabel']}" />
+                    <p:remoteCommand name="remoteCommandUpdateDataTable" update=":formaUploader:pnluploader"/>
+                </p:panel>
+
+                <p:dialog header="Mensaje" widgetVar="msgErrorRenuente" modal="true"
+                          resizable="false" draggable="false" >
+                    <p><div id="msgErrorRenuenteVal"></div></p>
+                    <p:commandButton value="Aceptar" onclick="msgErrorRenuente.hide();"/>
+                </p:dialog>
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

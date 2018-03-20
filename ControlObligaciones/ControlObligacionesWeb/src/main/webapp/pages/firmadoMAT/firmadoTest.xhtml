@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>
+                prueba
+            </title>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:outputStylesheet library="css/" name="estilos.css"></h:outputStylesheet>
+        <h:outputScript library="js/jquery" name="jquery-1.11.0.min.js"></h:outputScript>
+        
+        <script type="text/javascript">
+            /*<![CDATA[ */
+            function iniciarFirmado() {
+                var rfc=document.getElementById('txtRFC').value;
+                var fecha1=new Date();
+                console.log('inicio:'+fecha1.getMinutes()+':'+fecha1.getSeconds()+'.'+fecha1.getMilliseconds());
+                var datos = 'dato=algo';
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: "../../restServices/busqueda/getDatos",
+                    data: datos,
+                    success: function(msg) {
+                        if (msg.estatus === 1) {
+                            console.log(msg.cadenasOriginales);
+
+                            var total=msg.cadenasOriginales.length;
+                            var pagina=Math.ceil(total/5);
+                            console.log('pagina:'+pagina);
+                            //var pagina=40000;
+                            var paginas=Math.ceil(total/pagina);
+                            var index=0;
+                            var longitud=pagina;
+                            for(var cont=1;cont<=paginas;cont++){
+                                if(total <= (index+pagina) ){
+                                    longitud=total;
+                                }else{
+                                    longitud=index+pagina;
+                                }
+                                
+                                console.log('index:'+index+' longitud:'+longitud);
+                                generaFirmaMasivo(msg.cadenasOriginales.slice(index,longitud),{validarRFCSession: rfc}, function(error, resultado) {
+                                    var fecha1=new Date();
+                                    console.log('termina:'+fecha1.getMinutes()+':'+fecha1.getSeconds()+'.'+fecha1.getMilliseconds());
+                                    console.log(error); // Éxito 0
+                                    console.log(resultado); // cadena firmada en formato json
+                                });
+
+                                index=index+pagina;
+                            }
+                            var fecha1=new Date();
+                            console.log('termina for:'+fecha1.getMinutes()+':'+fecha1.getSeconds()+'.'+fecha1.getMilliseconds());
+                        }
+                    }
+                });
+            }
+
+            function sobreEscribirBoton(){
+                setTimeout(function() {
+                    console.log('ini');
+                    document.getElementById('btnEnviarForm').onclick=function(){
+                        iniciarFirmado();
+                    };
+                }, 1500);
+            }
+            /* ]]> */
+        </script>
+
+        <h:body>
+
+<!--            <p:panel style="width:820px;margin-left:auto;margin-right:auto;border:0px" id="panelSup">
+                <h:outputText value="test"/>
+                <h1 id="header">SAT - Servicio de Firmado Electrónico</h1>
+                <div id="firmado-widget-container"></div>
+            </p:panel>-->
+
+            <h:form>
+                <p:panel id="panel_data_entrada_masivo" header="Datos" style="margin-bottom:10px;width:800px;">
+<!--                    <div id="div_autenticacion_masivo" style="display:none;">
+                        <h:panelGrid columns="1">
+                            <f:subview id="board2">
+                                <ui:include src="fiel.xhtml" />
+                            </f:subview>
+                        </h:panelGrid>
+                    </div>-->
+                </p:panel>
+                <table id="botones_tabla" style="margin-bottom:10px;width:120px;">
+                    <tr style="border-color:#fff">
+                        <td style="width:50%;text-align: right;">
+                            <p:commandButton type="button" id="commandSubmitSM" value="Firmar" 
+                                             onclick="$('#div_autenticacion_masivo').css('display', 'block');"/>
+                        </td>
+                        <td style="width:50%;text-align: right;">
+                            <p:commandButton type="button" id="commandCancel" value="Cancelar" 
+                                             onclick="$('#div_autenticacion_masivo').css('display', 'none');"/>
+                        </td>
+                        <td style="width:50%;text-align: right;">
+                            <p:commandButton type="button" id="commandVentana" value="Ventana" 
+                                             onclick="dialogFirmado.show();sobreEscribirBoton();"/>
+                        </td>
+                    </tr> 
+                </table>
+            </h:form>
+            <p:dialog header="firmado individual" widgetVar="dialogFirmado">
+                <ui:include src="fiel.xhtml"/>
+            </p:dialog>
+            <p:dialog modal="true" widgetVar="statusDialogMasivo" header="Procesando" draggable="false" closable="false">
+                <p:graphicImage value="../../resources/images/ajaxloadingbar.gif"/>
+            </p:dialog>
+
+        </h:body>
+    </html>
+</f:view>

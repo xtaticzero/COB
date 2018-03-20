@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui">
+    <html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets">
+        <h:head>
+            <title>Criterios de Renuentes</title>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+        <h:outputStylesheet library="css/" name="estilos.css"/>
+        <script type="text/javascript">
+            function tiempoEspera() {
+                setTimeout("enviaMensaje()", 200000);
+            }
+            function enviaMensaje() {
+                msgSesionCaducada.show();
+            }
+        </script>
+        <h:body>
+            <h:form id="formaArchivo">
+                <p:panel id="panelArchivo" header="Archivo de búsqueda previa" 
+                         style="width:650px;margin-left:auto;margin-right:auto;" visible="#{buscaRenuentes.mostrarPanelArchivo}">
+                    <h:panelGrid id="gridArchivo" columns="3" cellspacing="3" cellpadding="3">
+
+                        <h:outputText  value="Fecha de búsqueda:" />
+                        <p:outputLabel value="#{buscaRenuentes.buscaRenuentes.fechaBusquedaStr}" />
+                        <h:outputText />
+                        <h:outputText  value="Búsqueda finalizada:" />
+                        <p:outputLabel value="#{buscaRenuentes.buscaRenuentes.esFinalizadaDesc}" />
+                        <h:outputText />
+                        <h:outputText  value="Ultimo archivo generado:" 
+                                       rendered="#{buscaRenuentes.mostrarMensajeArchivo||buscaRenuentes.mostrarBotonDescargaArchivo}"/>
+                        <p:commandButton ajax="false" value="Descargar" rendered="#{buscaRenuentes.mostrarBotonDescargaArchivo}">
+                            <p:fileDownload value="#{buscaRenuentes.bitacoraFile}" id="downloaderArchivo"/>
+                        </p:commandButton>
+                        <p:outputLabel value="#{buscaRenuentes.muestraMensaje}" rendered="#{buscaRenuentes.mostrarMensajeArchivo}"/>
+                        
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+
+            <br/>
+
+            <p:panel style="width:700px;margin-left:auto;margin-right:auto;border:none">
+                <p:messages id="messages" globalOnly="true" closable="true"/>
+            </p:panel>
+
+            <h:form id="renuentesSearchFrm" prependId="false">
+                <p:panel style="width:820px;margin-left:auto;margin-right:auto;border:0px">
+                    <p:panel id="panelBusquedaRenuentes" header="Criterios de Búsqueda" 
+                             style="width:650px;margin-left:auto;margin-right:auto;" visible="true">
+                        <h:panelGrid columns="3">
+                            <p:outputLabel value="Tipos de documento" />
+                            <p:selectCheckboxMenu id="comboTipoDoc" 
+                                                  value="#{buscaRenuentes.selectedTipoDocumento}" 
+                                                  style="width: 360px" panelStyle="width:356px" 
+                                                  label="Seleccione" required="true" 
+                                                  requiredMessage="Debe seleccionar al menos una opcion">
+                                <f:selectItems value="#{buscaRenuentes.beanHelper.catalogoTipoDocumento}" 
+                                               var="item" itemLabel="#{item.nombre}" itemValue="#{item.id}"/>
+                            </p:selectCheckboxMenu>
+                            <p:message for="comboTipoDoc"/>
+                            <p:outputLabel value="Obligaciones" />
+                            <p:selectCheckboxMenu id="comboTipoObligaciones" 
+                                                  value="#{buscaRenuentes.selectedObligaciones}" 
+                                                  style="width: 360px" panelStyle="width:356px" 
+                                                  label="Seleccione" required="true" 
+                                                  requiredMessage="Debe seleccionar al menos una opcion">  
+                                <f:selectItems value="#{buscaRenuentes.beanHelper.catalogoObligacion}" 
+                                               var="item" itemLabel="#{item.nombre}" itemValue="#{item.idString}"/>
+                            </p:selectCheckboxMenu>
+                            <p:message for="comboTipoObligaciones"/>
+                        </h:panelGrid>
+                        <p:messages for="validacionTabla" closable="true" showDetail="true"/>
+                        <h:panelGrid columns="7" cellpadding="5" cellspacing="5" style="margin-left:auto;margin-right:auto;">
+                            <p:dataTable var="item" value="#{buscaRenuentes.listaPeriodicidadHelper}" 
+                                         emptyMessage="#{mensajes['msg.dataTable.vacio']}" id="tamLista">
+                                <p:column style="text-align:left;">
+                                    <f:facet name="header">
+                                        <h:outputText value="Periodicidad" />
+                                    </f:facet>
+                                    <p:selectBooleanCheckbox id="manyPeriodicidadId" 
+                                                             value="#{item.checado}" required="true" 
+                                                             requiredMessage="Seleccionar al menos un periodo">
+                                        <p:ajax update="ejercicioInicial periodoInicial ejercicioFinal periodoFinal" 
+                                                process="tamLista"  event="change" />
+                                    </p:selectBooleanCheckbox>
+                                    <h:outputText value=" #{item.periodicidad.nombre}"/>
+                                </p:column>
+                                <p:column style="text-align:center;" >
+                                    <f:facet name="header">
+                                        <h:outputText value="Ejercicio Inicial" />
+                                    </f:facet>
+                                    <p:selectOneMenu id="ejercicioInicial" value="#{item.ejercicioInicialSelected}" 
+                                                     styleClass="combos" style="width:100px;" 
+                                                     required="true" disabled="#{!item.checado}"
+                                                     requiredMessage="#{mensajes['ui.validacion.required']}" >
+                                        <f:selectItems value="#{buscaRenuentes.beanHelper.catalogoEjercicioFiscal}" 
+                                                       var="iniEjercicio" itemValue="#{iniEjercicio.id}" 
+                                                       itemLabel="#{iniEjercicio.nombre}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column style="text-align:center;">
+                                    <f:facet name="header">
+                                        <p:outputLabel value="Periodo inicial"></p:outputLabel>
+                                    </f:facet>
+                                    <p:selectOneMenu id="periodoInicial" value="#{item.periodoInicialSelected}" 
+                                                     styleClass="combos" style="width:100px;" 
+                                                     required="true" disabled="#{!item.checado}" 
+                                                     requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <f:selectItems value="#{item.periodicidad.idString == 'M' ? buscaRenuentes.beanHelper.listaMensual : 
+                                                                (item.periodicidad.idString == 'B' ? buscaRenuentes.beanHelper.listaBimestral : 
+                                                                (item.periodicidad.idString == 'T' ? buscaRenuentes.beanHelper.listaTrimestral : 
+                                                                (item.periodicidad.idString == 'Q' ? buscaRenuentes.beanHelper.listaCuatrimestral : 
+                                                                (item.periodicidad.idString == 'S' ? buscaRenuentes.beanHelper.listaSemestral : 
+                                                                buscaRenuentes.beanHelper.listaAnual))))}" 
+                                                       var="iniPeriodo" itemValue="#{iniPeriodo.id}" itemLabel="#{iniPeriodo.nombre}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <p:outputLabel value="Ejercicio final"></p:outputLabel>
+                                    </f:facet>
+                                    <p:selectOneMenu id="ejercicioFinal" value="#{item.ejercicioFinalSelected}" 
+                                                     styleClass="combos" style="width:100px;" required="true" 
+                                                     disabled="#{!item.checado}" requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <f:selectItems value="#{buscaRenuentes.beanHelper.catalogoEjercicioFiscal}" 
+                                                       var="finEjercicio" itemValue="#{finEjercicio.id}" itemLabel="#{finEjercicio.nombre}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">
+                                        <p:outputLabel value="Periodo final"></p:outputLabel>
+                                    </f:facet>
+
+                                    <p:selectOneMenu id="periodoFinal" value="#{item.periodoFinalSelected}" 
+                                                     styleClass="combos" style="width:100px;" required="true" 
+                                                     disabled="#{!item.checado}" requiredMessage="#{mensajes['ui.validacion.required']}">
+                                        <f:selectItems value="#{item.periodicidad.idString == 'M' ? buscaRenuentes.beanHelper.listaMensual : 
+                                                                (item.periodicidad.idString == 'B' ? buscaRenuentes.beanHelper.listaBimestral : 
+                                                                (item.periodicidad.idString == 'T' ? buscaRenuentes.beanHelper.listaTrimestral : 
+                                                                (item.periodicidad.idString == 'Q' ? buscaRenuentes.beanHelper.listaCuatrimestral : 
+                                                                (item.periodicidad.idString == 'S' ? buscaRenuentes.beanHelper.listaSemestral : 
+                                                                buscaRenuentes.beanHelper.listaAnual))))}" 
+                                                       var="finPeriodo" itemValue="#{finPeriodo.id}" 
+                                                       itemLabel="#{finPeriodo.nombre}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <h:panelGrid columns="3">
+                            <p:outputLabel value="Estado del documento"/>
+                            <p:selectOneMenu id="estadoDocto" value="#{buscaRenuentes.estadoDocumento}" 
+                                             styleClass="combos" style="width:500px;" required="true" 
+                                             requiredMessage="#{mensajes['ui.validacion.required']}">
+                                <f:selectItems value="#{buscaRenuentes.beanHelper.catalogoEstadoDocto}" 
+                                               var="item" itemValue="#{item.id}" itemLabel="#{item.nombre}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <table width="100%">
+                            <tr align="right">
+                                <td>
+                                    <p:commandButton id="btnProcesar" value="Procesar" ajax="false" 
+                                                     onclick="tiempoEspera();" 
+                                                     update=":formaArchivo:panelArchivo :renuentesSearchFrm:panelBusquedaRenuentes :messages"
+                                                     action="#{buscaRenuentes.validaBusqueda}">
+                                    </p:commandButton>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <p:dialog modal="true" widgetVar="msgSesionCaducada" 
+                                  header="El proceso de búsqueda de renuentes se está ejecutando."
+                                  draggable="false" 
+                                  closable="false" resizable="false">
+                            <h:panelGrid columns="1" style="text-align: center;">
+                                <p:outputLabel value="Al finalizar exitosamente recibirá un correo electrónico de notificación"/>
+                                <p:commandButton value="Cerrar" action="#{buscaRenuentes.reloadPage}"/>
+                            </h:panelGrid>
+                        </p:dialog>
+
+                    </p:panel>
+                </p:panel>
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

@@ -1,0 +1,51 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package mx.gob.sat.siat.cob.background.partitioner.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+import mx.gob.sat.siat.cob.background.holder.CargaArchivosHolder;
+import mx.gob.sat.siat.cob.background.holder.HolderCargaMasivaMap;
+import mx.gob.sat.siat.cob.background.partitioner.CargaReqsAnterioresPartitioner;
+import mx.gob.sat.siat.cob.background.util.UtileriasBackground;
+import org.springframework.batch.item.ExecutionContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+/**
+ *
+ * @author Juan
+ */
+@Service("cargaReqsAnterioresPartitioner")
+@Scope("step")
+public class CargaReqsAnterioresPartitionerImpl implements CargaReqsAnterioresPartitioner {
+
+    @Autowired
+    private HolderCargaMasivaMap holderCargaMasiva;
+    private String idVigilanciaAdministracionLocal;
+    private Long idVigilancia;
+
+    @Override
+    public Map<String, ExecutionContext> partition(int gridSize) {
+        if (holderCargaMasiva.getHolderCargaMasiva().get(idVigilancia + idVigilanciaAdministracionLocal) != null) {
+            int totalSize = ((CargaArchivosHolder) holderCargaMasiva.getHolderCargaMasiva().
+                    get(idVigilancia + idVigilanciaAdministracionLocal)).getRequerimientos().size();
+            return UtileriasBackground.ejecucionPartition(gridSize, totalSize);
+        }
+        return new HashMap<String, ExecutionContext>();
+    }
+
+    @Value("#{jobParameters['idAdmonLocal']}")
+    public void setIdVigilanciaAdministracionLocal(String idVigilanciaAdministracionLocal) {
+        this.idVigilanciaAdministracionLocal = idVigilanciaAdministracionLocal;
+    }
+
+    @Value("#{jobParameters['idVigilancia']}")
+    public void setIdVigilancia(Long idVigilancia) {
+        this.idVigilancia = idVigilancia;
+    }
+}

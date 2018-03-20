@@ -1,0 +1,332 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <h:head>
+            <title>Aprobar Documentos Renuentes</title>
+            <h:outputScript library="js" name="procesamientoFirmas.js"/>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <script type="text/javascript">
+            /*<![CDATA[ */
+            var numEmpl;
+            var numVigilancia;
+            URL_TOTALDATOS = "../../../restServices/firmaRenuentes/getTotalRegistros";
+            URL_OBTENERDATOS = "../../../restServices/firmaRenuentes/getDatos";
+            URL_GUARDARFIRMAS = "../../../restServices/firmaRenuentes/guardarDatos";
+            URL_PROCESOTOMADO = "../../../restServices/firmaRenuentes/procesoTomado";
+            var Browser = detectarNavegador();
+
+            function iniciarFirmado() {
+                dialogFirmado.hide();
+                dlgProcesoFirmadoEmision.show();
+
+                rfc = '#{aprobarDocumentoRenuentesMB.rfc}';
+
+                flgContador = 1;
+                var fecha1 = new Date();
+                console.log('inicio:' + fecha1.getMinutes() + ':' + fecha1.getSeconds() + '.' + fecha1.getMilliseconds());
+                totalRegistros = getRegistrosTotales();
+                var fecha1 = new Date();
+                console.log('despues de total:' + fecha1.getMinutes() + ':' + fecha1.getSeconds() + '.' + fecha1.getMilliseconds());
+
+                paginaRegistros = Math.ceil(totalRegistros / NUMERO_PAGINAS);
+                console.log('paginaRegistros:' + paginaRegistros);
+                if (paginaRegistros < NUMERO_PAGINAS) {
+                    FLG_SALIDA = paginaRegistros;
+                } else {
+                    FLG_SALIDA = NUMERO_PAGINAS;
+                }
+                indexRegistros = 1;
+                longRegistros = paginaRegistros;
+
+                procesamientoFirma();
+
+                var fecha1 = new Date();
+                console.log('termina for:' + fecha1.getMinutes() + ':' + fecha1.getSeconds() + '.' + fecha1.getMilliseconds());
+
+            }
+            function validaErrores() {
+                if (flgTieneErrores > 0 && (flgContadorPagina + flgTieneErrores) === PAGINAS_PARCIAL) {
+                    console.log('Existen errores ' + motivoErrores);
+                    dlgProcesoFirmadoEmision.hide();
+                    generaMensaje(motivoErrores);
+                    msgErrorFirmado.show();
+                }
+            }
+
+            function validaFinProceso() {
+                if (flgContador >= FLG_SALIDA && indexRegistros > totalRegistros) {
+                    console.log('termina todos los procesos ya!');
+                    //funcion original
+                    terminoFirmado();
+                } else {
+                    flgContador++;
+                }
+            }
+
+            function guardarDatos(resultado) {
+                $.ajax({
+                    type: 'POST',
+                    cache: false,
+                    url: URL_GUARDARFIRMAS,
+                    data: 'firmas=' + encodeURIComponent(JSON.stringify(resultado)),
+                    success: function(msg) {
+                        console.log('estatus guardado:' + msg.estatus);
+                        if (msg.estatus === 1) {
+                            if (flgContadorPagina >= PAGINAS_PARCIAL) {
+                                console.log('--------termina los procesos de pagina');
+                                indexRegistros = indexRegistros + paginaRegistros;
+                                validaFinProceso(resultado);
+                                procesamientoFirma();
+                            } else {
+                                flgContadorPagina++;
+                            }
+                        } else {
+                            flgTieneErrores++;
+                            motivoErrores = msg.mensaje;
+                        }
+
+
+                    },
+                    error: function(jqXHR, status, errorTHrown) {
+                        console.log('error:' + jqXHR.status + ", error:" + errorTHrown);
+                        flgTieneErrores++;
+                        motivoErrores = errorTHrown;
+                    },
+                    complete: function(jqXHR, status) {
+                        console.log('complete:' + jqXHR.status);
+                        validaErrores();
+                    }
+                });
+            }
+            function procesoTomado() {
+                var tomado = 2;
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: URL_PROCESOTOMADO,
+                    async: false,
+                    success: function(msg) {
+                        if (msg.estatus === 1) {
+                            tomado = msg.bloqueado;
+                        } else {
+                            generaMensaje('No se puede determinar si las multas están siendo firmadas');
+                        }
+                    },
+                    error: function(jqXHR, status, errorTHrown) {
+                        console.log('error:' + jqXHR.status + ", error:" + errorTHrown);
+                        generaMensaje('Error al determinar si las multas están siendo firmadas');
+                    }
+                });
+                return tomado;
+            }
+
+            function sobreEscribirBoton() {
+                setTimeout(function() {
+                    console.log('ini');
+                    document.getElementById('btnEnviarForm').onclick = function() {
+                        iniciarFirmado();
+                    };
+                }, 1500);
+            }
+
+            function verDialogoFirmado() {
+                if (browserCompatible()) {
+                    dlgLoader.show();
+                    var tomado = procesoTomado();
+                    dlgLoader.hide();
+                    if (tomado === 1) {
+                        generaMensaje('Ya existe otro proceso firmando estos registros.');
+                    } else if (tomado === 0) {
+                        limpiaCampos();
+                        dialogFirmado.show();
+                        sobreEscribirBoton();
+                    }
+                }
+            }
+            function limpiaCampos() {
+                document.getElementById('certificate').value = '';
+                document.getElementById('privateKey').value = '';
+                document.getElementById('pwdLlavePriv').value = '';
+                document.getElementById('txtRFC').value = '';
+            }
+
+            function terminoFirmado() {
+                emitirRenuentes();
+            }
+            function generaMensaje(mensaje){
+                $('#msgErrorFirmaVal').html(mensaje);
+            }
+
+            /* ]]> */
+        </script>
+        <h:body>
+            <ui:include src="/WEB-INF/templates/loader.xhtml"/>
+            <h:form id="mostrarDocumentos" prependId="false"> 
+                <ui:include src="/pages/firmadoMAT/firmadoInclude.xhtml" />
+
+                <script type="text/javascript">
+                    /*<![CDATA[ */
+                    $.noConflict();
+                    /* ]]> */
+                </script>
+                <p:poll interval="10" listener="#{aprobarDocumentoRenuentesMB.increment}"
+                        widgetVar="poll" autoStart="false" id="pollMensaje"/>
+                <p:panel styleClass="panel-princial"> 
+                    <p:messages id="mensajes" showDetail="true" showSummary="true"/>
+                    <h:panelGrid>
+                        <h:panelGrid columns="2" >
+                            <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.fechaEmision']}"/>
+                            <h:outputText value="#{aprobarDocumentoRenuentesMB.aprobarDocumentoRenuentesHelper.visualizaVigilanciaRenuentes.fechaEmision}"/>
+                            <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.medioEnvio']}"/>
+                            <h:outputText value="#{aprobarDocumentoRenuentesMB.aprobarDocumentoRenuentesHelper.visualizaVigilanciaRenuentes.medioEnvio}"/>
+                            <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.tipoFirma']}"/>
+                            <h:outputText value="#{aprobarDocumentoRenuentesMB.aprobarDocumentoRenuentesHelper.visualizaVigilanciaRenuentes.tipoFirma}"/>
+                            <h:outputText value="#{mensajes['aprobarVigilanciaRenuentes.tipoDocumento']}"/>
+                            <h:outputText value="#{aprobarDocumentoRenuentesMB.aprobarDocumentoRenuentesHelper.visualizaVigilanciaRenuentes.tipoDocumento}"/>
+                        </h:panelGrid>
+                        <p:dataTable value="#{aprobarDocumentoRenuentesMB.aprobarDocumentoRenuentesHelper.documentos}"
+                                     var="documento"
+                                     paginator="false" emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarDocumentoRenuentes.numeroControl']}" />
+                                </f:facet>
+                                <p:commandLink value="#{documento.numeroControl}" 
+                                               process="@this"
+                                               update="@form"
+                                               action="#{aprobarDocumentoRenuentesMB.obtieneDetalles}"
+                                               oncomplete="dlg2.show()">
+                                    <f:setPropertyActionListener value="#{documento}"
+                                                                 target="#{aprobarDocumentoRenuentesMB.aprobarDocumentoRenuentesHelper.documentoSeleccionado}"/>
+                                </p:commandLink>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarDocumentoRenuentes.rfcVigente']}" />
+                                </f:facet>
+                                <h:outputText value="#{documento.rfc}"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="#{mensajes['aprobarDocumentoRenuentes.numeroControlReq']}" />
+                                </f:facet>
+                                <h:outputText value="#{documento.numeroControlRequerimiento}"/>
+                            </p:column>
+                        </p:dataTable>
+                        <h:panelGrid columns="7">
+                            <p:commandButton value="Primero" 
+                                             action="#{aprobarDocumentoRenuentesMB.irA}"
+                                             process="@this"
+                                             update="@form">
+                                <f:setPropertyActionListener value="1"
+                                                             target="#{aprobarDocumentoRenuentesMB.
+                                                                       aprobarDocumentoRenuentesHelper.
+                                                                       pagina}"/>
+                            </p:commandButton>
+                            <p:commandButton value="Atras" 
+                                             action="#{aprobarDocumentoRenuentesMB.anterior}"
+                                             process="@this"
+                                             update="@form"/>
+                            <p:inputText value="#{aprobarDocumentoRenuentesMB.aprobarDocumentoRenuentesHelper.pagina}" size="5"/>
+                            <p:commandButton action="#{aprobarDocumentoRenuentesMB.irA}" 
+                                             process="@parent" update="@form"
+                                             value="Ir"/>
+                            <h:outputText value=" De #{aprobarDocumentoRenuentesMB.aprobarDocumentoRenuentesHelper.paginador.numeroPaginas}"/>
+                            <p:commandButton value="Siguiente" 
+                                             action="#{aprobarDocumentoRenuentesMB.siguiente}"
+                                             process="@this"
+                                             update="@form"/>
+                            <p:commandButton value="Ultimo" 
+                                             action="#{aprobarDocumentoRenuentesMB.irA}"
+                                             process="@this"
+                                             update="@form">
+                                <f:setPropertyActionListener value="#{aprobarDocumentoRenuentesMB.
+                                                                      aprobarDocumentoRenuentesHelper.
+                                                                      paginador.
+                                                                      numeroPaginas}"
+                                                             target="#{aprobarDocumentoRenuentesMB.
+                                                                       aprobarDocumentoRenuentesHelper.
+                                                                       pagina}"/>
+                            </p:commandButton>                            
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <p:commandButton value="#{mensajes['btnRegresar']}" 
+                                             action="aprobarVigilanciaRenuentes" ajax="false"/>
+                            <p:commandButton value="#{mensajes['aprobarDocumentoRenuentes.botonEmitir']}"
+                                             onclick="msgAceptar.show()"
+                                             rendered="#{!aprobarDocumentoRenuentesMB.firmaDigital}">
+                            </p:commandButton>
+                            <p:commandButton value="#{mensajes['aprobarDocumentoRenuentes.botonEmitir']}"
+                                             rendered="#{aprobarDocumentoRenuentesMB.firmaDigital}"
+                                             onclick="verDialogoFirmado();" id="btnEmitirFirma">
+                            </p:commandButton>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </p:panel>
+                <p:dialog id="modalDialog" 
+                          header="#{mensajes['aprobarDocumentoRenuentes.documento']} #{aprobarDocumentoRenuentesMB.aprobarDocumentoRenuentesHelper.documentoSeleccionado.numeroControl}"
+                          widgetVar="dlg2" modal="true" height="200" width="650">
+                    <p:dataTable value="#{aprobarDocumentoRenuentesMB.aprobarDocumentoRenuentesHelper.listaDetalle}"
+                                 var="detalle"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 rows="12"
+                                 paginatorAlwaysVisible="false"
+                                 id="tblDetalles"
+                                 emptyMessage="#{mensajes['msg.dataTable.vacio']}">
+
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarDetalleRenuentes.claveObligacion']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.claveObligacion}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarDetalleRenuentes.descripcionObligacion']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.obligacion}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarDetalleRenuentes.ejercicioFiscal']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.ejercicio}"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{mensajes['aprobarDetalleRenuentes.periodo']}"/>
+                            </f:facet>
+                            <h:outputText value="#{detalle.periodo}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:dialog> 
+                <p:confirmDialog message="#{mensajes['aprobarDocumentoRenuentes.preguntaEmitir']}"
+                                 widgetVar="msgAceptar">
+                    <p:commandButton value="#{mensajes['btnAceptar']}" 
+                                     actionListener="#{aprobarDocumentoRenuentesMB.emision}"
+                                     oncomplete="msgAceptar.hide()"/>
+                    <p:commandButton value="#{mensajes['btnCancelar']}" onclick="msgAceptar.hide()"/> 
+                </p:confirmDialog>
+                <p:dialog header="Mensaje" widgetVar="msgErrorFirmado" modal="true"
+                          resizable="false" draggable="false" >
+                    <p><div id="msgErrorFirmaVal"></div></p>
+                    <p:commandButton value="Aceptar" onclick="msgErrorFirmado.hide();"/>
+                </p:dialog>
+                <p:dialog header="Emisión" widgetVar="dlgProcesoFirmadoEmision" modal="true"
+                          resizable="false" draggable="false" closable="false" 
+                          onShow="poll.start();"
+                          onHide="poll.stop();">
+                    <h:outputText value="Proceso de emisión, por favor espere..."/>                    
+                </p:dialog>
+                <p:remoteCommand name="emitirRenuentes" actionListener="#{aprobarDocumentoRenuentesMB.emision}" update="mensajes" oncomplete="dlgProcesoFirmadoEmision.hide();"/>
+            </h:form>
+        </h:body>
+    </html>
+</f:view>

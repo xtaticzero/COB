@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<f:view xmlns:f="http://java.sun.com/jsf/core" 
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui">
+    <html xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:ui="http://java.sun.com/jsf/facelets">
+        <h:head>
+            <title>Bitacora de Errores</title>           
+        </h:head>
+        <ui:include src="/WEB-INF/templates/version.xhtml"/>
+        <h:outputScript library="js" name="calendarioIdiomaEs.js"/>
+        <h:body>
+            <h:outputStylesheet library="css/" name="estilos.css"/>
+            <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+
+            <p:dialog modal="true" widgetVar="statusDialog" header="#{mensajes['msgEspere']}" draggable="false" closable="false"
+                      resizable="false">
+                <p:graphicImage value="/resources/images/ajaxloadingbar.gif"/>
+            </p:dialog>
+            <p:messages globalOnly="true" id="messages"/>
+            <h:form id="formaGeneral"> 
+                <p:panel id="panelBuscar" header="Filtro de Busqueda" style="width:820px;margin-left:auto;margin-right:auto;"  visible="#{bitacoraErroresVigilancia.mostrarPanelFiltros}">
+
+                    <h:panelGrid  columns="3">
+                        <h:outputText value="Opciones: " />  
+                        <p:selectOneRadio id="opcionesBusqueda" 
+                                          value="#{bitacoraErroresVigilancia.selected}"
+                                          required="true"
+                                          requiredMessage="#{mensajes['ui.validacion.required']}">  
+                            <f:selectItem itemLabel="Vigilancia" itemValue="1" />  
+                            <f:selectItem itemLabel="Fecha de carga" itemValue="2" />  
+                            <p:ajax update=":formaGeneral:panelBuscar" process="@this" listener="#{bitacoraErroresVigilancia.handleOpcionesBusqueda}" event="change" />   
+                        </p:selectOneRadio>
+                        <p:message display="text" for="opcionesBusqueda"/>
+                    </h:panelGrid> 
+
+
+                    <h:panelGrid  columns="4" rendered="#{bitacoraErroresVigilancia.mostrarOpcionIdVig}" >
+                        <h:outputText value="Vigilancia"/>
+                        <p:inputText    
+                            id="paramIdVigilancia"
+                            required="true"
+                            requiredMessage="#{mensajes['ui.validacion.required']}"
+                            value="#{bitacoraErroresVigilancia.paramIdVigilancia}">
+                        </p:inputText>    
+                        <p:message display="text" for="paramIdVigilancia"/>
+                    </h:panelGrid> 
+
+                    <h:panelGrid  columns="6" rendered="#{bitacoraErroresVigilancia.mostrarOpcionFechas}">
+                        <h:outputText value="Desde"/>
+                        <p:calendar  value="#{bitacoraErroresVigilancia.paramFechaInicio}" 
+                                     pattern="dd/MM/yyyy"
+                                     required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}"
+                                     id="popupButtonCal" 
+                                     showOn="button" 
+                                     locale="es"
+                                     readonlyInput="true">
+                            <p:ajax event="dateSelect" listener="#{bitacoraErroresVigilancia.habilitaFechaFin}" update=":formaGeneral:panelBuscar"/>
+                        </p:calendar>
+                        <p:message display="text" for="popupButtonCal"/>
+
+                        <h:outputText value="Hasta"/>
+                        <p:calendar  value="#{bitacoraErroresVigilancia.paramFechaFin}" 
+                                     pattern="dd/MM/yyyy"
+                                     mindate="#{bitacoraErroresVigilancia.paramFechaFinMin}"
+                                     maxdate="#{bitacoraErroresVigilancia.paramFechaFinMax}"
+                                     required="true"
+                                     requiredMessage="#{mensajes['ui.validacion.required']}" 
+                                     id="popupButtonCal2" 
+                                     showOn="button" 
+                                     locale="es"
+                                     readonlyInput="true"/>  
+                        <p:message display="text" for="popupButtonCal2"/>
+                    </h:panelGrid>
+
+                    <p:commandButton action="#{bitacoraErroresVigilancia.busquedaBitacoraErrores}" value="Buscar" type="submit" ajax="false" onclick="statusDialog.show();" onsuccess="statusDialog.hide();"/>                        
+                </p:panel>
+                <br></br>
+            </h:form>
+            <h:form id="formaGeneral2"> 
+                <p:panel id="panelBitacoraErrores" header="Bitacora de Errores" style="width:820px;margin-left:auto;margin-right:auto;" visible="#{bitacoraErroresVigilancia.mostrarPanelTabla}">
+                    <p:dataTable id="tbl" var="i" value="#{bitacoraErroresVigilancia.bitacoraErrores}" emptyMessage="#{mensajes['msg.dataTable.vacio']}" style="overflow:auto">
+
+                        <p:column headerText="Vigilancia" >
+                            <h:outputText id="idVigilancia" value="#{i.idVigilancia}"></h:outputText>
+                        </p:column>
+                        <p:column headerText="Descripcion">
+                            <h:inputTextarea id="descripcionTipoDoc" style="border:none;resize:none" cols="50" rows="1" value="#{i.descripcionVigilancia}" readonly="true" />
+                        </p:column>
+                        <p:column headerText="Nombre Archivo">
+                            <h:outputText id="nombreArchivo" value="#{i.nombreOriginalArchivo}"></h:outputText>
+                        </p:column>
+                        <p:column style="text-align:center;">
+                            <f:facet name="header">
+                                <h:outputText value="Descargar Archivo"/>
+                            </f:facet>
+                            <p:commandButton rendered="true" ajax="false"
+                                             icon="ui-icon-circle-arrow-s">
+                                <p:fileDownload value="#{i.archivoBitacora}" id="downloader"/>
+                            </p:commandButton>
+                        </p:column>
+                        <p:column headerText="Fecha de Carga">
+                            <h:outputText id="fechaCarga" value="#{i.fechaCargaArchivoStr}"></h:outputText>
+                        </p:column>
+
+                    </p:dataTable>
+                </p:panel>
+
+
+
+
+            </h:form>
+
+        </h:body>
+    </html>
+</f:view>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Multas_subreporte2" language="groovy" pageWidth="440" pageHeight="1500" columnWidth="440" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="ffd2379b-ca8f-4022-a7a0-97c6c30ea2a2">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="26"/>
+	<property name="ireport.y" value="0"/>
+	<field name="idObligacion" class="java.lang.Long"/>
+	<field name="descObligacion" class="java.lang.String"/>
+	<field name="monto" class="java.lang.String"/>
+	<field name="ejercicio" class="java.lang.String"/>
+	<field name="periodo" class="java.lang.String"/>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="05757b7b-7619-4727-876c-3d8b2288c57e" x="0" y="2" width="55" height="28"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idObligacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="b2ce5f89-1674-4119-81bb-f17b02c0ff9a" x="55" y="2" width="161" height="28" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descObligacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="f4c8f93a-f6f4-4d9f-b7cf-d342b9f43aea" x="369" y="2" width="70" height="28"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{monto}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="a43119b1-bdad-4577-a14b-b1ff24cbae30" x="216" y="2" width="77" height="28" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ejercicio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="cd182e60-e73b-4cfa-acd0-0ad4658ca2f2" x="293" y="2" width="76" height="28" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{periodo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

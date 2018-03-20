@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <title>Monitor</title>
+        <script type="text/javascript">
+            function ext() {
+                this.cfg.seriesDefaults = {
+                    lineWidth: 1.0,
+                    showMarker: true,
+                    markerOptions: {
+                        size: 4
+                    }
+                };
+                this.cfg.highlighter = {
+                    formatString: '%.0i, %.6f',
+                    tooltipAxes: 'xy',
+                    useAxesFormatters: true
+                };
+
+            }
+        </script>
+    </h:head>
+    <ui:include src="/WEB-INF/templates/version.xhtml"/>
+    <h:body>
+        <h:outputStylesheet library="css/" name="estilos.css"/>
+        <ui:include src="/WEB-INF/templates/sessionTimeOut.xhtml"/>
+        <h:form id="form" prependId ="false">
+            <h:panelGrid id="panelGraph">
+                <p:lineChart id="swapGraph" widgetVar="graph" value="#{monitor.memoryModel}" legendPosition="nw" title="PHYSICAL MEMORY MONITOR" style="width:1400px; height:250px;" seriesColors="00AA00, 0000AA" legendRows="1" xaxisLabel 
+                             ="Tiempo" yaxisLabel="Porcentaje" xaxisAngle="45" zoom="true" minY="0" maxY="120" extender="ext" />
+
+                <ui:repeat id="repeat" var="item" value="#{monitor.processModelList}" varStatus="element">
+                    <p:lineChart id="processGraph" value="#{item.processModel}" legendPosition="nw" title="PROCESS GRAPH" style="width:1400px; height:250px;" legendRows="1" xaxisLabel="Tiempo" yaxisLabel="Porcentaje" xaxisAngle="45" zoom="true" minY="0" extender="ext"/>
+                </ui:repeat>
+                <p:poll id="poll" interval="5" update="panelGraph" listener="#{monitor.populateData}" />
+            </h:panelGrid>
+        </h:form>
+    </h:body>
+</html>

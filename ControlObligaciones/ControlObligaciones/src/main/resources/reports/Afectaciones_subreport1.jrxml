@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Afectaciones_subreport1" language="groovy" pageWidth="452" pageHeight="572" orientation="Landscape" columnWidth="452" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="6efcbb54-7b1e-47e5-8b93-5244d7f056f4">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="claveObligacion" class="java.lang.Integer"/>
+	<field name="ejercicio" class="java.lang.String"/>
+	<field name="obDescripcion" class="java.lang.String"/>
+	<field name="periodo" class="java.lang.String"/>
+	<field name="estado" class="java.lang.String"/>
+	<title>
+		<band height="23">
+			<staticText>
+				<reportElement uuid="94b94639-ef39-4d61-91fb-e4f5cac003ff" x="10" y="5" width="431" height="14"/>
+				<textElement textAlignment="Center">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DETALLE DE OBLIGACIONES]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="38" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="3a57458f-a814-4ed0-a67f-6749a4f77535" mode="Opaque" x="5" y="1" width="440" height="37" backcolor="#B0B4BC"/>
+				<box>
+					<bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
+				</box>
+				<textElement/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b8febdfc-9fd8-4bd2-8c3e-dff945faaf10" x="221" y="1" width="77" height="36"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ejercicio de la obligación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="338ceae7-5d24-4d36-b651-96ffac631a62" x="6" y="1" width="55" height="36"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Clave de la obligación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e6534a43-1647-4cbd-8c51-9377588cf69f" x="61" y="1" width="161" height="36"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descripción de obligación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c325d447-0d43-41f6-b968-7757cf17c0ee" x="298" y="1" width="76" height="37"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Periodo de la obligación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1d61e5da-840f-46dd-b7c9-fe498b4e8545" x="374" y="1" width="71" height="37"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Estado de la obligación requerida]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="54" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="fd3228ec-f5a6-4b93-844b-a9ccd1160895" x="5" y="-1" width="56" height="55" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{claveObligacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="5c62a72a-b158-4d9d-b361-cb211eab1a21" x="221" y="-1" width="77" height="55" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ejercicio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="b8db7339-27fe-48f5-ac4f-311e05c610e8" x="298" y="-1" width="76" height="55" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{periodo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="d654fea0-29f2-448f-aff9-bf2bbc42fe7c" x="60" y="-1" width="161" height="55" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{obDescripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement uuid="bb71710e-4d29-49f2-83f6-d8c2679b3e56" x="374" y="-1" width="70" height="55" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" isPrintWhenDetailOverflows="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Constantia" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
